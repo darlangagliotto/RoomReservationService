@@ -1,34 +1,22 @@
-
-using AuthService.Api.Validators;
-using AuthService.Application.Mappings;
-using AuthService.Application.UseCases.RegisterUser;
-using AuthService.Domain.Repositories;
-using AuthService.Domain.Security;
-using AuthService.Domain.Services;
+using AuthService.Application.DependencyInjection;
 using AuthService.Infrastructure.Data;
-using AuthService.Infrastructure.Repositories;
-using AuthService.Infrastructure.Security;
-using FluentValidation;
-using FluentValidation.AspNetCore;
+using AuthService.Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<AuthenticationService>();
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
-builder.Services.AddAutoMapper(typeof(RegisterUserUseCase).Assembly);
 var app = builder.Build();
+
 
 // ------------------------
 // Middleware
@@ -44,5 +32,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();

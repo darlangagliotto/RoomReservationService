@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespw
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  authservice:
+    build:
+      context: ../AuthService
+    container_name: authservice  
+    ports:
+      - "5001:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=authdb;Username=postgres;Password=postgrespw
+    depends_on:
+      - db
+
+volumes:
+  db_data:

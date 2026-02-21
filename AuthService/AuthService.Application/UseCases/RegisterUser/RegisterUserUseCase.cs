@@ -31,12 +31,14 @@ namespace AuthService.Application.UseCases.RegisterUser
 
             var user = CreateUser(request);
             await _userRepository.AddSync(user);
-            var response = _mapper.Map<RegisterUserResponse>(user);
-            return response with
-            {
-                Token = "fake-jwt-token",
-                ExpiresAt = DateTime.UtcNow.AddHours(1)
-            };
+
+            return new RegisterUserResponse(
+                user.Id,
+                user.Name,
+                user.Email.Value,
+                "fake-jwt-token",
+                DateTime.UtcNow.AddHours(1)
+            );            
         }
 
         private User CreateUser(RegisterUserRequest request)

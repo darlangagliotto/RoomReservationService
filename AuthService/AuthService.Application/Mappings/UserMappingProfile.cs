@@ -9,23 +9,13 @@ namespace AuthService.Application.Mappings
         public UserMappingProfile()
         {
             CreateMap<User, RegisterUserResponse>()
-                .ForMember(
-                    dest => dest.Name,
-                    opt => opt.MapFrom(src => src.Name)
-                )
-                .ForMember(
-                    dest => dest.Email,
-                    opt => opt.MapFrom(src => src.Email.Value)
-                )
-                .ForMember(
-                    dest => dest.Token,
-                    opt => opt.Ignore()
-                )
-                .ForMember(
-                    dest => dest.ExpiresAt,
-                    opt => opt.Ignore()
-                );
-        }
-        
+                .ConstructUsing(src => new RegisterUserResponse(
+                    src.Id,
+                    src.Name,
+                    src.Email.Value,
+                    string.Empty,
+                    DateTime.MinValue
+                ));
+        }        
     }
 }
