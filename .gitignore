@@ -1,0 +1,53 @@
+# ============================
+# .NET
+# ============================
+bin/
+obj/
+out/
+
+# ============================
+# ASP.NET Core
+# ============================
+appsettings.Development.json
+appsettings.Local.json
+
+# ============================
+# Logs
+# ============================
+*.log
+
+# ============================
+# VSCode
+# ============================
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ============================
+# Rider / Visual Studio
+# ============================
+.idea/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ============================
+# OS
+# ============================
+.DS_Store
+Thumbs.db
+
+# ============================
+# Test results
+# ============================
+TestResults/
+
+# ============================
+# Docker
+# ============================
+*.env
+.env
