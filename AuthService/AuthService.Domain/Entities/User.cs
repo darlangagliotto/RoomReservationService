@@ -5,9 +5,9 @@ namespace AuthService.Domain.Entities
      public class User
     {
         public Guid Id {get; private set;}
-        public required string Name {get; init;}        
-        public required Email Email {get; init;}
-        public required string PasswordHash {get; init;}
+        public string Name {get; private set;}        
+        public Email Email {get; private set;}
+        public string PasswordHash {get; private set;}
         public bool IsBlocked{get; private set;}
 
         public User(string name, Email email, string passwordHash)

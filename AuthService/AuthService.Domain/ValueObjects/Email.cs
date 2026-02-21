@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using System.Net.Mail;
 
 namespace AuthService.Domain.ValueObjects
 {
@@ -11,10 +11,15 @@ namespace AuthService.Domain.ValueObjects
             {
                 throw new ArgumentException("Necessário informar o e-mail");
             }
-            if (!Regex.IsMatch(value, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            try
+            {
+                var mailAddress = new MailAddress(value);
+                Value = mailAddress.Address.ToLower().Trim();
+            }
+            catch
+            {
                 throw new ArgumentException("E-mail inválido");
-
-            Value = value.ToLower().Trim();
+            }
         }
         public override string ToString() => Value;
     }

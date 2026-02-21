@@ -1,10 +1,15 @@
 
+using AuthService.Api.Validators;
+using AuthService.Application.Mappings;
+using AuthService.Application.UseCases.RegisterUser;
 using AuthService.Domain.Repositories;
 using AuthService.Domain.Security;
 using AuthService.Domain.Services;
 using AuthService.Infrastructure.Data;
 using AuthService.Infrastructure.Repositories;
 using AuthService.Infrastructure.Security;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +25,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
+builder.Services.AddAutoMapper(typeof(RegisterUserUseCase).Assembly);
 var app = builder.Build();
 
 // ------------------------
