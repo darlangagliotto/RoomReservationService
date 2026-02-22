@@ -3,7 +3,6 @@ using AuthService.Domain.Entities;
 using AuthService.Domain.Repositories;
 using AuthService.Domain.Security;
 using AuthService.Domain.ValueObjects;
-using AutoMapper;
 
 namespace AuthService.Application.UseCases.RegisterUser
 {
@@ -11,13 +10,11 @@ namespace AuthService.Application.UseCases.RegisterUser
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
-        private readonly IMapper _mapper;
 
-        public RegisterUserUseCase(IUserRepository userRepository, IPasswordHasher passwordHasher, IMapper mapper)
+        public RegisterUserUseCase(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
-            _mapper = mapper;
         }
 
         public async Task<RegisterUserResponse> ExecuteAsync(RegisterUserRequest request)
