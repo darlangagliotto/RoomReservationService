@@ -1,6 +1,3 @@
-
-using AuthService.Application.DTOs;
-
 namespace AuthService.Application.UseCases.RegisterUser
 {
     public interface IRegisterUserUseCase

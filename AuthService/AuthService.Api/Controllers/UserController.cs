@@ -1,4 +1,3 @@
-using AuthService.Application.DTOs;
 using AuthService.Application.UseCases.RegisterUser;
 using Microsoft.AspNetCore.Mvc;
 

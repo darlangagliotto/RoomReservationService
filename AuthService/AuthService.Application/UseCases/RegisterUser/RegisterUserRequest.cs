@@ -1,4 +1,4 @@
-namespace AuthService.Application.DTOs;
+namespace AuthService.Application.UseCases.RegisterUser;
 
 public record RegisterUserRequest(
     string Name,

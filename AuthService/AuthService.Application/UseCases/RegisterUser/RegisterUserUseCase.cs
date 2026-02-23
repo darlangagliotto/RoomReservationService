@@ -1,4 +1,3 @@
-using AuthService.Application.DTOs;
 using AuthService.Domain.Entities;
 using AuthService.Domain.Repositories;
 using AuthService.Domain.Security;
@@ -42,9 +41,7 @@ namespace AuthService.Application.UseCases.RegisterUser
         {
             var email = new Email(request.Email);
             var passwordHash = _passwordHasher.Hash(request.Password);
-
             return new User(request.Name, email, passwordHash);
         }
-
     }
 }
