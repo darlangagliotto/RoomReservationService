@@ -21,10 +21,19 @@ namespace AuthService.Api.Controllers
         {
             var response = await _registerUserUseCase.ExecuteAsync(request);
 
+            if (!response.IsSuccess)
+            {
+                return Problem(
+                    title: "Erro de negócio",
+                    detail: response.Error,
+                    statusCode: StatusCodes.Status400BadRequest
+                );
+            }
+
             return CreatedAtAction(
                 nameof(Register),
-                new { id = response.Id},
-                response
+                new { id = response.Value?.Id},
+                response.Value
             );
         }
     }

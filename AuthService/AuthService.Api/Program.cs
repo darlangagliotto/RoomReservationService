@@ -27,6 +27,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<AuthService.API.Middleware.ExceptionMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

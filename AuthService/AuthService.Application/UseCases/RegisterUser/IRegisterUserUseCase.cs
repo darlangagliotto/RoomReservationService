@@ -1,7 +1,9 @@
+using AuthService.Domain.Common;
+
 namespace AuthService.Application.UseCases.RegisterUser
 {
     public interface IRegisterUserUseCase
     {
-        Task<RegisterUserResponse> ExecuteAsync(RegisterUserRequest request);
+        Task<Result<RegisterUserResponse>>  ExecuteAsync(RegisterUserRequest request);
     }
 }

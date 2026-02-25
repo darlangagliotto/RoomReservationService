@@ -1,3 +1,4 @@
+using AuthService.Domain.Common;
 using AuthService.Domain.Entities;
 using AuthService.Domain.Repositories;
 using AuthService.Domain.Security;
@@ -16,24 +17,27 @@ namespace AuthService.Application.UseCases.RegisterUser
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<RegisterUserResponse> ExecuteAsync(RegisterUserRequest request)
+        public async Task<Result<RegisterUserResponse>> ExecuteAsync(RegisterUserRequest request)
         {
             var existingUser = await _userRepository.GetByEmailAsync(request.Email);
 
             if (existingUser is not null)
             {
-                throw new InvalidOperationException("E-mail já cadastrado!");
+                return Result<RegisterUserResponse>
+                    .Failure("E-mail já cadastrado!");
             }
 
             var user = CreateUser(request);
             await _userRepository.AddSync(user);
 
-            return new RegisterUserResponse(
-                user.Id,
-                user.Name,
-                user.Email.Value,
-                "fake-jwt-token",
-                DateTime.UtcNow.AddHours(1)
+            return Result<RegisterUserResponse>.Success(
+                new RegisterUserResponse(
+                    user.Id,
+                    user.Name,
+                    user.Email.Value,
+                    "fake-jwt-token",
+                    DateTime.UtcNow.AddHours(1)
+                )
             );            
         }
 

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using AuthService.Application.UseCases.RegisterUser;
 using FluentValidation;
+using System.Reflection;
 
 namespace AuthService.Application.DependencyInjection
 {
@@ -9,8 +10,7 @@ namespace AuthService.Application.DependencyInjection
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddScoped<IRegisterUserUseCase, RegisterUserUseCase>();
-            // AutoMapper removido
-            services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             return services;
         }
     }
