@@ -42,12 +42,22 @@ appsettings.Local.json
 Thumbs.db
 
 # ============================
-# Test results
-# ============================
-TestResults/
-
-# ============================
 # Docker
 # ============================
 *.env
 .env
+
+# ============================
+# Test results
+# ============================
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# ============================
+# Coverage
+# ============================
+coverage/
+coveragereport/
+**/coverage.cobertura.xml
