@@ -1,25 +1,29 @@
-using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace AuthService.Domain.ValueObjects
 {
     public sealed record Email
     {
         public string Value { get; }
+
+        public static readonly Regex EmailRegex = 
+            new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         public Email(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
                 throw new ArgumentException("Necessário informar o e-mail");
             }
-            try
-            {
-                var mailAddress = new MailAddress(value);
-                Value = mailAddress.Address.ToLower().Trim();
-            }
-            catch
+
+            var normalized = value.Trim().ToLowerInvariant();
+
+            if(!EmailRegex.IsMatch(normalized))
             {
                 throw new ArgumentException("E-mail inválido");
             }
+
+            Value = normalized;
         }
         public override string ToString() => Value;
     }

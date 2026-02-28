@@ -12,6 +12,8 @@ namespace AuthService.Domain.Entities
 
         public User(string name, Email email, string passwordHash)
         {
+            Validate(name, email, passwordHash);
+
             Id = Guid.NewGuid();
             Name = name;
             Email = email;
@@ -25,5 +27,28 @@ namespace AuthService.Domain.Entities
         public void Block() => IsBlocked = true;
 
         public void Unblock() => IsBlocked = false;
+
+        private void Validate(string name, Email email, string passwordHash)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Nome é obrigatório.");
+            }
+
+            if (name.Length < 3)
+            {
+                throw new ArgumentException("Nome deve ter no mínimo 3 caracteres.");
+            }
+
+            if (email is null)
+            {
+                throw new ArgumentNullException(nameof(email), "E-mail é obrigatório.");
+            }
+
+            if (string.IsNullOrWhiteSpace(passwordHash))
+            {
+                throw new ArgumentException("Senha é obrigatória.");
+            }
+        }
     }
 }

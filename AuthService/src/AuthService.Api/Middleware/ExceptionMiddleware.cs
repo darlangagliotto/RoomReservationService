@@ -35,6 +35,5 @@ namespace AuthService.API.Middleware
                 await context.Response.WriteAsJsonAsync(problem);
             }
         }
-
     }
 }
