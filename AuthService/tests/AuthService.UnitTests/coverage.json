@@ -1,0 +1,491 @@
+{
+  "AuthService.Application.dll": {
+    "C:\\Projetos\\RoomReservationService\\AuthService\\src\\AuthService.Application\\UseCases\\RegisterUser\\RegisterUserRequest.cs": {
+      "AuthService.Application.UseCases.RegisterUser.RegisterUserRequest": {
+        "System.String AuthService.Application.UseCases.RegisterUser.RegisterUserRequest::get_Name()": {
+          "Lines": {
+            "4": 0
+          },
+          "Branches": []
+        },
+        "System.String AuthService.Application.UseCases.RegisterUser.RegisterUserRequest::get_Email()": {
+          "Lines": {
+            "5": 0
+          },
+          "Branches": []
+        },
+        "System.String AuthService.Application.UseCases.RegisterUser.RegisterUserRequest::get_Password()": {
+          "Lines": {
+            "6": 0
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Application.UseCases.RegisterUser.RegisterUserRequest::.ctor(System.String,System.String,System.String)": {
+          "Lines": {
+            "3": 0,
+            "7": 0
+          },
+          "Branches": []
+        }
+      }
+    },
+    "C:\\Projetos\\RoomReservationService\\AuthService\\src\\AuthService.Application\\UseCases\\RegisterUser\\RegisterUserRequestValidator.cs": {
+      "AuthService.Application.UseCases.RegisterUser.RegisterUserRequestValidator": {
+        "System.Void AuthService.Application.UseCases.RegisterUser.RegisterUserRequestValidator::.ctor()": {
+          "Lines": {
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "21": 0
+          },
+          "Branches": []
+        }
+      }
+    },
+    "C:\\Projetos\\RoomReservationService\\AuthService\\src\\AuthService.Application\\UseCases\\RegisterUser\\RegisterUserResponse.cs": {
+      "AuthService.Application.UseCases.RegisterUser.RegisterUserResponse": {
+        "System.Guid AuthService.Application.UseCases.RegisterUser.RegisterUserResponse::get_Id()": {
+          "Lines": {
+            "4": 0
+          },
+          "Branches": []
+        },
+        "System.String AuthService.Application.UseCases.RegisterUser.RegisterUserResponse::get_Name()": {
+          "Lines": {
+            "5": 0
+          },
+          "Branches": []
+        },
+        "System.String AuthService.Application.UseCases.RegisterUser.RegisterUserResponse::get_Email()": {
+          "Lines": {
+            "6": 0
+          },
+          "Branches": []
+        },
+        "System.String AuthService.Application.UseCases.RegisterUser.RegisterUserResponse::get_Token()": {
+          "Lines": {
+            "7": 0
+          },
+          "Branches": []
+        },
+        "System.DateTime AuthService.Application.UseCases.RegisterUser.RegisterUserResponse::get_ExpiresAt()": {
+          "Lines": {
+            "8": 0
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Application.UseCases.RegisterUser.RegisterUserResponse::.ctor(System.Guid,System.String,System.String,System.String,System.DateTime)": {
+          "Lines": {
+            "3": 0,
+            "9": 0
+          },
+          "Branches": []
+        }
+      }
+    },
+    "C:\\Projetos\\RoomReservationService\\AuthService\\src\\AuthService.Application\\UseCases\\RegisterUser\\RegisterUserUseCase.cs": {
+      "AuthService.Application.UseCases.RegisterUser.RegisterUserUseCase": {
+        "AuthService.Domain.Entities.User AuthService.Application.UseCases.RegisterUser.RegisterUserUseCase::CreateUser(AuthService.Application.UseCases.RegisterUser.RegisterUserRequest)": {
+          "Lines": {
+            "45": 0,
+            "46": 0,
+            "47": 0,
+            "48": 0,
+            "49": 0
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Application.UseCases.RegisterUser.RegisterUserUseCase::.ctor(AuthService.Domain.Repositories.IUserRepository,AuthService.Domain.Security.IPasswordHasher)": {
+          "Lines": {
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0
+          },
+          "Branches": []
+        }
+      },
+      "AuthService.Application.UseCases.RegisterUser.RegisterUserUseCase/<ExecuteAsync>d__3": {
+        "System.Void AuthService.Application.UseCases.RegisterUser.RegisterUserUseCase/<ExecuteAsync>d__3::MoveNext()": {
+          "Lines": {
+            "21": 0,
+            "22": 0,
+            "24": 0,
+            "25": 0,
+            "26": 0,
+            "27": 0,
+            "30": 0,
+            "31": 0,
+            "33": 0,
+            "34": 0,
+            "35": 0,
+            "36": 0,
+            "37": 0,
+            "38": 0,
+            "39": 0,
+            "40": 0,
+            "41": 0,
+            "42": 0
+          },
+          "Branches": [
+            {
+              "Line": 24,
+              "Offset": 180,
+              "EndOffset": 182,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 24,
+              "Offset": 180,
+              "EndOffset": 199,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            }
+          ]
+        }
+      }
+    },
+    "C:\\Projetos\\RoomReservationService\\AuthService\\src\\AuthService.Application\\DependencyInjection\\DependencyInjection.cs": {
+      "AuthService.Application.DependencyInjection.DependencyInjection": {
+        "Microsoft.Extensions.DependencyInjection.IServiceCollection AuthService.Application.DependencyInjection.DependencyInjection::AddApplication(Microsoft.Extensions.DependencyInjection.IServiceCollection)": {
+          "Lines": {
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0
+          },
+          "Branches": []
+        }
+      }
+    }
+  },
+  "AuthService.Domain.dll": {
+    "C:\\Projetos\\RoomReservationService\\AuthService\\src\\AuthService.Domain\\ValueObjects\\Email.cs": {
+      "AuthService.Domain.ValueObjects.Email": {
+        "System.String AuthService.Domain.ValueObjects.Email::get_Value()": {
+          "Lines": {
+            "7": 0
+          },
+          "Branches": []
+        },
+        "System.String AuthService.Domain.ValueObjects.Email::ToString()": {
+          "Lines": {
+            "28": 0
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Domain.ValueObjects.Email::.ctor(System.String)": {
+          "Lines": {
+            "12": 5,
+            "13": 5,
+            "14": 5,
+            "15": 0,
+            "16": 0,
+            "19": 5,
+            "21": 5,
+            "22": 0,
+            "23": 0,
+            "26": 5,
+            "27": 5
+          },
+          "Branches": [
+            {
+              "Line": 14,
+              "Offset": 16,
+              "EndOffset": 18,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 14,
+              "Offset": 16,
+              "EndOffset": 30,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 5
+            },
+            {
+              "Line": 21,
+              "Offset": 58,
+              "EndOffset": 60,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 21,
+              "Offset": 58,
+              "EndOffset": 72,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 5
+            }
+          ]
+        },
+        "System.Void AuthService.Domain.ValueObjects.Email::.ctor(AuthService.Domain.ValueObjects.Email)": {
+          "Lines": {
+            "5": 0
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Domain.ValueObjects.Email::.cctor()": {
+          "Lines": {
+            "9": 1,
+            "10": 1
+          },
+          "Branches": []
+        }
+      }
+    },
+    "C:\\Projetos\\RoomReservationService\\AuthService\\src\\AuthService.Domain\\Services\\AuthenticationService.cs": {
+      "AuthService.Domain.Services.AuthenticationService": {
+        "System.Boolean AuthService.Domain.Services.AuthenticationService::Authenticate(AuthService.Domain.Entities.User,System.String)": {
+          "Lines": {
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "21": 0,
+            "22": 0
+          },
+          "Branches": [
+            {
+              "Line": 17,
+              "Offset": 9,
+              "EndOffset": 11,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 17,
+              "Offset": 9,
+              "EndOffset": 16,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void AuthService.Domain.Services.AuthenticationService::.ctor(AuthService.Domain.Security.IPasswordHasher)": {
+          "Lines": {
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "13": 0
+          },
+          "Branches": []
+        }
+      }
+    },
+    "C:\\Projetos\\RoomReservationService\\AuthService\\src\\AuthService.Domain\\Entities\\User.cs": {
+      "AuthService.Domain.Entities.User": {
+        "System.Guid AuthService.Domain.Entities.User::get_Id()": {
+          "Lines": {
+            "7": 6
+          },
+          "Branches": []
+        },
+        "System.String AuthService.Domain.Entities.User::get_Name()": {
+          "Lines": {
+            "8": 6
+          },
+          "Branches": []
+        },
+        "AuthService.Domain.ValueObjects.Email AuthService.Domain.Entities.User::get_Email()": {
+          "Lines": {
+            "9": 6
+          },
+          "Branches": []
+        },
+        "System.String AuthService.Domain.Entities.User::get_PasswordHash()": {
+          "Lines": {
+            "10": 6
+          },
+          "Branches": []
+        },
+        "System.Boolean AuthService.Domain.Entities.User::get_IsBlocked()": {
+          "Lines": {
+            "11": 11
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Domain.Entities.User::Block()": {
+          "Lines": {
+            "27": 2
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Domain.Entities.User::Unblock()": {
+          "Lines": {
+            "29": 1
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Domain.Entities.User::Validate(System.String,AuthService.Domain.ValueObjects.Email,System.String)": {
+          "Lines": {
+            "32": 6,
+            "33": 6,
+            "34": 0,
+            "35": 0,
+            "38": 6,
+            "39": 0,
+            "40": 0,
+            "43": 6,
+            "44": 1,
+            "45": 1,
+            "48": 5,
+            "49": 0,
+            "50": 0,
+            "52": 5
+          },
+          "Branches": [
+            {
+              "Line": 33,
+              "Offset": 9,
+              "EndOffset": 11,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 33,
+              "Offset": 9,
+              "EndOffset": 23,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 6
+            },
+            {
+              "Line": 38,
+              "Offset": 34,
+              "EndOffset": 36,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 38,
+              "Offset": 34,
+              "EndOffset": 48,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 6
+            },
+            {
+              "Line": 43,
+              "Offset": 54,
+              "EndOffset": 56,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 1
+            },
+            {
+              "Line": 43,
+              "Offset": 54,
+              "EndOffset": 73,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 5
+            },
+            {
+              "Line": 48,
+              "Offset": 81,
+              "EndOffset": 83,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 0
+            },
+            {
+              "Line": 48,
+              "Offset": 81,
+              "EndOffset": 95,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 5
+            }
+          ]
+        },
+        "System.Void AuthService.Domain.Entities.User::.ctor(System.String,AuthService.Domain.ValueObjects.Email,System.String)": {
+          "Lines": {
+            "13": 6,
+            "14": 6,
+            "15": 6,
+            "17": 5,
+            "18": 5,
+            "19": 5,
+            "20": 5,
+            "21": 5,
+            "23": 5
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Domain.Entities.User::.ctor()": {
+          "Lines": {
+            "25": 0
+          },
+          "Branches": []
+        }
+      }
+    },
+    "C:\\Projetos\\RoomReservationService\\AuthService\\src\\AuthService.Domain\\Common\\Result.cs": {
+      "AuthService.Domain.Common.Result`1": {
+        "System.Boolean AuthService.Domain.Common.Result`1::get_IsSuccess()": {
+          "Lines": {
+            "5": 0
+          },
+          "Branches": []
+        },
+        "T AuthService.Domain.Common.Result`1::get_Value()": {
+          "Lines": {
+            "6": 0
+          },
+          "Branches": []
+        },
+        "System.String AuthService.Domain.Common.Result`1::get_Error()": {
+          "Lines": {
+            "7": 0
+          },
+          "Branches": []
+        },
+        "AuthService.Domain.Common.Result`1<T> AuthService.Domain.Common.Result`1::Success(T)": {
+          "Lines": {
+            "17": 0
+          },
+          "Branches": []
+        },
+        "AuthService.Domain.Common.Result`1<T> AuthService.Domain.Common.Result`1::Failure(System.String)": {
+          "Lines": {
+            "20": 0
+          },
+          "Branches": []
+        },
+        "System.Void AuthService.Domain.Common.Result`1::.ctor(System.Boolean,T,System.String)": {
+          "Lines": {
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0
+          },
+          "Branches": []
+        }
+      }
+    }
+  }
+}

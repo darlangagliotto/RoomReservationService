@@ -2,21 +2,30 @@
 
   <Target Name="Coverage"
           Condition="'$(IsTestProject)' == 'true' AND '$(IsCrossTargetingBuild)' != 'true'">
+
     <PropertyGroup>
       <TestProjectDir>$(MSBuildProjectDirectory)</TestProjectDir>
       <TestResultsDir>$(TestProjectDir)\TestResults</TestResultsDir>
       <CoverageOutput>$(TestProjectDir)\coveragereport</CoverageOutput>
-      <CoverageFiles>$(TestResultsDir)\**\coverage.cobertura.xml</CoverageFiles>
+      <CoverageFile>$(TestResultsDir)\coverage.cobertura.xml</CoverageFile>
     </PropertyGroup>
-    <Message Text="Cleaning previous coverage artifacts..." Importance="high" />
-    <!-- Remove TestResults -->
+
     <RemoveDir Directories="$(TestResultsDir)" Condition="Exists('$(TestResultsDir)')" />
-    <!-- Remove coveragereport -->
     <RemoveDir Directories="$(CoverageOutput)" Condition="Exists('$(CoverageOutput)')" />
-    <Message Text="Running tests with coverage..." Importance="high" />
-    <Exec Command="dotnet test --collect:&quot;XPlat Code Coverage&quot;" />
-    <Message Text="Generating HTML report..." Importance="high" />
-    <Exec Command="dotnet reportgenerator -reports:&quot;$(CoverageFiles)&quot; -targetdir:&quot;$(CoverageOutput)&quot; -reporttypes:Html" />
-    <Message Text="Opening coverage report..." Importance="high" />    
+
+    <!-- 1️⃣ Roda testes com cobertura (SEM threshold) -->
+    <Exec Command="dotnet test
+      -p:CollectCoverage=true
+      -p:CoverletOutputFormat=cobertura
+      -p:CoverletOutput=$(TestResultsDir)\coverage" />
+
+    <!-- 2️⃣ Gera HTML sempre que o arquivo existir -->
+    <Exec Command="dotnet reportgenerator
+      -reports:&quot;$(CoverageFile)&quot;
+      -targetdir:&quot;$(CoverageOutput)&quot;
+      -reporttypes:Html"
+      Condition="Exists('$(CoverageFile)')" />
+
   </Target>
+
 </Project>
