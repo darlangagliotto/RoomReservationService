@@ -1,0 +1,42 @@
+using AuthService.Domain.Common;
+using AuthService.Domain.Repositories;
+using AuthService.Domain.Security;
+
+namespace AuthService.Application.UseCases.LoginUser
+{
+    public class LoginUserUseCase : ILoginUserUseCase
+    {
+        private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher _passwordHasher;
+
+        public LoginUserUseCase(IUserRepository userRepository, IPasswordHasher passwordHasher)
+        {
+            _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
+        }
+
+        public async Task<Result<LoginUserResponse>> ExecuteAsync(LoginUserRequest request)
+        {
+            var user = await _userRepository.GetByEmailAsync(request.Email);
+
+            if (user is null) 
+            {
+                return Result<LoginUserResponse>.Failure("Usuário não encontrado!");
+            }
+
+            var isPasswordValid = _passwordHasher.Verify(request.Password, user.PasswordHash);
+
+            if (!isPasswordValid)
+            {
+                return Result<LoginUserResponse>.Failure("Senha inválida!");
+            }
+
+            return Result<LoginUserResponse>.Success(
+                new LoginUserResponse(
+                    "fake-jwt-token",
+                    DateTime.UtcNow.AddHours(1)
+                )
+            );
+        }
+    }
+}
