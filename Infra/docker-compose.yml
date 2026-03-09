@@ -20,6 +20,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=db;Database=authdb;Username=postgres;Password=postgrespw
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthService.Client
+      - Jwt__Key=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_WITH_AT_LEAST_32_CHARS
+      - Jwt__AccessTokenExpirationMinutes=60
     depends_on:
       - db
 

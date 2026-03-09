@@ -56,11 +56,7 @@ namespace AuthService.Api.Controllers
                 );
             }
 
-            return CreatedAtAction(
-                nameof(Login),
-                new { email = request.Email },
-                response.Value
-            );
+            return Ok(response.Value);
         }
     }
 }

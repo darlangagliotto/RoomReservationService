@@ -10,11 +10,16 @@ namespace AuthService.Application.UseCases.RegisterUser
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly ITokenGenerator _tokenGenerator;
 
-        public RegisterUserUseCase(IUserRepository userRepository, IPasswordHasher passwordHasher)
+        public RegisterUserUseCase(
+            IUserRepository userRepository, 
+            IPasswordHasher passwordHasher,
+            ITokenGenerator tokenGenerator)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _tokenGenerator = tokenGenerator;
         }
 
         public async Task<Result<RegisterUserResponse>> ExecuteAsync(RegisterUserRequest request)
@@ -30,13 +35,15 @@ namespace AuthService.Application.UseCases.RegisterUser
             var user = CreateUser(request);
             await _userRepository.AddSync(user);
 
+            var token = _tokenGenerator.Generate(user);
+
             return Result<RegisterUserResponse>.Success(
                 new RegisterUserResponse(
                     user.Id,
                     user.Name,
                     user.Email.Value,
-                    "fake-jwt-token",
-                    DateTime.UtcNow.AddHours(1)
+                    token.Token,
+                    token.ExpiresAt
                 )
             );            
         }

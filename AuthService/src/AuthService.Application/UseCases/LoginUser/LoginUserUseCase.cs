@@ -8,11 +8,16 @@ namespace AuthService.Application.UseCases.LoginUser
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly ITokenGenerator _tokenGenerator;
 
-        public LoginUserUseCase(IUserRepository userRepository, IPasswordHasher passwordHasher)
+        public LoginUserUseCase(
+            IUserRepository userRepository, 
+            IPasswordHasher passwordHasher,
+            ITokenGenerator tokenGenerator)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _tokenGenerator = tokenGenerator;
         }
 
         public async Task<Result<LoginUserResponse>> ExecuteAsync(LoginUserRequest request)
@@ -31,10 +36,12 @@ namespace AuthService.Application.UseCases.LoginUser
                 return Result<LoginUserResponse>.Failure("Senha inválida!");
             }
 
+            var token = _tokenGenerator.Generate(user);
+
             return Result<LoginUserResponse>.Success(
                 new LoginUserResponse(
-                    "fake-jwt-token",
-                    DateTime.UtcNow.AddHours(1)
+                    token.Token,
+                    token.ExpiresAt
                 )
             );
         }

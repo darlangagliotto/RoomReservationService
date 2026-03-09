@@ -16,6 +16,16 @@ namespace AuthService.Infrastructure.DependencyInjection
             services.AddDbContext<AuthDbContext>(options =>
                 options.UseNpgsql(
                     configuration.GetConnectionString("DefaultConnection")));
+
+            var jwtOptions = configuration
+                .GetSection(JwtOptions.SectionName)
+                .Get<JwtOptions>()
+                ?? throw new InvalidOperationException("Configurações do Jwt não encontrada!");
+
+            jwtOptions.Validate();
+
+            services.AddSingleton(jwtOptions);
+            services.AddSingleton<ITokenGenerator, JwtTokenGenerator>();            
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
             return services;
