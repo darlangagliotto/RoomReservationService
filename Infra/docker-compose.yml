@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   db:
     image: postgres:15
@@ -6,6 +5,12 @@ services:
       POSTGRES_DB: authdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d authdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
@@ -25,7 +30,8 @@ services:
       - Jwt__Key=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_WITH_AT_LEAST_32_CHARS
       - Jwt__AccessTokenExpirationMinutes=60
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:

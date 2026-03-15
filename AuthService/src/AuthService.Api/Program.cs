@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Npgsql;
+using System.Net.Sockets;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,10 +80,50 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
-    db.Database.Migrate();
-}
+await MigrateDatabaseWithRetryAsync(app);
 
 app.Run();
+
+static async Task MigrateDatabaseWithRetryAsync(WebApplication app)
+{
+    const int maxRetries = 10;
+    var delay = TimeSpan.FromSeconds(3);
+
+    for (var attempt = 1; attempt <= maxRetries; attempt++)
+    {
+        try
+        {
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+
+            await db.Database.MigrateAsync();
+            return;
+        }
+        catch (Exception ex) when (IsTransientDatabaseStartupFailure(ex) && attempt < maxRetries)
+        {
+            app.Logger.LogWarning(
+                ex,
+                "Database unavailable during startup. Retrying migration in {DelaySeconds}s ({Attempt}/{MaxRetries}).",
+                delay.TotalSeconds,
+                attempt,
+                maxRetries);
+
+            await Task.Delay(delay);
+        }
+    }
+
+    using var finalScope = app.Services.CreateScope();
+    var finalDb = finalScope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    await finalDb.Database.MigrateAsync();
+}
+
+static bool IsTransientDatabaseStartupFailure(Exception exception)
+{
+    return exception switch
+    {
+        NpgsqlException => true,
+        SocketException => true,
+        _ when exception.InnerException is not null => IsTransientDatabaseStartupFailure(exception.InnerException),
+        _ => false
+    };
+}
