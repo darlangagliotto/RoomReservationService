@@ -35,15 +35,15 @@ namespace AuthService.Application.UseCases.RegisterUser
             var user = CreateUser(request);
             await _userRepository.AddSync(user);
 
-            var token = _tokenGenerator.Generate(user);
+            //var token = _tokenGenerator.Generate(user);
 
             return Result<RegisterUserResponse>.Success(
                 new RegisterUserResponse(
                     user.Id,
                     user.Name,
-                    user.Email.Value,
-                    token.Token,
-                    token.ExpiresAt
+                    user.Email.Value
+                    //token.Token,
+                    //token.ExpiresAt
                 )
             );            
         }
