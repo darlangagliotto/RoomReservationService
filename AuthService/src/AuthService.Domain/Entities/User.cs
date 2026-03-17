@@ -1,3 +1,4 @@
+using AuthService.Domain.Common;
 using AuthService.Domain.ValueObjects;
 
 namespace AuthService.Domain.Entities
@@ -32,22 +33,22 @@ namespace AuthService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Nome é obrigatório.");
+                throw new DomainException("Nome é obrigatório.");
             }
 
             if (name.Length < 3)
             {
-                throw new ArgumentException("Nome deve ter no mínimo 3 caracteres.");
+                throw new DomainException("Nome deve ter no mínimo 3 caracteres.");
             }
 
             if (email is null)
             {
-                throw new ArgumentNullException(nameof(email), "E-mail é obrigatório.");
+                throw new DomainException("E-mail é obrigatório.");
             }
 
             if (string.IsNullOrWhiteSpace(passwordHash))
             {
-                throw new ArgumentException("Senha é obrigatória.");
+                throw new DomainException("Senha é obrigatória.");
             }
         }
     }

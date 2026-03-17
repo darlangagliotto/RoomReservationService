@@ -32,18 +32,23 @@ namespace AuthService.Application.UseCases.RegisterUser
                     .Failure("E-mail já cadastrado!");
             }
 
-            var user = CreateUser(request);
-            await _userRepository.AddSync(user);
+            User user;
+            try
+            {
+                user = CreateUser(request);
+            }
+            catch (DomainException ex)
+            {
+                return Result<RegisterUserResponse>.Failure(ex.Message);
+            }
 
-            var token = _tokenGenerator.Generate(user);
+            await _userRepository.AddSync(user);
 
             return Result<RegisterUserResponse>.Success(
                 new RegisterUserResponse(
                     user.Id,
                     user.Name,
-                    user.Email.Value,
-                    token.Token,
-                    token.ExpiresAt
+                    user.Email.Value
                 )
             );            
         }

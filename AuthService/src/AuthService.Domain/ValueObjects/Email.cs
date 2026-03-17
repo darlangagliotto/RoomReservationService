@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using AuthService.Domain.Common;
 
 namespace AuthService.Domain.ValueObjects
 {
@@ -13,14 +14,14 @@ namespace AuthService.Domain.ValueObjects
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ArgumentException("Necessário informar o e-mail");
+                throw new DomainException("Necessário informar o e-mail");
             }
 
             var normalized = value.Trim().ToLowerInvariant();
 
             if(!EmailRegex.IsMatch(normalized))
             {
-                throw new ArgumentException("E-mail inválido");
+                throw new DomainException("E-mail inválido");
             }
 
             Value = normalized;
