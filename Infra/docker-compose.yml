@@ -1,20 +1,24 @@
-version: '3.8'
 services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: authdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
 
   authservice:
     build:
       context: ../AuthService
-    container_name: authservice  
+    container_name: authservice
     ports:
       - "5001:5000"
     environment:
@@ -25,7 +29,25 @@ services:
       - Jwt__Key=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_WITH_AT_LEAST_32_CHARS
       - Jwt__AccessTokenExpirationMinutes=60
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
+  userservice:
+    build:
+      context: ../UserService
+    container_name: userservice
+    ports:
+      - "5002:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=userdb;Username=postgres;Password=postgrespw
+      - Jwt__Issuer=UserService
+      - Jwt__Audience=UserService.Client
+      - Jwt__Key=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_WITH_AT_LEAST_32_CHARS
+      - Jwt__AccessTokenExpirationMinutes=60
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:
