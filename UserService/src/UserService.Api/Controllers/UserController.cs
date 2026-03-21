@@ -1,4 +1,5 @@
 using UserService.Application.UseCases.RegisterUser;
+using UserService.Application.UseCases.ValidateCredentials;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UserService.Api.Controllers
@@ -8,10 +9,14 @@ namespace UserService.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IRegisterUserUseCase _registerUserUseCase;
+        private readonly IValidateCredentialsUseCase _validateCredentialsUseCase;
 
-        public UserController(IRegisterUserUseCase registerUserUseCase)
+        public UserController(
+            IRegisterUserUseCase registerUserUseCase,
+            IValidateCredentialsUseCase validateCredentialsUseCase)
         {
             _registerUserUseCase = registerUserUseCase;
+            _validateCredentialsUseCase = validateCredentialsUseCase;
         }
 
         [HttpPost]
@@ -35,6 +40,20 @@ namespace UserService.Api.Controllers
                 new { id = response.Value?.Id},
                 response.Value
             );
+        }
+
+        [HttpPost("validate-credentials")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<ActionResult<ValidateCredentialsResponse>> ValidateCredentials([FromBody] ValidateCredentialsRequest request)
+        {
+            var response = await _validateCredentialsUseCase.ExecuteAsync(request);
+
+            if (!response.IsSuccess)
+            {
+                return Ok(new ValidateCredentialsResponse(false, null));
+            }
+
+            return Ok(response.Value);
         }        
     }
 }
