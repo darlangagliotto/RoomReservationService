@@ -1,25 +1,22 @@
-using AuthService.Domain.Common;
-using AuthService.Domain.Entities;
-using AuthService.Domain.Repositories;
-using AuthService.Domain.Security;
-using AuthService.Domain.ValueObjects;
+using UserService.Domain.Common;
+using UserService.Domain.Entities;
+using UserService.Domain.Repositories;
+using UserService.Domain.Security;
+using UserService.Domain.ValueObjects;
 
-namespace AuthService.Application.UseCases.RegisterUser
+namespace UserService.Application.UseCases.RegisterUser
 {
     public class RegisterUserUseCase : IRegisterUserUseCase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IPasswordHasher _passwordHasher;
-        private readonly ITokenGenerator _tokenGenerator;
+        private readonly IPasswordHasher _passwordHasher;        
 
         public RegisterUserUseCase(
             IUserRepository userRepository, 
-            IPasswordHasher passwordHasher,
-            ITokenGenerator tokenGenerator)
+            IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
-            _tokenGenerator = tokenGenerator;
         }
 
         public async Task<Result<RegisterUserResponse>> ExecuteAsync(RegisterUserRequest request)

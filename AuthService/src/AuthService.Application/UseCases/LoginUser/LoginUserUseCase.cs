@@ -11,7 +11,7 @@ namespace AuthService.Application.UseCases.LoginUser
         private readonly ITokenGenerator _tokenGenerator;
 
         public LoginUserUseCase(
-            IUserRepository userRepository, 
+            IUserRepository userRepository,
             IPasswordHasher passwordHasher,
             ITokenGenerator tokenGenerator)
         {
@@ -24,16 +24,16 @@ namespace AuthService.Application.UseCases.LoginUser
         {
             var user = await _userRepository.GetByEmailAsync(request.Email);
 
-            if (user is null) 
+            if (user is null)
             {
-                return Result<LoginUserResponse>.Failure("Usuário não encontrado!");
+                return Result<LoginUserResponse>.Failure("Usuario nao encontrado!");
             }
 
             var isPasswordValid = _passwordHasher.Verify(request.Password, user.PasswordHash);
 
             if (!isPasswordValid)
             {
-                return Result<LoginUserResponse>.Failure("Senha inválida!");
+                return Result<LoginUserResponse>.Failure("Senha invalida!");
             }
 
             var token = _tokenGenerator.Generate(user);

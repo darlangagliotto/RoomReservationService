@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace AuthService.Application.UseCases.RegisterUser
+namespace UserService.Application.UseCases.RegisterUser
 {
     public class RegisterUserRequestValidator 
         : AbstractValidator<RegisterUserRequest>
@@ -17,7 +17,7 @@ namespace AuthService.Application.UseCases.RegisterUser
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Senha é obrigatória.")
-                .MinimumLength(6).WithMessage("Senha deve ter no minimo 6 caracteres.");
+                .MinimumLength(6).WithMessage("Senha deve ter no mínimo 6 caracteres.");
         }
     }
 }

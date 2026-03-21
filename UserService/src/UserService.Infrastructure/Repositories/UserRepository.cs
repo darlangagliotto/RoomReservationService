@@ -1,23 +1,22 @@
-using AuthService.Domain.Entities;
-using AuthService.Domain.Repositories;
-using AuthService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using UserService.Domain.Entities;
+using UserService.Domain.Repositories;
+using UserService.Infrastructure.Data;
 
-namespace AuthService.Infrastructure.Repositories
+namespace UserService.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly AuthDbContext _context;
+        private readonly UserDbContext _context;
 
-        public UserRepository(AuthDbContext context)
+        public UserRepository(UserDbContext context)
         {
             _context = context;
         }
 
-        public async Task AddSync(User user)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User?> GetByEmailAsync(string email)
@@ -26,9 +25,10 @@ namespace AuthService.Infrastructure.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Email.Value == normalizedEmail);
         }
 
-        public async Task<User?> GetByIdAsync(Guid id)
+        public async Task AddSync(User user)
         {
-            return await _context.Users.FindAsync(id);
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(User user)

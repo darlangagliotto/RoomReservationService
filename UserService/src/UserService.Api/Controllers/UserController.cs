@@ -1,7 +1,7 @@
-using AuthService.Application.UseCases.RegisterUser;
+using UserService.Application.UseCases.RegisterUser;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AuthService.Api.Controllers
+namespace UserService.Api.Controllers
 {
     [ApiController]
     [Route("api/users")]

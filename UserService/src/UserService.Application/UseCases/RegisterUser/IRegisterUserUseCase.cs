@@ -1,6 +1,6 @@
-using AuthService.Domain.Common;
+using UserService.Domain.Common;
 
-namespace AuthService.Application.UseCases.RegisterUser
+namespace UserService.Application.UseCases.RegisterUser
 {
     public interface IRegisterUserUseCase
     {
