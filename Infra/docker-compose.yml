@@ -23,14 +23,14 @@ services:
       - "5001:5000"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=db;Database=authdb;Username=postgres;Password=postgrespw
+      - Services__UserServiceUrl=http://userservice:5000
       - Jwt__Issuer=AuthService
       - Jwt__Audience=AuthService.Client
       - Jwt__Key=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_WITH_AT_LEAST_32_CHARS
       - Jwt__AccessTokenExpirationMinutes=60
     depends_on:
-      db:
-        condition: service_healthy
+      userservice:
+        condition: service_started
 
   userservice:
     build:

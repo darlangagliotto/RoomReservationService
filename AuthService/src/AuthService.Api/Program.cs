@@ -1,10 +1,8 @@
 using AuthService.Application.DependencyInjection;
-using AuthService.Infrastructure.Data;
 using AuthService.Infrastructure.DependencyInjection;
 using AuthService.Infrastructure.Security;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
@@ -77,11 +75,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
-    db.Database.Migrate();
-}
 
 app.Run();

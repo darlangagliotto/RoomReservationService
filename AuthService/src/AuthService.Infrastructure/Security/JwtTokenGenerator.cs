@@ -42,5 +42,31 @@ namespace AuthService.Infrastructure.Security
             var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
             return new TokenResult(tokenValue, expiresAt);
         }
+
+        public TokenResult Generate(Guid userId, string email)
+        {
+            var expiresAt = DateTime.UtcNow.AddMinutes(_options.AccessTokenExpirationMinutes);
+            var claims = new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new(JwtRegisteredClaimNames.Email, email),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _options.Issuer,
+                audience: _options.Audience,
+                claims: claims,
+                notBefore: DateTime.UtcNow,
+                expires: expiresAt,
+                signingCredentials: credentials
+            );
+
+            var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
+            return new TokenResult(tokenValue, expiresAt);
+        }
     }
 }

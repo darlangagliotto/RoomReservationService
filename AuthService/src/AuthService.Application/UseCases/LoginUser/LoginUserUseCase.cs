@@ -1,42 +1,32 @@
 using AuthService.Domain.Common;
-using AuthService.Domain.Repositories;
 using AuthService.Domain.Security;
+using AuthService.Domain.Services;
 
 namespace AuthService.Application.UseCases.LoginUser
 {
     public class LoginUserUseCase : ILoginUserUseCase
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IPasswordHasher _passwordHasher;
+        private readonly IUserValidationService _userValidationService;
         private readonly ITokenGenerator _tokenGenerator;
 
         public LoginUserUseCase(
-            IUserRepository userRepository,
-            IPasswordHasher passwordHasher,
+            IUserValidationService userValidationService,
             ITokenGenerator tokenGenerator)
         {
-            _userRepository = userRepository;
-            _passwordHasher = passwordHasher;
+            _userValidationService = userValidationService;
             _tokenGenerator = tokenGenerator;
         }
 
         public async Task<Result<LoginUserResponse>> ExecuteAsync(LoginUserRequest request)
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email);
+            var (isValid, userId) = await _userValidationService.ValidateCredentialsAsync(request.Email, request.Password);
 
-            if (user is null)
+            if (!isValid || !userId.HasValue)
             {
-                return Result<LoginUserResponse>.Failure("Usuario nao encontrado!");
+                return Result<LoginUserResponse>.Failure("Email ou senha invalidos!");
             }
 
-            var isPasswordValid = _passwordHasher.Verify(request.Password, user.PasswordHash);
-
-            if (!isPasswordValid)
-            {
-                return Result<LoginUserResponse>.Failure("Senha invalida!");
-            }
-
-            var token = _tokenGenerator.Generate(user);
+            var token = _tokenGenerator.Generate(userId.Value, request.Email);
 
             return Result<LoginUserResponse>.Success(
                 new LoginUserResponse(
