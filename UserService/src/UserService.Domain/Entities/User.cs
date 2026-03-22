@@ -13,43 +13,52 @@ namespace UserService.Domain.Entities
 
         public User(string name, Email email, string passwordHash)
         {
-            Validate(name, email, passwordHash);
-
             Id = Guid.NewGuid();
-            Name = name;
-            Email = email;
-            PasswordHash = passwordHash;
+            Rename(name);
+            ChangeEmail(email);
+            ChangePasswordHash(passwordHash);
             IsBlocked = false;            
-            
         }
 
         protected User() { }
 
-        public void Block() => IsBlocked = true;
-
-        public void Unblock() => IsBlocked = false;
-
-        private void Validate(string name, Email email, string passwordHash)
+        public void Rename(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new DomainException("Nome é obrigatório.");
             }
 
-            if (name.Length < 3)
+            if (name.Trim().Length < 3)
             {
                 throw new DomainException("Nome deve ter no mínimo 3 caracteres.");
             }
 
+            Name = name.Trim();
+        }
+
+        public void ChangeEmail(Email email)
+        {
             if (email is null)
             {
                 throw new DomainException("E-mail é obrigatório.");
             }
 
+            Email = email;
+        }
+
+        public void ChangePasswordHash(string passwordHash)
+        {
             if (string.IsNullOrWhiteSpace(passwordHash))
             {
                 throw new DomainException("Senha é obrigatória.");
             }
+
+            PasswordHash = passwordHash;
         }
+
+        public void Block() => IsBlocked = true;
+
+        public void Unblock() => IsBlocked = false;
     }
 }
