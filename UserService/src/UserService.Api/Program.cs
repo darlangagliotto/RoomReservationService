@@ -13,6 +13,7 @@ builder.Services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
 
 builder.Services.AddFluentValidationAutoValidation();
 var app = builder.Build();
@@ -32,6 +33,7 @@ app.UseMiddleware<UserService.Api.Middleware.ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
 {
