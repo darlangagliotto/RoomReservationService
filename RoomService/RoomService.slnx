@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RoomService.Api/RoomService.Api.csproj" />
+    <Project Path="src/RoomService.Application/RoomService.Application.csproj" />
+    <Project Path="src/RoomService.Domain/RoomService.Domain.csproj" />
+    <Project Path="src/RoomService.Infrastructure/RoomService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/RoomService.UnitTests/RoomService.UnitTests.csproj" />
+  </Folder>
+</Solution>
