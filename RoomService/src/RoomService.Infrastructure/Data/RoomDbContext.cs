@@ -10,7 +10,7 @@ namespace RoomService.Infrastructure.Data
 
         public DbSet<Room> Rooms { get; set; } = null!;
         public DbSet<Equipment> Equipments { get; set; } = null!;
-        public DbSet<RoomEquipment> RoomEquipments { get; set; } = null!;
+        //public DbSet<RoomEquipment> RoomEquipments { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using RoomService.Application.UseCases.RegisterUser;
-using RoomService.Application.UseCases.ValidateCredentials;
+using RoomService.Application.UseCases.RegisterRoom;
+using RoomService.Application.UseCases.RegisterEquipment;
 using FluentValidation;
 using System.Reflection;
 
@@ -10,9 +10,8 @@ namespace RoomService.Application.DependencyInjection
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddScoped<IRegisterUserUseCase, RegisterUserUseCase>();
-            services.AddScoped<IValidateCredentialsUseCase, ValidateCredentialsUseCase>();
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddScoped<IRegisterRoomUseCase, RegisterRoomUseCase>();
+            services.AddScoped<IRegisterEquipmentUseCase, RegisterEquipmentUseCase>();            
             return services;
         }
     }

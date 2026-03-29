@@ -1,3 +1,5 @@
+using RoomService.Domain.Common;
+
 namespace RoomService.Domain.Entities
 {
     public class Room

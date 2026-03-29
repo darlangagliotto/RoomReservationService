@@ -1,3 +1,5 @@
+using RoomService.Domain.Common;
+
 namespace RoomService.Domain.Entities
 {
     public class Equipment
@@ -5,19 +7,21 @@ namespace RoomService.Domain.Entities
         public Guid Id {get; private set;}
         public string Type {get; private set;}
         public string Brand {get; private set;}
+        public string SerialNumber {get; private set;}
         public DateTime PurchaseDate {get; private set;}
 
-        public Equipment(string type, string brand, DateTime purchaseDate)
+        public Equipment(string type, string brand, string serialNumber, DateTime purchaseDate)
         {
             Id = Guid.NewGuid();
-            ReassignType(type);
+            ChangeType(type);
             ChangeBrand(brand);
+            ChangeSerialNumber(serialNumber);
             ChangePurchaseDate(purchaseDate);
         }
 
         protected Equipment() { }
 
-        public void ReassignType(string type)
+        public void ChangeType(string type)
         {
             if (string.IsNullOrWhiteSpace(type))
             {
@@ -45,7 +49,22 @@ namespace RoomService.Domain.Entities
             }
 
             Brand = brand.Trim();
-        }        
+        }
+
+        public void ChangeSerialNumber(string serialNumber)
+        {
+            if (string.IsNullOrWhiteSpace(serialNumber))
+            {
+                throw new DomainException("Serial number é obrigatório.");
+            }
+
+            if (serialNumber.Trim().Length < 3)
+            {
+                throw new DomainException("Serial number deve ter no mínimo 3 caracteres.");
+            }
+
+            SerialNumber = serialNumber;
+        }
 
         public void ChangePurchaseDate(DateTime purchaseDate)
         {

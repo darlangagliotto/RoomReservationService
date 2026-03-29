@@ -61,3 +61,6 @@ TestResults/
 coverage/
 coveragereport/
 **/coverage.cobertura.xml
+
+# RoomService secrets
+RoomService/.env
