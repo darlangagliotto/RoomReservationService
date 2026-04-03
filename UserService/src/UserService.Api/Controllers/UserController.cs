@@ -1,5 +1,6 @@
 using UserService.Application.UseCases.RegisterUser;
 using UserService.Application.UseCases.ValidateCredentials;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UserService.Api.Controllers
@@ -21,6 +22,7 @@ namespace UserService.Api.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(RegisterUserResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<RegisterUserResponse>> Register([FromBody] RegisterUserRequest request)
@@ -44,6 +46,7 @@ namespace UserService.Api.Controllers
         }
 
         [HttpPost("validate-credentials")]
+        [AllowAnonymous]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult<ValidateCredentialsResponse>> ValidateCredentials([FromBody] ValidateCredentialsRequest request)
         {

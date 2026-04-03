@@ -3,8 +3,10 @@ using RoomService.Infrastructure.Data;
 using RoomService.Infrastructure.DependencyInjection;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,14 +17,32 @@ builder.Services
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Cole apenas o token JWT (sem o prefixo 'Bearer')"
+    });
+
+    options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", doc)] = new List<string>()
+    });
+});
 builder.Services.AddHealthChecks();
 
 builder.Services.AddFluentValidationAutoValidation();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = jwtSettings["Key"] ?? throw new InvalidOperationException("JWT Key não configurada.");
+var issuer = jwtSettings["Issuer"] ?? "AuthService";
+var audience = jwtSettings["Audience"] ?? "AuthService.Client";
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => 
     {
@@ -32,12 +52,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "RoomReservationAuth",
-            ValidAudience = "RoomReservationClient",
+            ValidIssuer = issuer,
+            ValidAudience = audience,
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(key))
         };
     });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 var app = builder.Build();
 
@@ -55,11 +82,11 @@ app.UseMiddleware<RoomService.Api.Middleware.ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.MapControllers();
-app.MapHealthChecks("/health");
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
+app.MapHealthChecks("/health").AllowAnonymous();
 
 using (var scope = app.Services.CreateScope())
 {

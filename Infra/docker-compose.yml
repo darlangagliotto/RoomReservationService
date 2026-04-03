@@ -26,7 +26,7 @@ services:
       - Services__UserServiceUrl=http://userservice:5000
       - Jwt__Issuer=AuthService
       - Jwt__Audience=AuthService.Client
-      - Jwt__Key=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_WITH_AT_LEAST_32_CHARS
+      - Jwt__Key=${JWT_KEY}
       - Jwt__AccessTokenExpirationMinutes=60
     depends_on:
       userservice:
@@ -55,7 +55,7 @@ services:
       db:
         condition: service_healthy
 
-    roomservice:
+  roomservice:
     build:
       context: ../RoomService
     container_name: roomservice
