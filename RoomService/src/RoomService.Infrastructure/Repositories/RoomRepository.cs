@@ -14,6 +14,14 @@ namespace RoomService.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<List<Room>> GetAllAsync()
+        {
+            return await _context.Rooms
+                .AsNoTracking()
+                .Include(r => r.Equipments)
+                .ToListAsync();
+        }
+
         public async Task<Room?> GetByNameAsync(string name)
         {
             return await _context.Rooms.FirstOrDefaultAsync(u => u.Name == name);

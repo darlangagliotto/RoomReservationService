@@ -4,6 +4,7 @@ namespace RoomService.Domain.Repositories
 {
     public interface IRoomRepository
     {
+        Task<List<Room>> GetAllAsync();
         Task<Room?> GetByIdAsync(Guid id);
         Task<Room?> GetByNameAsync(string name);
         Task<Room?> GetByNumberAsync(int number);
