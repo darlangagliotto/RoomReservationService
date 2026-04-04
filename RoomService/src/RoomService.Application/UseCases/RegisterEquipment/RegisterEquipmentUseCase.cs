@@ -1,12 +1,13 @@
 using RoomService.Domain.Common;
 using RoomService.Domain.Entities;
 using RoomService.Domain.Repositories;
+using RoomService.Application.UseCases.Common;
 
 namespace RoomService.Application.UseCases.RegisterEquipment
 {
     public class RegisterEquipmentUseCase : IRegisterEquipmentUseCase
     {
-        private readonly IEquipmentRepository _equipmentRepository;        
+        private readonly IEquipmentRepository _equipmentRepository;
 
         public RegisterEquipmentUseCase(
             IEquipmentRepository equipmentRepository)
@@ -38,11 +39,13 @@ namespace RoomService.Application.UseCases.RegisterEquipment
 
             return Result<RegisterEquipmentResponse>.Success(
                 new RegisterEquipmentResponse(
+                    new EquipmentResponse(
                     equipment.Id,
                     equipment.Type,
                     equipment.Brand,
                     equipment.SerialNumber,
                     equipment.PurchaseDate
+                    )
                 )
             );            
         }

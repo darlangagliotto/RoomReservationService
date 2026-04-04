@@ -1,10 +1,7 @@
-using RoomService.Application.UseCases.RegisterEquipment;
+using RoomService.Application.UseCases.Common;
 
 namespace RoomService.Application.UseCases.RegisterRoom;
 
 public record RegisterRoomResponse(
-    Guid Id,
-    string Name,
-    int Number,
-    List<RegisterEquipmentResponse> Equipments
+    RoomResponse Room
 );

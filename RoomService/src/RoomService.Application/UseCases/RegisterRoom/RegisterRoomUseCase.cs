@@ -2,25 +2,27 @@ using RoomService.Domain.Common;
 using RoomService.Domain.Entities;
 using RoomService.Domain.Repositories;
 using RoomService.Application.UseCases.RegisterEquipment;
+using RoomService.Application.UseCases.Common;
+using RoomService.Application.UseCases.Common.Services;
 
 namespace RoomService.Application.UseCases.RegisterRoom
 {
     public class RegisterRoomUseCase : IRegisterRoomUseCase
     {
-        private readonly IRoomRepository _roomRepository;
-        private readonly IEquipmentRepository _equipmentRepository;
+        private readonly IRoomRepository _roomRepository;        
+        private readonly IEquipmentResponseMapper _equipmentResponseMapper;
 
         public RegisterRoomUseCase(
             IRoomRepository roomRepository,
-            IEquipmentRepository equipmentRepository)
+            IEquipmentResponseMapper equipmentResponseMapper)
         {
-            _roomRepository = roomRepository;
-            _equipmentRepository = equipmentRepository;
+            _roomRepository = roomRepository;            
+            _equipmentResponseMapper = equipmentResponseMapper;
         }
 
         public async Task<Result<RegisterRoomResponse>> ExecuteAsync(RegisterRoomRequest request)
         {
-            var existingRoom = await _roomRepository.GetByNameAndNumberAsync(request.Name, request.Number);
+            var existingRoom = await _roomRepository.GetByNameOrNumberAsync(request.Name, request.Number);
 
             if (existingRoom is not null)
             {
@@ -40,14 +42,16 @@ namespace RoomService.Application.UseCases.RegisterRoom
 
             await _roomRepository.AddSync(room);
 
-            var equipmentResponses = await MapEquipmentsAsync(room.Equipments);
+            var equipmentResponses = await _equipmentResponseMapper.MapEquipmentsAsync(room.Equipments);
 
             return Result<RegisterRoomResponse>.Success(
                 new RegisterRoomResponse(
+                    new RoomResponse(
                     room.Id,
                     room.Name,
                     room.Number,
                     equipmentResponses
+                    )
                 )
             );            
         }
@@ -61,23 +65,5 @@ namespace RoomService.Application.UseCases.RegisterRoom
             }
             return room;
         }
-
-        private async Task<List<RegisterEquipmentResponse>> MapEquipmentsAsync(IEnumerable<RoomEquipment> roomEquipments)
-        {
-            var equipmentResponses = new List<RegisterEquipmentResponse>();
-            foreach (var roomEquipment in roomEquipments)
-            {
-                var equipment = await _equipmentRepository.GetByIdAsync(roomEquipment.EquipmentId);
-                equipmentResponses.Add(new RegisterEquipmentResponse(
-                    equipment.Id,
-                    equipment.Type,
-                    equipment.Brand,
-                    equipment.SerialNumber,
-                    equipment.PurchaseDate
-                ));
-            }
-            return equipmentResponses;
-        }
-
     }
 }

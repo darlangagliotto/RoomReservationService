@@ -26,12 +26,14 @@ namespace RoomService.Infrastructure.Repositories
 
         public async Task<Room?> GetByNumberAsync(int roomNumber)
         {
-            return await _context.Rooms.FirstOrDefaultAsync(u => u.Number == roomNumber);
+            return await _context.Rooms
+                .Include(e => e.Equipments)
+                .FirstOrDefaultAsync(u => u.Number == roomNumber);
         }
 
-        public async Task<Room?> GetByNameAndNumberAsync(string name, int roomNumber)
+        public async Task<Room?> GetByNameOrNumberAsync(string name, int roomNumber)
         {
-            return await _context.Rooms.FirstOrDefaultAsync(u => u.Name == name && u.Number == roomNumber);
+            return await _context.Rooms.FirstOrDefaultAsync(u => u.Name == name || u.Number == roomNumber);
         }
 
         public async Task AddSync(Room room)

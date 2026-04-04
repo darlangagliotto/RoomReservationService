@@ -35,7 +35,7 @@ namespace RoomService.Api.Controllers
 
             return CreatedAtAction(
                 nameof(Register),
-                new { id = response.Value?.Id },
+                new { id = response.Value?.Equipment.Id },
                 response.Value
             );
         }
