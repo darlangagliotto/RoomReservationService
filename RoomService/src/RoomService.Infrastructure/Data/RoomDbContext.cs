@@ -38,12 +38,15 @@ namespace RoomService.Infrastructure.Data
 
             modelBuilder.Entity<RoomEquipment>(entity =>
             {
-                entity.HasKey(x => new { x.RoomId, x.EquipmentId});
+                entity.HasKey(x => new { x.RoomId, x.EquipmentId });
+
+                entity.HasIndex(x => x.EquipmentId)
+                    .IsUnique();
 
                 entity.HasOne<Equipment>()
-                      .WithMany()
-                      .HasForeignKey(x => x.EquipmentId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany()
+                    .HasForeignKey(x => x.EquipmentId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }
