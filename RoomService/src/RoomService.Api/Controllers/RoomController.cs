@@ -1,8 +1,7 @@
 using RoomService.Application.UseCases.RegisterRoom;
-using RoomService.Application.UseCases.GetRoomByNumber;
-using RoomService.Application.UseCases.GetRoomByName;
-using RoomService.Application.UseCases.GetAllRooms;
+using RoomService.Application.UseCases.GetRooms;
 using RoomService.Application.UseCases.UpdateRoomDetails;
+using RoomService.Application.UseCases.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,22 +13,16 @@ namespace RoomService.Api.Controllers
     public class RoomController : ControllerBase
     {
         private readonly IRegisterRoomUseCase _registerRoomUseCase;
-        private readonly IGetRoomByNumberUseCase _getRoomByNumberUseCase;
-        private readonly IGetRoomByNameUseCase _getRoomByNameUseCase;
-        private readonly IGetAllRoomsUseCase _getAllRoomsUseCase;
+        private readonly IGetRoomsUseCase _getRoomsUseCase;
         private readonly IUpdateRoomDetailsUseCase _updateRoomDetailsUseCase;
 
         public RoomController(
             IRegisterRoomUseCase registerRoomUseCase,
-            IGetRoomByNumberUseCase getRoomByNumberUseCase,
-            IGetAllRoomsUseCase getAllRoomsUseCase,
-            IGetRoomByNameUseCase getRoomByNameUseCase,
+            IGetRoomsUseCase getRoomsUseCase,
             IUpdateRoomDetailsUseCase updateRoomDetailsUseCase)
         {
             _registerRoomUseCase = registerRoomUseCase;
-            _getRoomByNumberUseCase = getRoomByNumberUseCase;
-            _getRoomByNameUseCase = getRoomByNameUseCase;
-            _getAllRoomsUseCase = getAllRoomsUseCase;
+            _getRoomsUseCase = getRoomsUseCase;
             _updateRoomDetailsUseCase = updateRoomDetailsUseCase;
         }
 
@@ -56,12 +49,12 @@ namespace RoomService.Api.Controllers
             );
         }
 
-        [HttpGet("by-number")]
-        [ProducesResponseType(typeof(GetRoomByNumberResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [ProducesResponseType(typeof(List<RoomResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<GetRoomByNumberResponse>> GeRoomByNumber([FromQuery] GetRoomByNumberRequest request)
+        public async Task<ActionResult<List<RoomResponse>>> GetRooms([FromQuery] GetRoomsRequest request)
         {
-            var response = await _getRoomByNumberUseCase.ExecuteAsync(request);
+            var response = await _getRoomsUseCase.ExecuteAsync(request);
 
             if (!response.IsSuccess)
             {
@@ -75,51 +68,14 @@ namespace RoomService.Api.Controllers
             return Ok(response.Value);
         }
 
-        [HttpGet("by-name")]
-        [ProducesResponseType(typeof(GetRoomByNameResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<GetRoomByNameResponse>> GetRoomByName([FromQuery] GetRoomByNameRequest request)
-        {
-            var response = await _getRoomByNameUseCase.ExecuteAsync(request);
-
-            if (!response.IsSuccess)
-            {
-                return Problem(
-                    title: "Erro de negócio",
-                    detail: response.Error,
-                    statusCode: StatusCodes.Status400BadRequest
-                );
-            }
-
-            return Ok(response.Value);
-        }
-
-        [HttpGet("all")]
-        [ProducesResponseType(typeof(GetAllRoomsResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<List<GetAllRoomsResponse>>> GetAllRooms()
-        {
-            var response = await _getAllRoomsUseCase.ExecuteAsync();
-
-            if (!response.IsSuccess)
-            {
-                return Problem(
-                    title: "Erro de negócio",
-                    detail: response.Error,
-                    statusCode: StatusCodes.Status400BadRequest
-                );
-            }
-            return Ok(response.Value);
-        }
-
-        [HttpPatch("{id:guid}/details")]
+        [HttpPatch("{id:guid}")]
         [ProducesResponseType(typeof(UpdateRoomDetailsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UpdateRoomDetailsResponse>> UpdateDetails(
             [FromRoute] Guid id,
             [FromBody] UpdateRoomDetailsRequest request)
         {
-            var response = await _updateRoomDetailsUseCase.ExecuteAsync(request);
+            var response = await _updateRoomDetailsUseCase.ExecuteAsync(request with { RoomId = id });
 
             if (!response.IsSuccess)
             {

@@ -44,6 +44,11 @@ namespace RoomService.Infrastructure.Repositories
             return await _context.Rooms.FirstOrDefaultAsync(u => u.Name == name || u.Number == roomNumber);
         }
 
+        public async Task<Room?> GetByNameAndNumberAsync(string name, int roomNumber)
+        {
+            return await _context.Rooms.FirstOrDefaultAsync(u => u.Name == name && u.Number == roomNumber);
+        }
+
         public async Task AddSync(Room room)
         {
             await _context.Rooms.AddAsync(room);
