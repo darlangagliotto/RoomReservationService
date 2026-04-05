@@ -4,30 +4,33 @@ using RoomService.Domain.Repositories;
 using RoomService.Application.UseCases.RegisterEquipment;
 using RoomService.Application.UseCases.Common;
 using RoomService.Application.UseCases.Common.Services;
+using System.IO.Pipelines;
 
 namespace RoomService.Application.UseCases.RegisterRoom
 {
     public class RegisterRoomUseCase : IRegisterRoomUseCase
     {
-        private readonly IRoomRepository _roomRepository;        
+        private readonly IRoomRepository _roomRepository;
+
+        private readonly IEquipmentRepository _equipmentRepository;
         private readonly IEquipmentResponseMapper _equipmentResponseMapper;
 
         public RegisterRoomUseCase(
             IRoomRepository roomRepository,
-            IEquipmentResponseMapper equipmentResponseMapper)
+            IEquipmentResponseMapper equipmentResponseMapper,
+            IEquipmentRepository equipmentRepository)
         {
-            _roomRepository = roomRepository;            
+            _roomRepository = roomRepository;
+            _equipmentRepository = equipmentRepository;
             _equipmentResponseMapper = equipmentResponseMapper;
         }
 
         public async Task<Result<RegisterRoomResponse>> ExecuteAsync(RegisterRoomRequest request)
         {
-            var existingRoom = await _roomRepository.GetByNameOrNumberAsync(request.Name, request.Number);
-
-            if (existingRoom is not null)
+            var validationResult = await ValidateAsync(request);
+            if (!validationResult.IsSuccess)
             {
-                return Result<RegisterRoomResponse>
-                    .Failure("Sala já cadastrado!");
+                return Result<RegisterRoomResponse>.Failure(validationResult.Error!);
             }
 
             Room room;
@@ -55,7 +58,72 @@ namespace RoomService.Application.UseCases.RegisterRoom
                 )
             );            
         }
-        
+
+        private async Task<Result<bool>> ValidateAsync(RegisterRoomRequest request)
+        {
+            var roomUniquenessValidation = await ValidateRoomUniquenessAsync(request);
+            if (!roomUniquenessValidation.IsSuccess)
+            {
+                return roomUniquenessValidation;
+            }
+
+            var equipmentIdsValidation = await ValidateEquipmentIdsAsync(request);
+            if (!equipmentIdsValidation.IsSuccess)
+            {
+                return equipmentIdsValidation;
+            }
+
+            var equipmnetAllocationValidation = await ValidateEquipmentAllocationAsync(request.EquipmentIds);
+            if (!equipmnetAllocationValidation.IsSuccess)
+            {
+                return equipmentIdsValidation;
+            }
+
+            return Result<bool>.Success(true);
+        }
+
+       private async Task<Result<bool>> ValidateRoomUniquenessAsync(RegisterRoomRequest request)
+        {
+            var existingRoom = await _roomRepository.GetByNameOrNumberAsync(request.Name, request.Number);
+
+            if (existingRoom is not null)
+            {
+                return Result<bool>.Failure("Sala já cadastrada.");
+            }
+            return Result<bool>.Success(true);
+        }
+
+        private async Task<Result<bool>> ValidateEquipmentIdsAsync(RegisterRoomRequest request)
+        {    
+            foreach (var equipmentId in request.EquipmentIds.Distinct())
+            {
+                var existEquipment = await _equipmentRepository.GetByIdAsync(equipmentId);
+
+                if (existEquipment is null)
+                {
+                    return Result<bool>.Failure($"Equipamento com ID {equipmentId} não encontrado!");    
+                }
+            }
+
+            if (request.EquipmentIds.Any(id => id == Guid.Empty))
+            {
+                return Result<bool>.Failure("Existe equipamento com ID inválido.");
+            }
+
+            return Result<bool>.Success(true);
+        }
+
+        private async Task<Result<bool>> ValidateEquipmentAllocationAsync(IEnumerable<Guid> equipmentIds)
+        {
+            foreach (var equipmentId in equipmentIds.Distinct())
+            {
+                var alreadyAllocated = await _roomRepository.ExistsByEquipmentIdAsync(equipmentId);
+                if (alreadyAllocated)
+                    return Result<bool>.Failure($"Equipamento {equipmentId} já está alocado em outra sala.");
+            }
+            return Result<bool>.Success(true);
+        }
+
         private Room CreateRoom(RegisterRoomRequest request)
         {
             var room = new Room(request.Name, request.Number);

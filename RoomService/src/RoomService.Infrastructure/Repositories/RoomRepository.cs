@@ -61,5 +61,12 @@ namespace RoomService.Infrastructure.Repositories
             _context.Rooms.Remove(room);
             await _context.SaveChangesAsync();
         }
+    
+        public async Task<bool> ExistsByEquipmentIdAsync(Guid equipmentId)
+        {
+            return await _context.Set<RoomEquipment>()
+                .AsNoTracking()
+                .AnyAsync(eq => eq.EquipmentId == equipmentId);
+        }
     }
 }
