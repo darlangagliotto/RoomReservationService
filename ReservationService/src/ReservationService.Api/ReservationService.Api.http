@@ -1,0 +1,6 @@
+@ReservationService.Api_HostAddress = http://localhost:5275
+
+GET {{ReservationService.Api_HostAddress}}/health
+Accept: application/json
+
+###
