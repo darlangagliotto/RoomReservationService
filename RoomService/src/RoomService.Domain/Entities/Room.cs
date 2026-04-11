@@ -25,12 +25,12 @@ namespace RoomService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new DomainException("Nome é obrigatório.");
+                throw new DomainException("Name is required.");
             }
 
             if (name.Trim().Length < 3)
             {
-                throw new DomainException("Nome deve ter no mínimo 3 caracteres.");
+                throw new DomainException("Name must be at least 3 characters long.");
             }
 
             Name = name.Trim();
@@ -40,7 +40,7 @@ namespace RoomService.Domain.Entities
         {
             if (number <= 0)
             {
-                throw new DomainException("Numero da sala deve ser maior do que 0.");
+                throw new DomainException("Room number must be greater than 0.");
             }
 
             Number = number;
@@ -50,12 +50,12 @@ namespace RoomService.Domain.Entities
         {
             if (equipmentId == Guid.Empty)
             {
-                throw new DomainException("Equipamento é obrigatório.");
+                throw new DomainException("Equipment is required.");
             }
 
             if(_equipments.Any(x => x.EquipmentId == equipmentId))
             {
-                throw new DomainException("Equipamento já está associado à sala.");
+                throw new DomainException("Equipment is already associated with the room.");
             }
 
             _equipments.Add(new RoomEquipment(Id, equipmentId));
@@ -67,7 +67,7 @@ namespace RoomService.Domain.Entities
 
             if (association is null)
             {
-                throw new DomainException("Equipamento não está associado à sala.");
+                throw new DomainException("Equipment is not associated with the room.");
             }
 
             _equipments.Remove(association);

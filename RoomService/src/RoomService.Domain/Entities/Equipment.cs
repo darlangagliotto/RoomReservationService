@@ -25,12 +25,12 @@ namespace RoomService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(type))
             {
-                throw new DomainException("Tipo do equipamento é obrigatório.");
+                throw new DomainException("Equipment type is required.");
             }
 
             if (type.Trim().Length < 3)
             {
-                throw new DomainException("Tipo do equipamento deve ter no mínimo 3 caracteres.");
+                throw new DomainException("Equipment type must be at least 3 characters long.");
             }
 
             Type = type.Trim();
@@ -40,12 +40,12 @@ namespace RoomService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(brand))
             {
-                throw new DomainException("A marca é obrigatória.");
+                throw new DomainException("Brand is required.");
             }
 
             if (brand.Trim().Length < 3)
             {
-                throw new DomainException("A marca deve ter no mínimo 3 caracteres.");
+                throw new DomainException("Brand must be at least 3 characters long.");
             }
 
             Brand = brand.Trim();
@@ -55,12 +55,12 @@ namespace RoomService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(serialNumber))
             {
-                throw new DomainException("Serial number é obrigatório.");
+                throw new DomainException("Serial number is required.");
             }
 
             if (serialNumber.Trim().Length < 3)
             {
-                throw new DomainException("Serial number deve ter no mínimo 3 caracteres.");
+                throw new DomainException("Serial number must be at least 3 characters long.");
             }
 
             SerialNumber = serialNumber;
@@ -70,17 +70,17 @@ namespace RoomService.Domain.Entities
         {
             if (purchaseDate == default)
             {
-                throw new DomainException("Data de compra é obrigatória.");
+                throw new DomainException("Purchase date is required.");
             }
 
             if (purchaseDate.Date > DateTime.UtcNow.Date)
             {
-                throw new DomainException("Data de compra não pode ser futura.");
+                throw new DomainException("Purchase date cannot be in the future.");
             }
             
             if (purchaseDate.Year < 1990)
             {
-                throw new DomainException("Data de compra inválida para o contexto do negócio.");
+                throw new DomainException("Invalid purchase date for the business context.");
             }
 
             PurchaseDate = purchaseDate;

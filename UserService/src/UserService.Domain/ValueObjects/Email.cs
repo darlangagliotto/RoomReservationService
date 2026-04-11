@@ -14,14 +14,14 @@ namespace UserService.Domain.ValueObjects
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new DomainException("Necessário informar o e-mail");
+                throw new DomainException("Email is required");
             }
 
             var normalized = value.Trim().ToLowerInvariant();
 
             if(!EmailRegex.IsMatch(normalized))
             {
-                throw new DomainException("E-mail inválido");
+                throw new DomainException("Invalid email");
             }
 
             Value = normalized;

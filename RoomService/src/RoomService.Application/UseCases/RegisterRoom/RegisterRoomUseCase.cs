@@ -88,7 +88,7 @@ namespace RoomService.Application.UseCases.RegisterRoom
 
             if (existingRoom is not null)
             {
-                return Result<bool>.Failure("Sala já cadastrada.");
+                return Result<bool>.Failure("Room is already registered.");
             }
             return Result<bool>.Success(true);
         }
@@ -101,13 +101,13 @@ namespace RoomService.Application.UseCases.RegisterRoom
 
                 if (existEquipment is null)
                 {
-                    return Result<bool>.Failure($"Equipamento com ID {equipmentId} não encontrado!");    
+                    return Result<bool>.Failure($"Equipment with ID {equipmentId} not found!");    
                 }
             }
 
             if (request.EquipmentIds.Any(id => id == Guid.Empty))
             {
-                return Result<bool>.Failure("Existe equipamento com ID inválido.");
+                return Result<bool>.Failure("There is equipment with an invalid ID.");
             }
 
             return Result<bool>.Success(true);
@@ -119,7 +119,7 @@ namespace RoomService.Application.UseCases.RegisterRoom
             {
                 var alreadyAllocated = await _roomRepository.ExistsByEquipmentIdAsync(equipmentId);
                 if (alreadyAllocated)
-                    return Result<bool>.Failure($"Equipamento {equipmentId} já está alocado em outra sala.");
+                    return Result<bool>.Failure($"Equipment {equipmentId} is already allocated to another room.");
             }
             return Result<bool>.Success(true);
         }

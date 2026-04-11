@@ -25,7 +25,7 @@ namespace RoomService.Application.UseCases.GetRooms
 
             if (rooms.Count == 0)
             {
-                return Result<List<RoomResponse>>.Failure("Nenhuma sala encontrada.");
+                return Result<List<RoomResponse>>.Failure("No rooms found.");
             }
 
             var roomResponses = new List<RoomResponse>();

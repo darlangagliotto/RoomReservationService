@@ -32,22 +32,22 @@ namespace AuthService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new DomainException("Nome e obrigatorio.");
+                throw new DomainException("Name is required.");
             }
 
             if (name.Length < 3)
             {
-                throw new DomainException("Nome deve ter no minimo 3 caracteres.");
+                throw new DomainException("Name must be at least 3 characters long.");
             }
 
             if (email is null)
             {
-                throw new DomainException("E-mail e obrigatorio.");
+                throw new DomainException("Email is required.");
             }
 
             if (string.IsNullOrWhiteSpace(passwordHash))
             {
-                throw new DomainException("Senha e obrigatoria.");
+                throw new DomainException("Password is required.");
             }
         }
     }

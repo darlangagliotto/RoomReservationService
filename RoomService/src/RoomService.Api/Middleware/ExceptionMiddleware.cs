@@ -24,16 +24,16 @@ namespace RoomService.Api.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro inesperado");
+                _logger.LogError(ex, "Unexpected error");
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
                 var detail = _env.IsDevelopment()
                     ? $"{ex.GetType().Name}: {ex.Message}"
-                    : "Ocorreu um erro inesperado.";
+                    : "An unexpected error occurred.";
 
                 var problem = new ProblemDetails
                 {
-                    Title = "Erro interno do servidor",
+                    Title = "Internal server error",
                     Detail = detail,
                     Status = 500,
                     Instance = context.Request.Path

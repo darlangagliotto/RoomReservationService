@@ -25,7 +25,7 @@ public class UserValidationService : IUserValidationService
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("UserService retornou status {StatusCode} ao validar credenciais", response.StatusCode);
+                _logger.LogWarning("UserService returned status {StatusCode} while validating credentials", response.StatusCode);
                 return (false, null);
             }
 
@@ -33,7 +33,7 @@ public class UserValidationService : IUserValidationService
 
             if (result == null)
             {
-                _logger.LogWarning("Resposta do UserService foi nula");
+                _logger.LogWarning("UserService response was null");
                 return (false, null);
             }
 
@@ -43,7 +43,7 @@ public class UserValidationService : IUserValidationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao chamar UserService para validar credenciais");
+            _logger.LogError(ex, "Error calling UserService to validate credentials");
             return (false, null);
         }
     }

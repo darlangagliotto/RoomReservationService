@@ -24,7 +24,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
 
             if (room is null)
             {
-                return Result<UpdateRoomDetailsResponse>.Failure("Sala não encontrada!");
+                return Result<UpdateRoomDetailsResponse>.Failure("Room not found!");
             }
 
             var validationIsOk = await ValidateAsync(request);
@@ -64,7 +64,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
         {
            if (request.Name is null && !request.Number.HasValue)
            {
-                return Result<bool>.Failure("Informe ao menos um campo para atualização!");
+             return Result<bool>.Failure("Provide at least one field to update!");
            }
 
            if (request.Name is not null)
@@ -72,7 +72,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
                 var sameNameRoom = await _roomRepository.GetByNameAsync(request.Name);
                 if (sameNameRoom is not null && sameNameRoom.Id != request.RoomId)
                 {
-                    return Result<bool>.Failure("Já existe uma sala com esse nome.");  
+                    return Result<bool>.Failure("A room with this name already exists.");  
                 }
            }
 
@@ -81,7 +81,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
                 var sameNumberRoom = await _roomRepository.GetByNumberAsync(request.Number.Value);
                 if (sameNumberRoom is not null && sameNumberRoom.Id != request.RoomId)
                 {
-                    return Result<bool>.Failure("Já existe uma sala com esse número.");
+                    return Result<bool>.Failure("A room with this number already exists.");
                 }                
             }
             return Result<bool>.Success(true);

@@ -14,7 +14,7 @@ namespace AuthService.Infrastructure.DependencyInjection
             var jwtOptions = configuration
                 .GetSection(JwtOptions.SectionName)
                 .Get<JwtOptions>()
-                ?? throw new InvalidOperationException("Configurações do Jwt não encontrada!");
+                ?? throw new InvalidOperationException("Jwt settings not found!");
 
             jwtOptions.Validate();
 
@@ -24,7 +24,7 @@ namespace AuthService.Infrastructure.DependencyInjection
             
             // HttpClient para chamar UserService
             var userServiceUrl = configuration["Services:UserServiceUrl"] 
-                ?? throw new InvalidOperationException("UserService URL não configurada");
+                ?? throw new InvalidOperationException("UserService URL not configured");
             
             services.AddHttpClient<IUserValidationService, UserValidationService>(client =>
             {

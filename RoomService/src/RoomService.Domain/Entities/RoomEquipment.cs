@@ -11,12 +11,12 @@ namespace RoomService.Domain.Entities
         {
             if (roomId == Guid.Empty)
             {
-                throw new DomainException("Sala é obrigatória.");
+                throw new DomainException("Room is required.");
             }
 
             if (equipmentId == Guid.Empty)
             {
-                throw new DomainException("Equipamento é obrigatório.");
+                throw new DomainException("Equipment is required.");
             }
             
             RoomId = roomId;

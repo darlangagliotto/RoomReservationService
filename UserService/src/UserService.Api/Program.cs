@@ -25,7 +25,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Use: Bearer {seu_token}"
+        Description = "Use: Bearer {your_token}"
     });
 });
 builder.Services.AddHealthChecks();
@@ -33,7 +33,7 @@ builder.Services.AddHealthChecks();
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "AuthService";
 var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "AuthService.Client";
 var jwtKey = builder.Configuration["Jwt:Key"]
-    ?? throw new InvalidOperationException("Configuração Jwt:Key não encontrada.");
+    ?? throw new InvalidOperationException("Jwt:Key configuration not found.");
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

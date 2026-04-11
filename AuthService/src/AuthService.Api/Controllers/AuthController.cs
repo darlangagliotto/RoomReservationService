@@ -24,7 +24,7 @@ namespace AuthService.Api.Controllers
             if(!response.IsSuccess)
             {
                 return Problem(
-                    title: "Erro de negócio",
+                    title: "Business error",
                     detail: response.Error,
                     statusCode: StatusCodes.Status400BadRequest
                 );

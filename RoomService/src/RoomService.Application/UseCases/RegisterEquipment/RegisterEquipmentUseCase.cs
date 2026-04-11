@@ -22,7 +22,7 @@ namespace RoomService.Application.UseCases.RegisterEquipment
             if (existingEquipment is not null)
             {
                 return Result<RegisterEquipmentResponse>
-                    .Failure("Equipamento já cadastrado!");
+                    .Failure("Equipment is already registered!");
             }
 
             Equipment equipment;

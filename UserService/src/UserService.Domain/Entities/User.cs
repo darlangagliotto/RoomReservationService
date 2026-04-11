@@ -26,12 +26,12 @@ namespace UserService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new DomainException("Nome é obrigatório.");
+                throw new DomainException("Name is required.");
             }
 
             if (name.Trim().Length < 3)
             {
-                throw new DomainException("Nome deve ter no mínimo 3 caracteres.");
+                throw new DomainException("Name must be at least 3 characters long.");
             }
 
             Name = name.Trim();
@@ -41,7 +41,7 @@ namespace UserService.Domain.Entities
         {
             if (email is null)
             {
-                throw new DomainException("E-mail é obrigatório.");
+                throw new DomainException("Email is required.");
             }
 
             Email = email;
@@ -51,7 +51,7 @@ namespace UserService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(passwordHash))
             {
-                throw new DomainException("Senha é obrigatória.");
+                throw new DomainException("Password is required.");
             }
 
             PasswordHash = passwordHash;

@@ -26,7 +26,7 @@ namespace UserService.Application.UseCases.RegisterUser
             if (existingUser is not null)
             {
                 return Result<RegisterUserResponse>
-                    .Failure("E-mail já cadastrado!");
+                    .Failure("Email is already registered!");
             }
 
             User user;

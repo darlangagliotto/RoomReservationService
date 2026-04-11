@@ -16,7 +16,7 @@ builder.Services
 var jwtOptions = builder.Configuration
     .GetSection(JwtOptions.SectionName)
     .Get<JwtOptions>()
-    ?? throw new InvalidOperationException("Configurações Jwt não encontrada");
+    ?? throw new InvalidOperationException("Jwt settings not found");
 
 jwtOptions.Validate(); 
 
@@ -49,7 +49,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Use: Bearer {seu_token}"
+        Description = "Use: Bearer {your_token}"
     });
 
 });

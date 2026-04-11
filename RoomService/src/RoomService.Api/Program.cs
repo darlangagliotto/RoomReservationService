@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Cole apenas o token JWT (sem o prefixo 'Bearer')"
+        Description = "Paste only the JWT token (without the 'Bearer' prefix)"
     });
 
     options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
@@ -39,7 +39,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AddFluentValidationAutoValidation();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = jwtSettings["Key"] ?? throw new InvalidOperationException("JWT Key não configurada.");
+var key = jwtSettings["Key"] ?? throw new InvalidOperationException("JWT Key not configured.");
 var issuer = jwtSettings["Issuer"] ?? "AuthService";
 var audience = jwtSettings["Audience"] ?? "AuthService.Client";
 
