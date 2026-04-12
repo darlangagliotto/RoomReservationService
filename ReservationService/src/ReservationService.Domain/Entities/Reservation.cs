@@ -1,4 +1,4 @@
-using RoomService.Domain.Common;
+using ReservationService.Domain.Common;
 
 namespace ReservationService.Domain.Entities
 {
@@ -37,7 +37,7 @@ namespace ReservationService.Domain.Entities
         {
             if (roomId == Guid.Empty)
             {
-                throw new DomainException("Room is required.")
+                throw new DomainException("Room is required.");
             }
             RoomId = roomId;
         }
@@ -65,7 +65,7 @@ namespace ReservationService.Domain.Entities
             }
 
             StartTime = startDate;
-            EndTime = endTime;
+            EndTime = endDate;
         }
     }
 }
