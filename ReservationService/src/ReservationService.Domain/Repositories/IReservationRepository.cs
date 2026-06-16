@@ -8,8 +8,9 @@ namespace ReservationService.Domain.Repositories
         Task<Reservation> GetReservationById(Guid id);
         Task<List<Reservation>> GetByDate(DateTime startTime, DateTime endTime);
         Task<List<Reservation?>> GetByRoomId(Guid roomId);
+        Task AddAsync(Reservation reservation);
         Task UpdateAsync(Reservation reservation);
-        Task DeleteAsync(Reservation reservation);        
+        Task DeleteAsync(Reservation reservation);
         IQueryable<Reservation> Query();
     }
 }

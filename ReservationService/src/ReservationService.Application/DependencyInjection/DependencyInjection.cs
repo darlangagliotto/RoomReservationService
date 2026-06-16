@@ -2,6 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
 using System.Reflection;
 using ReservationService.Application.UseCases.GetReservations;
+using ReservationService.Application.UseCases.CreateReservation;
+using ReservationService.Application.UseCases.CancelReservation;
 using ReservationService.Application.Services;
 
 namespace ReservationService.Application.DependencyInjection
@@ -12,6 +14,8 @@ namespace ReservationService.Application.DependencyInjection
         {
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddScoped<IGetReservationsUseCase, GetReservationsUseCase>();
+            services.AddScoped<ICreateReservationUseCase, CreateReservationUseCase>();
+            services.AddScoped<ICancelReservationUseCase, CancelReservationUseCase>();
             services.AddHttpClient<IRoomServiceClient, RoomServiceClient>(client =>
             {
                 client.BaseAddress = new Uri("http://roomservice:5000");
