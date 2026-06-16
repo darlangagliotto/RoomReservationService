@@ -107,5 +107,32 @@ services:
       userservice:
         condition: service_healthy
 
+  gateway:
+    build:
+      context: ../Gateway
+    container_name: gateway
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthService.Client
+      - Jwt__Key=${JWT_KEY}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      authservice:
+        condition: service_started
+      userservice:
+        condition: service_healthy
+      roomservice:
+        condition: service_healthy
+      reservationservice:
+        condition: service_healthy
+
 volumes:
   db_data:
