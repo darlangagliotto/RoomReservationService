@@ -49,6 +49,13 @@ de improvisar.
 | Datas | date-fns (com utilitários UTC próprios, ver abaixo) |
 | Testes | Vitest + Testing Library |
 
+Versões efetivamente instaladas em 2026-09-02 (passo 1 da spec 001): React `19.2`,
+Vite `8.2`, TypeScript `7.0`, Tailwind `4.3`, `@vitejs/plugin-react` `6.1`.
+
+**Armadilha do TypeScript 7**: a opção `baseUrl` foi **removida**. Alias de path se
+declara só com `paths`, e o destino precisa ser relativo — `"@/*": ["./src/*"]`, com o
+`./` obrigatório. Configuração herdada de projetos TS 5 falha no `tsc` com `TS5102`/`TS5090`.
+
 Nada de biblioteca de estado global (Redux, Zustand) enquanto o estado for
 majoritariamente de servidor — TanStack Query já é o cache. Estado de UI fica em
 `useState`/`useReducer` local ou Context pequeno.

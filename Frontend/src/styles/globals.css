@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+/*
+  Tokens semanticos. Componentes nunca usam hex literal nem cor por matiz —
+  sempre o papel (surface, muted, danger...). Trocar a paleta acontece aqui.
+
+  PROVISORIO: os valores abaixo sao uma base neutra e restrita, suficiente para
+  o scaffold. A identidade visual de "Room Reservation" (paleta definitiva,
+  tipografia, escala) entra no passo 4 da spec 001, pela skill frontend-design.
+  A ESTRUTURA de tokens, essa sim, e definitiva.
+*/
+
+:root {
+  --rrs-background: oklch(0.99 0.002 250);
+  --rrs-foreground: oklch(0.22 0.015 255);
+  --rrs-surface: oklch(1 0 0);
+  --rrs-border: oklch(0.91 0.005 250);
+  --rrs-muted: oklch(0.52 0.012 255);
+  --rrs-accent: oklch(0.55 0.13 250);
+  --rrs-accent-foreground: oklch(0.99 0.002 250);
+  --rrs-danger: oklch(0.55 0.18 25);
+  --rrs-success: oklch(0.55 0.12 150);
+  --rrs-ring: oklch(0.55 0.13 250);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rrs-background: oklch(0.17 0.012 255);
+    --rrs-foreground: oklch(0.95 0.004 250);
+    --rrs-surface: oklch(0.22 0.014 255);
+    --rrs-border: oklch(0.31 0.014 255);
+    --rrs-muted: oklch(0.68 0.012 255);
+    --rrs-accent: oklch(0.72 0.12 250);
+    --rrs-accent-foreground: oklch(0.17 0.012 255);
+    --rrs-danger: oklch(0.68 0.17 25);
+    --rrs-success: oklch(0.70 0.12 150);
+    --rrs-ring: oklch(0.72 0.12 250);
+  }
+}
+
+@theme inline {
+  --color-background: var(--rrs-background);
+  --color-foreground: var(--rrs-foreground);
+  --color-surface: var(--rrs-surface);
+  --color-border: var(--rrs-border);
+  --color-muted: var(--rrs-muted);
+  --color-accent: var(--rrs-accent);
+  --color-accent-foreground: var(--rrs-accent-foreground);
+  --color-danger: var(--rrs-danger);
+  --color-success: var(--rrs-success);
+  --color-ring: var(--rrs-ring);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Piso de acessibilidade: foco sempre visivel. */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

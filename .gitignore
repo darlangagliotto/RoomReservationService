@@ -12,6 +12,13 @@ appsettings.Development.json
 appsettings.Local.json
 
 # ============================
+# Node / Frontend
+# ============================
+node_modules/
+Frontend/dist/
+Frontend/.vite/
+
+# ============================
 # Logs
 # ============================
 *.log
