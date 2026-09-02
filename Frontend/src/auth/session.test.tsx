@@ -31,7 +31,7 @@ function renderApp(initialEntries: string[] = ['/']) {
   return router
 }
 
-const HOME_TEXT = 'Salas e reservas aparecerao aqui.'
+const HOME_TEXT = 'Salas e reservas aparecerão aqui.'
 
 beforeEach(() => {
   clearToken()
@@ -110,7 +110,7 @@ describe('login', () => {
     await userEvent.type(screen.getByLabelText('Senha'), 'segredo123')
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Informe um e-mail valido.')
+    expect(await screen.findByRole('alert')).toHaveTextContent('Informe um e-mail válido.')
     expect(fetchMock).not.toHaveBeenCalled()
   })
 

@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label'
   Ver docs/specs/001-login-e-sessao.md#5-regras-de-negocio
 */
 const loginSchema = z.object({
-  email: z.email('Informe um e-mail valido.'),
+  email: z.email('Informe um e-mail válido.'),
   password: z.string().min(1, 'Informe sua senha.'),
 })
 
@@ -70,9 +70,10 @@ export function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-semibold tracking-tight">Room Reservation</h1>
+    <main className="blueprint-ground flex min-h-dvh items-center justify-center p-4">
+      {/* A placa: o objeto em que se entra, sobre a malha da planta. */}
+      <div className="w-full max-w-sm rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+        <h1 className="font-display text-2xl font-bold tracking-tight">Room Reservation</h1>
         <p className="mt-1 text-sm text-muted">Entre para reservar uma sala.</p>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-8 flex flex-col gap-5">
@@ -118,7 +119,7 @@ export function LoginPage() {
           )}
 
           <Button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
-            {isSubmitting ? 'Entrando...' : 'Entrar'}
+            {isSubmitting ? 'Entrando…' : 'Entrar'}
           </Button>
         </form>
       </div>

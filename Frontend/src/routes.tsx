@@ -1,5 +1,6 @@
 import type { RouteObject } from 'react-router'
 import { RequireAuth } from '@/auth/RequireAuth'
+import { AppShell } from '@/components/AppShell'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { HomePage } from '@/features/home/HomePage'
 
@@ -8,6 +9,11 @@ export const routes: RouteObject[] = [
   { path: '/login', element: <LoginPage /> },
   {
     element: <RequireAuth />,
-    children: [{ path: '/', element: <HomePage /> }],
+    children: [
+      {
+        element: <AppShell />,
+        children: [{ path: '/', element: <HomePage /> }],
+      },
+    ],
   },
 ]

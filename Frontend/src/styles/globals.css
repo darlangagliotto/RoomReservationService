@@ -1,40 +1,43 @@
 @import "tailwindcss";
 
 /*
-  Tokens semanticos. Componentes nunca usam hex literal nem cor por matiz —
-  sempre o papel (surface, muted, danger...). Trocar a paleta acontece aqui.
+  Identidade: sinalizacao arquitetonica.
 
-  PROVISORIO: os valores abaixo sao uma base neutra e restrita, suficiente para
-  o scaffold. A identidade visual de "Room Reservation" (paleta definitiva,
-  tipografia, escala) entra no passo 4 da spec 001, pela skill frontend-design.
-  A ESTRUTURA de tokens, essa sim, e definitiva.
+  O dominio e o de placas de porta, numeracao de sala, planta baixa e grade de
+  horario — dai vem o fundo petroleo (tinta de planta, nao preto neutro) e o
+  acento ambar de sinalizacao, que tambem carrega a semantica de status:
+  livre (success/verde-petroleo), atencao (accent/ambar), indisponivel (muted).
+
+  Cor sempre por papel semantico. Componente nunca usa hex nem matiz literal.
 */
 
 :root {
-  --rrs-background: oklch(0.99 0.002 250);
-  --rrs-foreground: oklch(0.22 0.015 255);
+  --rrs-background: oklch(0.97 0.008 220);
+  --rrs-foreground: oklch(0.25 0.04 220);
   --rrs-surface: oklch(1 0 0);
-  --rrs-border: oklch(0.91 0.005 250);
-  --rrs-muted: oklch(0.52 0.012 255);
-  --rrs-accent: oklch(0.55 0.13 250);
-  --rrs-accent-foreground: oklch(0.99 0.002 250);
-  --rrs-danger: oklch(0.55 0.18 25);
-  --rrs-success: oklch(0.55 0.12 150);
-  --rrs-ring: oklch(0.55 0.13 250);
+  --rrs-border: oklch(0.89 0.012 220);
+  --rrs-muted: oklch(0.5 0.02 220);
+  --rrs-accent: oklch(0.72 0.15 65);
+  --rrs-accent-foreground: oklch(0.22 0.05 60);
+  --rrs-danger: oklch(0.52 0.19 25);
+  --rrs-success: oklch(0.55 0.1 165);
+  --rrs-ring: oklch(0.55 0.12 65);
+  --rrs-grid: oklch(0.25 0.04 220 / 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --rrs-background: oklch(0.17 0.012 255);
-    --rrs-foreground: oklch(0.95 0.004 250);
-    --rrs-surface: oklch(0.22 0.014 255);
-    --rrs-border: oklch(0.31 0.014 255);
-    --rrs-muted: oklch(0.68 0.012 255);
-    --rrs-accent: oklch(0.72 0.12 250);
-    --rrs-accent-foreground: oklch(0.17 0.012 255);
-    --rrs-danger: oklch(0.68 0.17 25);
-    --rrs-success: oklch(0.70 0.12 150);
-    --rrs-ring: oklch(0.72 0.12 250);
+    --rrs-background: oklch(0.21 0.03 220);
+    --rrs-foreground: oklch(0.95 0.01 220);
+    --rrs-surface: oklch(0.26 0.032 220);
+    --rrs-border: oklch(0.34 0.03 220);
+    --rrs-muted: oklch(0.74 0.02 220);
+    --rrs-accent: oklch(0.78 0.14 70);
+    --rrs-accent-foreground: oklch(0.22 0.05 60);
+    --rrs-danger: oklch(0.72 0.16 25);
+    --rrs-success: oklch(0.72 0.11 165);
+    --rrs-ring: oklch(0.78 0.14 70);
+    --rrs-grid: oklch(0.95 0.01 220 / 0.045);
   }
 }
 
@@ -49,12 +52,20 @@
   --color-danger: var(--rrs-danger);
   --color-success: var(--rrs-success);
   --color-ring: var(--rrs-ring);
+
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Numerais tabulares para numero de sala e horario. A familia so e carregada
+     quando as telas de salas/reservas existirem (spec 002); ate la, o mono do
+     sistema atende. */
+  --font-data: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
 }
 
 @layer base {
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
 
@@ -73,5 +84,18 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+@layer utilities {
+  /*
+    Malha de planta baixa. Atmosfera da tela de entrada — nao se repete no
+    shell: uma ideia por tela.
+  */
+  .blueprint-ground {
+    background-image:
+      linear-gradient(to right, var(--rrs-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--rrs-grid) 1px, transparent 1px);
+    background-size: 2.5rem 2.5rem;
   }
 }
