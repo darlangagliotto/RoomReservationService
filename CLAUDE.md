@@ -14,6 +14,7 @@ verdade para especificação (SDD)**. Antes de qualquer implementação, leia:
 | Como escrever código neste repo | [docs/architecture/conventions.md](docs/architecture/conventions.md) |
 | Auth, erros, config, EF, Docker | [docs/architecture/cross-cutting.md](docs/architecture/cross-cutting.md) |
 | Por que está assim | [docs/architecture/decisions.md](docs/architecture/decisions.md) |
+| Telas, navegação, o que falta | [docs/product/information-architecture.md](docs/product/information-architecture.md) |
 | Regras de negócio e schema | [docs/domain/model.md](docs/domain/model.md) |
 | Contrato de um serviço | [docs/services/](docs/services/) |
 | O que fazer a seguir | [docs/sdd/backlog.md](docs/sdd/backlog.md) |

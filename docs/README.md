@@ -14,6 +14,8 @@ docs/
 │   ├── conventions.md     Camadas, padrão de UseCase, Result<T>, entidades, DI, controllers, testes
 │   ├── cross-cutting.md   JWT, erros, health, EF/Npgsql, configuração, Docker
 │   └── decisions.md       ADRs (o porquê de cada escolha estrutural)
+├── product/
+│   └── information-architecture.md  Telas, navegação e o que cada uma exige do backend
 ├── domain/
 │   └── model.md           Linguagem ubíqua, agregados, invariantes, schema físico por banco
 ├── services/
