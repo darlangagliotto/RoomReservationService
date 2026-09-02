@@ -226,6 +226,20 @@ qualquer um é bug, não detalhe:
    trace nem o `ProblemDetails` cru.
 4. **Sucesso** — o conteúdo.
 
+## Testabilidade
+
+Todo módulo nasce testável — decisão separada de I/O:
+
+- `fetch` existe **apenas** em `api/client.ts`. Componente e hook nunca chamam rede direto.
+- `sessionStorage` é tocado **apenas** por `auth/token-store.ts`.
+- Lógica (parse de erro, conversão UTC, resolução de filtro, decodificação do token)
+  mora em função pura em `lib/` ou `api/`, exercitável sem React nem DOM.
+- Componente recebe dado por prop ou hook; não busca por conta própria.
+
+**Testável não é o mesmo que testado**: escreva teste onde a regra é não-óbvia — mapa de
+erros, ciclo de sessão, conversão de data, resolução de filtro — não para renderização
+trivial nem para repetir a implementação.
+
 ## Design e tokens
 
 A `frontend-design` decide paleta, tipografia e layout. Esta skill define o **contrato**
@@ -263,4 +277,5 @@ quatro cards de métrica não descreve nenhum dos dois.
 - [ ] Datas convertidas para UTC na saída
 - [ ] Nenhum segredo, token ou senha em log, `.env` versionado ou bundle
 - [ ] Nova rota de API registrada em `src/api/` e no proxy do Vite, se necessário
+- [ ] Lógica extraída de componente para função pura testável; teste onde a regra não é óbvia
 - [ ] Documentação atualizada se algo aqui mudou (stack, contrato, estrutura)

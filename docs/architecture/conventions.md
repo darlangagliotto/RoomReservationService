@@ -140,6 +140,19 @@ public class <Entity>Controller : ControllerBase
 - Em PATCH, o id da rota sobrescreve o do corpo: `request with { RoomId = id }`.
 - Nada de lógica de negócio, mapeamento ou acesso a repositório no controller.
 
+## Testabilidade
+
+Todo código nasce testável: dependência entra por interface no construtor, decisão fica
+separada de I/O, e nenhum caso de uso precisa de banco ou rede para ser exercitado.
+**Testável não é o mesmo que testado** — escreve-se teste onde a regra é não-óbvia, onde
+errar é caro, ou onde já houve defeito; perseguir cobertura total produz teste que só
+repete a implementação.
+
+Violação concreta já no repositório: `IReservationRepository.Query()` devolve
+`IQueryable` e `GetReservationsUseCase` chama `ToListAsync()` sobre ele — esse caso de
+uso é impossível de testar sem um Postgres real ([B11](../sdd/backlog.md)). Repositório
+recebe critérios e devolve `List<T>`; não devolve consulta em aberto.
+
 ## Testes
 
 xUnit + FluentAssertions + Moq (`AuthService.UnitTests` é a referência).

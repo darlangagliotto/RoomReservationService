@@ -8,7 +8,7 @@ Candidatos priorizados estão em [../sdd/backlog.md](../sdd/backlog.md).
 
 | # | Spec | Status | Serviços |
 |---|---|---|---|
-| — | _(nenhuma ainda)_ | | |
+| 001 | [Login e sessão autenticada](001-login-e-sessao.md) | Aprovada | Frontend, AuthService (consumo) |
 
 Ao criar uma spec, adicione a linha nesta tabela; ao concluí-la, marque `Implementada`
 e remova o item correspondente do backlog.
