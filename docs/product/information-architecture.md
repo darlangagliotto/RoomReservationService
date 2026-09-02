@@ -158,9 +158,31 @@ Três lacunas são estruturais e aparecem em mais de uma tela:
 | 002 | Consulta por id e autenticação serviço-a-serviço | backend | — | escrita |
 | 003 | Disponibilidade por intervalo, com três estados | backend | 002 | escrita |
 | 004 | Catálogo de equipamentos e vínculo com a planta | backend | — | escrita |
-| 005 | Navegação no topo + telas de lista e cadastro | frontend | 002, 004 | a escrever |
-| 006 | Planta do andar com estado e linha do tempo | frontend | 003, 004, 005 | a escrever |
-| 007 | Detalhe da sala | frontend | 004, 006 | a escrever |
+| 005 | **Navegação no topo** + Salas: lista, cadastro, edição | frontend | — | a escrever |
+| 006 | Equipamentos e Reservas: listas, cadastro, cancelamento | frontend | 002, 004, 005 | a escrever |
+| 007 | Planta do andar com estado e linha do tempo | frontend | 003, 004, 005, **render** | a escrever |
+| 008 | Detalhe da sala | frontend | 004, 007 | a escrever |
+
+**A 005 não depende de backend nenhum.** `GET`, `POST` e `PATCH /api/rooms` já existem e
+funcionam; o `planSlot` da spec 004 entra depois como campo adicional. Ou seja: a barra de
+navegação e a primeira tela de dados podem ser construídas **em paralelo** com o bloco de
+backend, não depois dele.
+
+A navegação nasce junto da 005 porque é ali que existe o primeiro destino real. Barra de
+menu antes disso apontaria para lugar nenhum.
+
+## Pendências de produção
+
+Itens que não são código e têm prazo de entrega próprio. A spec 007 não começa sem eles.
+
+| Item | Quem | Situação |
+|---|---|---|
+| Render do andar visto de cima, realista, planta fixa, até 10 salas | Fora do sistema — ferramenta 3D ou arte encomendada | **pendente, caminho crítico** |
+| Marcadores dos tipos de equipamento (11 tipos da spec 004) | idem | pendente |
+| Levantamento do que dá para obter pronto na internet — ferramentas, pacotes de assets, licenças | Claude, a pedido | **a entregar** |
+
+O levantamento acima foi pedido para "quando chegar nos desenhos", mas o render está no
+caminho crítico da 007: convém antecipá-lo.
 
 Duas observações sobre a ordem:
 
