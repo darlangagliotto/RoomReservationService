@@ -15,6 +15,7 @@ export default defineConfig({
     // explicita, `localStorage` fica indefinido.
     environmentOptions: { jsdom: { url: 'http://localhost:5173' } },
     include: ['src/**/*.test.{ts,tsx}'],
+    setupFiles: ['./src/test/setup.ts'],
     restoreMocks: true,
     unstubGlobals: true,
   },

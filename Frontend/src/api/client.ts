@@ -65,8 +65,12 @@ function hasFieldErrors(problem: ProblemDetails | null): problem is ProblemDetai
 export function createApiClient({
   getToken,
   onUnauthorized,
-  fetchImpl = globalThis.fetch,
+  fetchImpl,
 }: ApiClientOptions): ApiClient {
+  // Resolvido a cada chamada, e nao capturado na criacao: mantem o cliente
+  // padrao substituivel em teste e evita chamar fetch desvinculado do global.
+  const doFetch: typeof fetch = fetchImpl ?? ((input, init) => globalThis.fetch(input, init))
+
   async function send(path: string, options: RequestOptions): Promise<Response> {
     const token = getToken()
     const headers = new Headers({ Accept: 'application/json' })
@@ -79,7 +83,7 @@ export function createApiClient({
     }
 
     try {
-      return await fetchImpl(path, {
+      return await doFetch(path, {
         method: options.method ?? 'GET',
         headers,
         body: options.body === undefined ? undefined : JSON.stringify(options.body),

@@ -251,7 +251,10 @@ Ambiente: `vitest` com `environment: 'jsdom'` e `environmentOptions.jsdom.url` d
 sem uma URL de origem explícita o jsdom não expõe storage. **No Node 26 o global
 `localStorage` é nativo e exige `--localstorage-file`**, ficando indefinido e sombreando o
 do jsdom; teste que precise dele deve injetar um dublê com `vi.stubGlobal`
-(`unstubGlobals: true` no config). `sessionStorage` não é afetado.
+(`unstubGlobals: true` no config). `sessionStorage` não é afetado. Como os helpers do
+vitest são importados explicitamente (`globals: false`), o cleanup automático do Testing
+Library **não** se registra sozinho: `afterEach(cleanup)` fica no `src/test/setup.ts` —
+sem ele, renders anteriores permanecem no DOM e as queries encontram a tela errada.
 
 ## Design e tokens
 
