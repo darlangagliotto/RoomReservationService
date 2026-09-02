@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | Aprovada |
+| Status | Implementada |
 | Serviços afetados | Frontend (novo), AuthService (consumo, sem alteração) |
 | Depende de | — |
 | Autor / data | Darlan · 2026-09-02 |
@@ -39,13 +39,22 @@ a sessão é encerrada de forma previsível, sem tela quebrada. O logout é expl
 - **Home** (`/`), rota autenticada de destino após o login, com conteúdo placeholder
 - Testes dos comportamentos de sessão
 
+**Ampliações decididas durante a execução** (registradas aqui para o escopo não mentir
+sobre o que foi entregue):
+
+- Dockerfile do frontend, `nginx.conf` e serviço no `docker-compose` (porta 5005), a
+  pedido, para a pilha inteira subir por Docker
+- Tokens de cor em tema claro **e** escuro — a estrutura de tokens exige os dois papéis
+  definidos juntos, e separá-los custaria mais do que fazê-los de uma vez
+- Usuário fixo de desenvolvimento no UserService, necessário para verificar o fluxo real
+  sem cadastrar conta à mão (ver [user-service.md](../services/user-service.md#seed-de-desenvolvimento))
+
 **Fora de escopo**
 
 - Cadastro de usuário (`POST /api/users`) — spec própria
 - Qualquer tela de salas, equipamentos ou reservas
-- Dockerfile do frontend e entrada no `docker-compose`
-- CORS no Gateway e correção de B2 — necessários só para ambiente publicado
-- Refresh token, "lembrar-me", recuperação de senha, tema escuro
+- Correção de B2 — contornada por desvio de proxy, não resolvida
+- Refresh token, "lembrar-me", recuperação de senha
 
 ## 4. Contrato
 
@@ -79,9 +88,10 @@ não deve inventar uma mensagem de indisponibilidade que não pode comprovar.
 ### Roteamento
 
 O Gateway hoje bloqueia `/api/auth/*` pela `FallbackPolicy`
-([B2](../sdd/backlog.md#b2)). Em desenvolvimento, o proxy do Vite envia `/api/auth`
-direto para `http://localhost:5001` e o restante de `/api` para o Gateway na `5000`,
-com um `TODO(B2)` no `vite.config.ts` marcando a remoção do desvio.
+([B2](../sdd/backlog.md#b2)). O desvio é feito em dois lugares, ambos marcados com
+`TODO(B2)`: `vite.config.ts`, no dev server, e `Frontend/nginx.conf`, no container. Os
+dois enviam `/api/auth` e `/api/users` direto aos serviços e o restante de `/api` ao
+Gateway.
 
 O app sempre chama caminhos relativos (`/api/auth/login`); nenhum host aparece no código
 da aplicação.
@@ -158,40 +168,48 @@ Indisponibilidade: com o AuthService fora do ar, o login falha com erro genéric
 UserService fora do ar, falha como credencial inválida (§4). Ambos os casos deixam a
 pessoa na tela de login com mensagem — nunca em tela branca.
 
-Para ambiente publicado (fora de escopo aqui), duas pendências de backend precisam estar
-resolvidas: CORS no Gateway e o desbloqueio de `/api/auth/*` (B2).
+**CORS deixou de ser pendência.** Como o nginx serve o bundle e faz o proxy de `/api`,
+aplicação e API ficam na mesma origem (`localhost:5005`) e o navegador nunca emite
+requisição cross-origin. CORS no Gateway só volta a ser necessário se o frontend passar a
+ser servido de outro host. O desbloqueio de `/api/auth/*` (B2) segue pendente — está
+contornado por desvio de proxy, tanto no Vite quanto no nginx.
 
 ## 8. Critérios de aceite
 
+> Verificados em 2026-09-02 com a pilha inteira em Docker (`localhost:5005`), contra
+> Postgres, AuthService e UserService reais — não contra dublês. Os itens de sessão têm
+> cobertura automatizada adicional em `src/auth/session.test.tsx`.
+
 **Autenticação**
 
-- [ ] Dado credencial válida, quando submeto o login, então sou levado à Home (`/`) e o meu e-mail aparece no shell.
-- [ ] Dado credencial inválida, quando submeto, então vejo `"Invalid email or password!"` junto ao formulário, o campo de senha é limpo e permaneço no login.
-- [ ] Dado o AuthService indisponível, quando submeto, então vejo mensagem de erro e opção de tentar novamente, sem tela quebrada.
-- [ ] Dado e-mail em formato inválido, quando submeto, então vejo o erro no campo e nenhuma requisição é enviada.
-- [ ] Dado que digito uma senha de 3 caracteres, quando submeto, então a requisição **é** enviada (o cliente não valida comprimento).
+- [x] Dado credencial válida, quando submeto o login, então sou levado à Home (`/`) e o meu e-mail aparece no shell.
+- [x] Dado credencial inválida, quando submeto, então vejo `"Invalid email or password!"` junto ao formulário, o campo de senha é limpo e permaneço no login.
+- [x] Dado o AuthService indisponível, quando submeto, então vejo mensagem de erro e opção de tentar novamente, sem tela quebrada.
+- [x] Dado e-mail em formato inválido, quando submeto, então vejo o erro no campo e nenhuma requisição é enviada.
+- [x] Dado que digito uma senha de 3 caracteres, quando submeto, então a requisição **é** enviada (o cliente não valida comprimento).
 
 **Sessão**
 
-- [ ] Dado que não tenho sessão, quando acesso `/` direto pela URL, então sou levado ao login e, após autenticar, chego na Home.
-- [ ] Dado que recarrego a aba autenticado, então permaneço autenticado.
-- [ ] Dado que fecho a aba e reabro, então **não** permaneço autenticado.
-- [ ] Dado um token expirado em `sessionStorage`, quando abro o app, então inicio deslogado e nenhuma requisição à API é feita.
-- [ ] Dado token expirado durante o uso, quando faço qualquer chamada, então a sessão é encerrada e vou para o login.
-- [ ] Dado que faço logout, então o token some da memória e do `sessionStorage`, e voltar pelo histórico não restaura a sessão.
+- [x] Dado que não tenho sessão, quando acesso `/` direto pela URL, então sou levado ao login e, após autenticar, chego na Home.
+- [x] Dado que recarrego a aba autenticado, então permaneço autenticado.
+- [x] Dado que fecho a aba e reabro, então **não** permaneço autenticado.
+- [x] Dado um token expirado em `sessionStorage`, quando abro o app, então inicio deslogado e nenhuma requisição à API é feita.
+- [x] Dado token expirado durante o uso, quando faço qualquer chamada, então a sessão é encerrada e vou para o login.
+- [x] Dado que faço logout, então o token some da memória e do `sessionStorage`, e voltar pelo histórico não restaura a sessão.
 
 **Interface**
 
-- [ ] Em 375px, login e shell não produzem scroll horizontal; a navegação do shell está recolhida.
-- [ ] Todo o fluxo (login, navegação, logout) é percorrível apenas com teclado, com foco visível.
-- [ ] Durante o envio do login, o botão indica carregamento e não permite envio duplicado.
-- [ ] Nenhum token, senha ou corpo de requisição de login aparece no console.
+- [x] Em 375px, login e shell não produzem scroll horizontal (medido: `scrollWidth === clientWidth` nas duas rotas).
+- [—] ~~Navegação do shell recolhida em 375px~~ — **sem objeto**: não há itens de navegação enquanto só existe a Home, e um menu apontando para lugar nenhum seria decoração. O critério passa a valer na spec 002.
+- [x] Todo o fluxo (login, navegação, logout) é percorrível apenas com teclado, com foco visível.
+- [x] Durante o envio do login, o botão indica carregamento e não permite envio duplicado.
+- [x] Nenhum token, senha ou corpo de requisição de login aparece no console.
 
 **Qualidade**
 
-- [ ] `npx tsc --noEmit` limpo, sem `any`.
-- [ ] `npm run build` sem erro nem warning novo.
-- [ ] Testes cobrindo: restauração de sessão, expiração local, `401` durante o uso e logout.
+- [x] `npx tsc --noEmit` limpo, sem `any`.
+- [x] `npm run build` sem erro nem warning novo.
+- [x] Testes cobrindo: restauração de sessão, expiração local, `401` durante o uso e logout.
 
 ## 9. Decisões em aberto
 
