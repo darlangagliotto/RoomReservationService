@@ -17,19 +17,44 @@ Consequência de projeto: a tela inicial não é um painel de métricas. É a pr
 
 | Decisão | Razão |
 |---|---|
-| **Um andar só** | Prédio multi-andar é conceito adiado; entra quando houver demanda real |
+| **Um andar só, planta fixa, no máximo 10 salas** | O andar existe e não muda; isso permite uma planta desenhada uma vez |
+| **Acabamento realista, não esquemático** | Requisito do produto. Ver "Tratamento visual" |
+| **Três estados**: disponível · reservada · em uso | Sala livre agora mas reservada logo não serve para uma reunião longa |
 | **Status é derivado das reservas**, nunca um campo | Uma sala não "é" ocupada; ela está ocupada num intervalo |
 | **A referência de tempo abre em "agora" e é móvel** | Abrir em agora é útil sem configurar; sem poder mover, não se reserva para mais tarde |
 | **Navegação no topo**, não lateral | 4 seções não justificam menu lateral, e a planta precisa de toda a largura |
 | **Derivar, não pedir** | Posição pedida no cadastro vira campo vazio em produção. Ver abaixo |
 
+## Tratamento visual
+
+**Requisito registrado**: a planta deve ter acabamento **realista** — piso, mobiliário e
+volume desenhados —, não traço esquemático. Planta em linha fina foi avaliada e
+**recusada**. A referência aceita é um render arquitetônico visto de cima.
+
+Como a planta é **fixa** e tem no máximo 10 salas, o caminho é:
+
+| Camada | O que é | Origem |
+|---|---|---|
+| **Base** | Render realista do andar inteiro, visto de cima | Feito **uma vez**, fora do sistema (ferramenta 3D ou arte encomendada) |
+| **Hotspots** | Um polígono invisível por sala, sobre a base | `Room.PlanSlot` liga a sala ao polígono |
+| **Estado** | Etiqueta com texto e contorno, por sala | Calculado pela API de disponibilidade |
+| **Equipamentos** | Marcadores nas âncoras + lista no painel | Dados do cadastro |
+
+Consequência a assumir de olhos abertos: **o mobiliário do render é cenário**. O
+equipamento *cadastrado* aparece como marcador sobre o render e na lista do painel — não
+como móvel desenhado. Trocar a base (render novo) não exige mudar código, só o arquivo e
+os polígonos.
+
+O estado **nunca** é uma lavagem de cor sobre a sala: com piso desenhado, a película briga
+com a arte. Etiqueta com texto e contorno, como na referência.
+
+Como a planta é fixa, o modelo **não precisa** de largura, profundidade nem formato da
+sala. Isso foi removido do escopo.
+
 ### Derivar, não pedir
 
-Princípio que governa as duas decisões espaciais do produto:
+Princípio que governa a posição dos objetos:
 
-- **Posição da sala no andar** é derivada do **número**. Prédios reais numeram ao longo de
-  corredores; distribuir as salas por ordem numérica em duas fileiras produz uma planta
-  plausível com zero cadastro.
 - **Posição do objeto na sala** é derivada do **tipo**, via âncora semântica:
 
 | Âncora | Tipos | Desenho |
@@ -128,14 +153,14 @@ Três lacunas são estruturais e aparecem em mais de uma tela:
 
 ## Sequência de specs
 
-| # | Spec | Bloco | Depende |
-|---|---|---|---|
-| 002 | B1: endpoints por id + auth serviço-a-serviço | backend | — |
-| 003 | Disponibilidade por intervalo | backend | 002 |
-| 004 | Geometria, vocabulário de tipo e âncoras; listar equipamentos; rota do Gateway | backend | — |
-| 005 | Navegação no topo + telas de lista e cadastro | frontend | 002, 004 |
-| 006 | Planta do andar com status e linha do tempo | frontend | 003, 004, 005 |
-| 007 | Detalhe da sala | frontend | 004, 006 |
+| # | Spec | Bloco | Depende | Estado |
+|---|---|---|---|---|
+| 002 | Consulta por id e autenticação serviço-a-serviço | backend | — | escrita |
+| 003 | Disponibilidade por intervalo, com três estados | backend | 002 | escrita |
+| 004 | Catálogo de equipamentos e vínculo com a planta | backend | — | escrita |
+| 005 | Navegação no topo + telas de lista e cadastro | frontend | 002, 004 | a escrever |
+| 006 | Planta do andar com estado e linha do tempo | frontend | 003, 004, 005 | a escrever |
+| 007 | Detalhe da sala | frontend | 004, 006 | a escrever |
 
 Duas observações sobre a ordem:
 
