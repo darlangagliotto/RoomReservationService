@@ -247,6 +247,12 @@ Todo módulo nasce testável — decisão separada de I/O:
 erros, ciclo de sessão, conversão de data, resolução de filtro — não para renderização
 trivial nem para repetir a implementação.
 
+Ambiente: `vitest` com `environment: 'jsdom'` e `environmentOptions.jsdom.url` definido —
+sem uma URL de origem explícita o jsdom não expõe storage. **No Node 26 o global
+`localStorage` é nativo e exige `--localstorage-file`**, ficando indefinido e sombreando o
+do jsdom; teste que precise dele deve injetar um dublê com `vi.stubGlobal`
+(`unstubGlobals: true` no config). `sessionStorage` não é afetado.
+
 ## Design e tokens
 
 A `frontend-design` decide paleta, tipografia e layout. Esta skill define o **contrato**

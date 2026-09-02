@@ -1,0 +1,21 @@
+import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  test: {
+    environment: 'jsdom',
+    // localStorage/sessionStorage do jsdom exigem origem nao-opaca; sem uma URL
+    // explicita, `localStorage` fica indefinido.
+    environmentOptions: { jsdom: { url: 'http://localhost:5173' } },
+    include: ['src/**/*.test.{ts,tsx}'],
+    restoreMocks: true,
+    unstubGlobals: true,
+  },
+})
