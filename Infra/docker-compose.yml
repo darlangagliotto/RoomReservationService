@@ -140,5 +140,21 @@ services:
       reservationservice:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ../Frontend
+    container_name: frontend
+    ports:
+      - "5005:5000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:5000/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      gateway:
+        condition: service_healthy
+
 volumes:
   db_data:

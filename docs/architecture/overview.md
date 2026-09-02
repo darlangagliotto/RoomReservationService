@@ -21,8 +21,8 @@ Microsserviços por subdomínio, cada um com **Clean Architecture em 4 projetos*
 | RoomService | 5003 | 5000 | `roomdb` | implementado |
 | ReservationService | 5004 | 5000 | `reservationdb` | implementado, integração incompleta |
 | PostgreSQL 15 | 5432 | 5432 | instância única | implementado |
+| Frontend (React + nginx) | 5005 | 5000 | — | login e sessão (spec 001) |
 | Mensageria | — | — | — | **não existe** (ADR-006) |
-| Frontend | — | — | — | **não existe** |
 
 Portas de execução local fora do Docker (`launchSettings.json`): Gateway `5046/7091`,
 AuthService `5223/7036`, RoomService `5274/7118`, ReservationService `5275/7119`,
@@ -69,7 +69,13 @@ UserService `5291`.
 de destino. Consequência funcional em [backlog.md](../sdd/backlog.md#b1).
 
 Ordem de subida definida em `Infra/docker-compose.yml`:
-`db` → `userservice` → (`authservice`, `roomservice`, `reservationservice`) → `gateway`.
+`db` → `userservice` → (`authservice`, `roomservice`, `reservationservice`) → `gateway`
+→ `frontend`.
+
+O frontend é servido por nginx, que também faz o proxy de `/api` para o Gateway — por
+isso não há CORS envolvido: para o navegador, aplicação e API estão na mesma origem
+(`localhost:5005`). `/api/auth` e `/api/users` são desviados direto para os serviços
+enquanto [B2](../sdd/backlog.md#b2) não for corrigido.
 
 ## Fluxo 1 — Login
 
