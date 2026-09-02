@@ -41,6 +41,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=db;Database=userdb;Username=postgres;Password=postgrespw
+      # Usuario fixo de desenvolvimento, criado no startup (so em Development).
+      # Serve para logar logo apos subir o compose, sem cadastrar na mao.
+      - Seed__DefaultUser__Enabled=true
+      - Seed__DefaultUser__Name=Dev User
+      - Seed__DefaultUser__Email=dev@roomreservation.dev
+      - Seed__DefaultUser__Password=dev123456
       - Jwt__Issuer=AuthService
       - Jwt__Audience=AuthService.Client
       - Jwt__Key=${JWT_KEY}

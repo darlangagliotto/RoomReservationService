@@ -107,6 +107,10 @@ docker compose up --build
 
 Sobe, nesta ordem de dependência: Postgres → UserService → AuthService/RoomService/ReservationService → Gateway.
 
+Em `Development`, o UserService cria um usuário fixo no startup para você conseguir logar
+de imediato — `dev@roomreservation.dev` / `dev123456`. O seeder não roda em nenhum outro
+ambiente (ver `docs/services/user-service.md`).
+
 | Serviço             | Endereço               |
 |------------------------|---------------------------|
 | Gateway                  | http://localhost:5000       |

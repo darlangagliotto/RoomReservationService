@@ -57,6 +57,26 @@ incorreta.
 `UserRepository` normaliza o e-mail (`Trim().ToLowerInvariant()`) antes de consultar.
 `Migrate()` roda no startup. Schema em [domain/model.md](../domain/model.md#userdb).
 
+## Seed de desenvolvimento
+
+`Api/Seeding/DevelopmentSeeder.cs` cria um usuário fixo no startup, depois do
+`Migrate()`, para permitir login logo após `docker compose up` sem cadastrar conta à mão.
+
+| Chave | Valor no Compose |
+|---|---|
+| `Seed:DefaultUser:Enabled` | `true` |
+| `Seed:DefaultUser:Name` | `Dev User` |
+| `Seed:DefaultUser:Email` | `dev@roomreservation.dev` |
+| `Seed:DefaultUser:Password` | `dev123456` |
+
+Duas travas impedem que isso vire conta permanente com senha pública: o seeder **sai
+imediatamente fora do ambiente `Development`**, e pode ser desligado por
+`Seed:DefaultUser:Enabled=false`. É idempotente — e-mail já existente encerra a execução,
+então reinício sobre volume populado não recria nem redefine a senha.
+
+O usuário é criado pela entidade de domínio com hash BCrypt real, não por SQL: as
+invariantes valem para ele e a senha funciona no `validate-credentials` normalmente.
+
 ## Configuração
 
 `ConnectionStrings:DefaultConnection` e `Jwt:*`. O `appsettings.json` versionado

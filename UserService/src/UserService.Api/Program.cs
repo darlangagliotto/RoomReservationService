@@ -83,4 +83,6 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
+await UserService.Api.Seeding.DevelopmentSeeder.SeedDefaultUserAsync(app);
+
 app.Run();
