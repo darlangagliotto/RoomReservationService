@@ -3,6 +3,7 @@ import { RequireAuth } from '@/auth/RequireAuth'
 import { AppShell } from '@/components/AppShell'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { HomePage } from '@/features/home/HomePage'
+import { RoomsPage } from '@/features/rooms/RoomsPage'
 
 /** Exportado separado do router para os testes montarem um memory router. */
 export const routes: RouteObject[] = [
@@ -12,7 +13,10 @@ export const routes: RouteObject[] = [
     children: [
       {
         element: <AppShell />,
-        children: [{ path: '/', element: <HomePage /> }],
+        children: [
+          { path: '/', element: <HomePage /> },
+          { path: '/salas', element: <RoomsPage /> },
+        ],
       },
     ],
   },

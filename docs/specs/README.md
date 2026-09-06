@@ -13,6 +13,8 @@ Candidatos priorizados estão em [../sdd/backlog.md](../sdd/backlog.md).
 | 003 | [Disponibilidade de salas por intervalo](003-disponibilidade-de-salas.md) | Implementada | Reservation, Room |
 | 004 | [Catálogo de equipamentos e vínculo com a planta](004-catalogo-de-equipamentos-e-planta.md) | Implementada | Room, Gateway |
 
+| 005 | [Navegação e telas de Salas](005-navegacao-e-salas.md) | Implementada | Frontend |
+
 Ordem e dependências entre specs: [product/information-architecture.md](../product/information-architecture.md#sequência-de-specs).
 
 Ao criar uma spec, adicione a linha nesta tabela; ao concluí-la, marque `Implementada`

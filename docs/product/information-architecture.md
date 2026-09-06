@@ -158,7 +158,7 @@ Três lacunas são estruturais e aparecem em mais de uma tela:
 | 002 | Consulta por id e autenticação serviço-a-serviço | backend | — | escrita |
 | 003 | Disponibilidade por intervalo, com três estados | backend | 002 | escrita |
 | 004 | Catálogo de equipamentos e vínculo com a planta | backend | — | escrita |
-| 005 | **Navegação no topo** + Salas: lista, cadastro, edição | frontend | — | a escrever |
+| 005 | **Navegação no topo** + Salas: lista, cadastro, edição | frontend | — | implementada |
 | 006 | Equipamentos e Reservas: listas, cadastro, cancelamento | frontend | 002, 004, 005 | a escrever |
 | 007 | Planta do andar com estado e linha do tempo | frontend | 003, 004, 005, **render** | a escrever |
 | 008 | Detalhe da sala | frontend | 004, 007 | a escrever |
