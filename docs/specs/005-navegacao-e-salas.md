@@ -32,9 +32,9 @@ equipamentos, cadastra uma sala nova e edita nome, número e posição na planta
 
 **Fora de escopo**
 
-- Equipamentos e Reservas como seções próprias — spec 006
-- A planta — spec 007
-- Remover sala, ou alterar equipamentos de uma sala existente: **a API não expõe**
+- Equipamentos como seção própria — spec 006; Reservas — spec 008
+- A planta — spec 009
+- Remover sala, ou alterar equipamentos de uma sala existente: **a API não expõe** — resolvido pela spec 007
 
 ## 4. Contrato
 

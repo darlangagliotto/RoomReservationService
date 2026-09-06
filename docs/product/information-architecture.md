@@ -85,7 +85,7 @@ Room Reservation     Planta   Reservas   Salas   Equipamentos     usuario@email 
 | `/equipamentos` | **Equipamentos** | cadastrar equipamentos |
 
 A barra lista apenas destinos que existem. Hoje: Início e Salas (spec 005); Equipamentos,
-Reservas e Planta entram com as specs 006 e 007. Em telas estreitas a barra quebra para a
+Reservas e Planta entram com as specs 006, 008 e 009. Em telas estreitas a barra quebra para a
 linha de baixo em vez de colapsar num menu — com poucos itens, um hambúrguer esconderia
 mais do que ajudaria.
 
@@ -145,13 +145,15 @@ saber o que falta abaixo dela.
 | Detalhe da sala | `GET /api/rooms/{id}`, `GET /api/reservations?roomId=` | ✅ pronto |
 | Nova reserva | `POST /api/reservations` | ✅ pronto |
 | Reservas | `GET`, `DELETE /api/reservations`, `GET /api/users/{id}` | ✅ pronto |
+| Equipamentos de uma sala | `POST`/`DELETE /api/rooms/{id}/equipments` | ❌ **não existe** — spec 007 |
 | Salas | `GET`, `POST`, `PATCH /api/rooms` | ✅ pronto e **em uso** (spec 005) |
 | Equipamentos | `GET`, `POST /api/equipments` | ✅ pronto |
 
-**O backend deixou de ser o gargalo.** As três lacunas estruturais que este documento
+**O backend quase deixou de ser o gargalo.** As três lacunas estruturais que este documento
 levantou foram fechadas pelas specs 002, 003 e 004: consulta por id com propagação de
 token, disponibilidade por intervalo com os três estados, e vocabulário de equipamento com
-âncoras mais `PlanSlot`.
+âncoras mais `PlanSlot`. Restou uma, descoberta ao escrever a spec 007: **não há como
+alterar os equipamentos de uma sala depois de criada** — o domínio sabe, a API não expõe.
 
 O que trava a planta agora é **produção de arte**, não código — ver "Pendências de
 produção" abaixo.
@@ -164,9 +166,11 @@ produção" abaixo.
 | 003 | Disponibilidade por intervalo, com três estados | backend | 002 | ✅ implementada |
 | 004 | Catálogo de equipamentos e vínculo com a planta | backend | — | ✅ implementada |
 | 005 | **Navegação no topo** + Salas: lista, cadastro, edição | frontend | — | implementada |
-| 006 | Equipamentos e Reservas: listas, cadastro, cancelamento | frontend | 002, 004, 005 | a escrever — **desbloqueada** |
-| 007 | Planta do andar com estado e linha do tempo | frontend | 003, 004, 005, **render** | a escrever |
-| 008 | Detalhe da sala | frontend | 004, 007 | a escrever |
+| 006 | Cadastro de equipamentos | frontend | 004, 005 | **escrita — desbloqueada** |
+| 007 | Atribuir equipamentos às salas | **backend** + frontend | 005, 006 | **escrita — exige endpoints novos** |
+| 008 | Reservar salas: criar, listar, cancelar | frontend | 002, 005 | **escrita — desbloqueada** |
+| 009 | Planta do andar com estado e linha do tempo | frontend | 003, 004, 008, **render** | a escrever |
+| 010 | Detalhe da sala | frontend | 004, 009 | a escrever |
 
 **A 005 não depende de backend nenhum.** `GET`, `POST` e `PATCH /api/rooms` já existem e
 funcionam; o `planSlot` da spec 004 entra depois como campo adicional. Ou seja: a barra de
@@ -178,7 +182,7 @@ menu antes disso apontaria para lugar nenhum.
 
 ## Pendências de produção
 
-Itens que não são código e têm prazo de entrega próprio. A spec 007 não começa sem eles.
+Itens que não são código e têm prazo de entrega próprio. A spec 009 não começa sem eles.
 
 | Item | Quem | Situação |
 |---|---|---|
@@ -187,7 +191,7 @@ Itens que não são código e têm prazo de entrega próprio. A spec 007 não co
 | Levantamento do que dá para obter pronto na internet — ferramentas, pacotes de assets, licenças | Claude, a pedido | **a entregar** |
 
 O levantamento acima foi pedido para "quando chegar nos desenhos", mas o render está no
-caminho crítico da 007: convém antecipá-lo.
+caminho crítico da 009: convém antecipá-lo.
 
 Duas observações sobre a ordem:
 
