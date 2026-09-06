@@ -44,6 +44,11 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
                 room.ChangeNumber(request.Number.Value);
             }
 
+            if (request.PlanSlot.HasValue)
+            {
+                room.AssignPlanSlot(request.PlanSlot.Value);
+            }
+
             await _roomRepository.UpdateAsync(room);
 
             var equipments = await _equipmentResponseMapper.MapEquipmentsAsync(room.Equipments);
@@ -54,6 +59,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
                         room.Id,
                         room.Name,
                         room.Number,
+                        room.PlanSlot,
                         equipments
                     )
                 )
@@ -62,9 +68,18 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
 
         private async Task<Result<bool>> ValidateAsync(UpdateRoomDetailsRequest request)
         {
-           if (request.Name is null && !request.Number.HasValue)
+           if (request.Name is null && !request.Number.HasValue && !request.PlanSlot.HasValue)
            {
              return Result<bool>.Failure("Provide at least one field to update!");
+           }
+
+           if (request.PlanSlot.HasValue)
+           {
+                var samePlanSlotRoom = await _roomRepository.GetByPlanSlotAsync(request.PlanSlot.Value);
+                if (samePlanSlotRoom is not null && samePlanSlotRoom.Id != request.RoomId)
+                {
+                    return Result<bool>.Failure("Plan slot is already taken.");
+                }
            }
 
            if (request.Name is not null)

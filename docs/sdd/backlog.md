@@ -5,7 +5,9 @@ Cada item é candidato a uma spec em `docs/specs/`. Ordem = ordem sugerida de ex
 
 ## Bloqueadores — o sistema não funciona ponta a ponta sem eles
 
-### B1 — Endpoints de consulta por id ausentes {#b1}
+### ~~B1 — Endpoints de consulta por id ausentes~~ ✅ {#b1}
+
+> Resolvido pela [spec 002](../specs/002-consulta-por-id-e-auth-servico.md).
 
 O ReservationService chama quatro endpoints que **não existem**:
 
@@ -35,7 +37,9 @@ tem token. Correção: declarar `"AuthorizationPolicy": "anonymous"` nas rotas
 correspondentes (ou separar rotas públicas por path). Hoje o fluxo só funciona batendo
 direto nas portas 5001/5002.
 
-### B3 — Validação de alocação de equipamento é ignorada {#b3}
+### ~~B3 — Validação de alocação de equipamento é ignorada~~ ✅ {#b3}
+
+> Corrigido junto da spec 004: o método devolvia a variável errada.
 
 `RegisterRoomUseCase.ValidateAsync` retorna `equipmentIdsValidation` (sucesso) quando
 `ValidateEquipmentAllocationAsync` falha. O equipamento já alocado passa pela validação
@@ -62,7 +66,7 @@ convertendo-a em erro de negócio.
 `roomdb`. Funciona porque `Migrate()` cria o banco, mas a inconsistência confunde.
 Decidir: script completo ou remover o script (o EF já cobre).
 
-### B7 — Divergências de nulabilidade
+### ~~B7 — Divergências de nulabilidade~~ ✅
 
 `IRoomServiceClient` e `IUserServiceClient` declaram retornos não-anuláveis com
 implementações que retornam `null`; `IReservationRepository.GetReservationById` idem.
@@ -81,7 +85,7 @@ tolerância. Padronizar (o valor é a decisão; a inconsistência é o problema)
 dependências EF Core/Npgsql do `AuthService.Api.csproj` não participam de nenhum fluxo.
 Remover, e reescrever os testes unitários contra o caso de uso real (`LoginUserUseCase`).
 
-### B10 — URLs fixas no ReservationService
+### ~~B10 — URLs fixas no ReservationService~~ ✅
 
 `http://roomservice:5000` e `http://userservice:5000` estão no
 `Application/DependencyInjection`. Mover para configuração (`Services:RoomServiceUrl`,

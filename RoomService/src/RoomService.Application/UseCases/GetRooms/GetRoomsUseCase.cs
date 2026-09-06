@@ -38,6 +38,7 @@ namespace RoomService.Application.UseCases.GetRooms
                     room.Id,
                     room.Name,
                     room.Number,
+                    room.PlanSlot,
                     equipmentResponses
                 ));
             }

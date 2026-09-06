@@ -144,3 +144,38 @@ FK → `Rooms` com `ON DELETE CASCADE`; FK → `Equipments` com `ON DELETE RESTR
 | `EndTime` | `timestamptz` | NOT NULL |
 
 Sem índice em `RoomId` — a busca de overlap faz varredura completa filtrando por sala.
+
+## Atualizações da spec 004
+
+### `EquipmentType` — vocabulário controlado
+
+`Equipment.Type` deixou de ser texto livre. Valores aceitos: `Tv`, `Monitor`,
+`QuadroBranco`, `Projetor`, `ArCondicionado`, `Telefone`, `Notebook`, `Dock`, `Flipchart`,
+`Cadeira`, `Outro`. Persistido como texto (`character varying(40)`), legível no banco e
+estável a reordenação dos membros do enum.
+
+### Âncora (`EquipmentPlacement`)
+
+Onde o objeto fica na sala: `Parede`, `Teto`, `Mesa`, `Piso`. **Derivada do tipo**, nunca
+armazenada por equipamento — um projetor *está* no teto. A tabela de derivação é
+conhecimento de domínio (`EquipmentPlacements.For`), não de interface.
+
+`RoomEquipment.Placement` é uma **sobrescrita opcional e nula**: nulo significa "use a
+âncora do tipo", que é o caso de praticamente todo cadastro. Existe para precisão virar
+aditiva no futuro sem migration dolorosa.
+
+### `Room.PlanSlot`
+
+Inteiro de 1 a 10, **opcional e único**, ligando a sala ao polígono da planta fixa. Nulo =
+a sala não aparece na planta, mas aparece nas listagens. Índice único **filtrado** no banco
+(ignora nulos) — diferente das demais unicidades do sistema, que só têm checagem em código
+([B5](../sdd/backlog.md)).
+
+Com planta fixa, o modelo **não tem** largura, profundidade nem formato de sala.
+
+### Normalização de `PurchaseDate`
+
+`Equipment.ChangePurchaseDate` converte a data para `DateTimeKind.Utc` antes de validar e
+gravar. Sem isso, uma data sem fuso (`"2024-01-10"`) chegava como `Unspecified` e o Npgsql
+derrubava o insert na coluna `timestamptz` — `POST /api/equipments` **nunca** funcionou com
+o payload mais natural. Mesmo espírito da normalização de `Email`.

@@ -11,6 +11,7 @@ namespace RoomService.Domain.Repositories
         Task<Room?> GetByNameOrNumberAsync(string name, int number);
         Task<Room?> GetByNameAndNumberAsync(string name, int number);
         Task<bool> ExistsByEquipmentIdAsync(Guid equipmentId);
+        Task<Room?> GetByPlanSlotAsync(int planSlot);
         Task AddSync(Room room);
         Task UpdateAsync(Room room);
         Task DeleteAsync(Room room);

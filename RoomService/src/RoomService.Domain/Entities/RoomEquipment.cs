@@ -7,6 +7,13 @@ namespace RoomService.Domain.Entities
         public Guid RoomId {get; private set;}
         public Guid EquipmentId {get; private set;}
 
+        /// <summary>
+        /// Sobrescrita da ancora. Nulo significa "use a ancora do tipo" — e o
+        /// caso de praticamente todo cadastro. Existe para precisao virar
+        /// aditiva no futuro sem migration dolorosa. Ver docs/specs/004.
+        /// </summary>
+        public EquipmentPlacement? Placement {get; private set;}
+
         internal RoomEquipment(Guid roomId, Guid equipmentId)
         {
             if (roomId == Guid.Empty)
@@ -24,5 +31,7 @@ namespace RoomService.Domain.Entities
         }
 
         protected RoomEquipment() { }
+
+        public void OverridePlacement(EquipmentPlacement? placement) => Placement = placement;
     }
 }

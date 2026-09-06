@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RoomService.Application.UseCases.RegisterRoom;
 using RoomService.Application.UseCases.RegisterEquipment;
+using RoomService.Application.UseCases.GetEquipments;
 using RoomService.Application.UseCases.GetRoomById;
 using RoomService.Application.UseCases.GetRooms;
 using RoomService.Application.UseCases.UpdateRoomDetails;
@@ -16,6 +17,7 @@ namespace RoomService.Application.DependencyInjection
             services.AddScoped<IRegisterEquipmentUseCase, RegisterEquipmentUseCase>();
             services.AddScoped<IGetRoomsUseCase, GetRoomsUseCase>();
             services.AddScoped<IGetRoomByIdUseCase, GetRoomByIdUseCase>();
+            services.AddScoped<IGetEquipmentsUseCase, GetEquipmentsUseCase>();
             services.AddScoped<IUpdateRoomDetailsUseCase, UpdateRoomDetailsUseCase>();
             services.AddScoped<IEquipmentResponseMapper, EquipmentResponseMapper>();
             

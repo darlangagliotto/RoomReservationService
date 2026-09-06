@@ -17,6 +17,12 @@ namespace RoomService.Application.UseCases.RegisterEquipment
 
         public async Task<Result<RegisterEquipmentResponse>> ExecuteAsync(RegisterEquipmentRequest request)
         {
+            if (!TryParseType(request.Type, out var type))
+            {
+                return Result<RegisterEquipmentResponse>.Failure(
+                    $"Unknown equipment type. Accepted values: {string.Join(", ", Enum.GetNames<EquipmentType>())}.");
+            }
+
             var existingEquipment = await _equipmentRepository.GetBySerialNumberAsync(request.SerialNumber);
 
             if (existingEquipment is not null)
@@ -28,7 +34,7 @@ namespace RoomService.Application.UseCases.RegisterEquipment
             Equipment equipment;
             try
             {
-                equipment = CreateEquipment(request);
+                equipment = new Equipment(type, request.Brand, request.SerialNumber, request.PurchaseDate);
             }
             catch (DomainException ex)
             {
@@ -40,17 +46,20 @@ namespace RoomService.Application.UseCases.RegisterEquipment
             return Result<RegisterEquipmentResponse>.Success(
                 new RegisterEquipmentResponse(
                     new EquipmentResponse(
-                    equipment.Id,
-                    equipment.Type,
-                    equipment.Brand,
-                    equipment.SerialNumber,
-                    equipment.PurchaseDate
+                        equipment.Id,
+                        equipment.Type.ToString(),
+                        equipment.Placement.ToString(),
+                        equipment.Brand,
+                        equipment.SerialNumber,
+                        equipment.PurchaseDate,
+                        // Recem cadastrado nunca esta alocado.
+                        null
                     )
                 )
-            );            
+            );
         }
 
-        private Equipment CreateEquipment(RegisterEquipmentRequest request) =>
-            new Equipment(request.Type, request.Brand, request.SerialNumber, request.PurchaseDate);
+        private static bool TryParseType(string? value, out EquipmentType type)
+            => Enum.TryParse(value, ignoreCase: true, out type) && Enum.IsDefined(type);
     }
 }

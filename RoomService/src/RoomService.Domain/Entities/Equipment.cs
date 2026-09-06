@@ -5,12 +5,15 @@ namespace RoomService.Domain.Entities
     public class Equipment
     {
         public Guid Id {get; private set;}
-        public string Type {get; private set;}
+        public EquipmentType Type {get; private set;}
         public string Brand {get; private set;}
         public string SerialNumber {get; private set;}
         public DateTime PurchaseDate {get; private set;}
 
-        public Equipment(string type, string brand, string serialNumber, DateTime purchaseDate)
+        /// <summary>Ancora padrao, derivada do tipo. Nao e coluna.</summary>
+        public EquipmentPlacement Placement => EquipmentPlacements.For(Type);
+
+        public Equipment(EquipmentType type, string brand, string serialNumber, DateTime purchaseDate)
         {
             Id = Guid.NewGuid();
             ChangeType(type);
@@ -21,19 +24,14 @@ namespace RoomService.Domain.Entities
 
         protected Equipment() { }
 
-        public void ChangeType(string type)
+        public void ChangeType(EquipmentType type)
         {
-            if (string.IsNullOrWhiteSpace(type))
+            if (!Enum.IsDefined(type))
             {
-                throw new DomainException("Equipment type is required.");
+                throw new DomainException("Unknown equipment type.");
             }
 
-            if (type.Trim().Length < 3)
-            {
-                throw new DomainException("Equipment type must be at least 3 characters long.");
-            }
-
-            Type = type.Trim();
+            Type = type;
         }
 
         public void ChangeBrand(string brand)
@@ -63,7 +61,7 @@ namespace RoomService.Domain.Entities
                 throw new DomainException("Serial number must be at least 3 characters long.");
             }
 
-            SerialNumber = serialNumber;
+            SerialNumber = serialNumber.Trim();
         }
 
         public void ChangePurchaseDate(DateTime purchaseDate)
@@ -73,17 +71,28 @@ namespace RoomService.Domain.Entities
                 throw new DomainException("Purchase date is required.");
             }
 
-            if (purchaseDate.Date > DateTime.UtcNow.Date)
+            // A coluna e timestamptz e o Npgsql so aceita Kind=Utc: uma data sem
+            // fuso ("2024-01-10") chegava como Unspecified e derrubava o insert
+            // com 500. Normalizar aqui e coerente com o Email, que tambem
+            // normaliza na entrada. Data de compra nao tem semantica de hora.
+            var normalized = purchaseDate.Kind switch
+            {
+                DateTimeKind.Utc => purchaseDate,
+                DateTimeKind.Local => purchaseDate.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(purchaseDate, DateTimeKind.Utc)
+            };
+
+            if (normalized.Date > DateTime.UtcNow.Date)
             {
                 throw new DomainException("Purchase date cannot be in the future.");
             }
-            
-            if (purchaseDate.Year < 1990)
+
+            if (normalized.Year < 1990)
             {
                 throw new DomainException("Invalid purchase date for the business context.");
             }
 
-            PurchaseDate = purchaseDate;
+            PurchaseDate = normalized;
         }
     }
 }

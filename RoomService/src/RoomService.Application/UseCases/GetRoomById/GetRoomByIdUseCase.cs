@@ -34,6 +34,7 @@ namespace RoomService.Application.UseCases.GetRoomById
                     room.Id,
                     room.Name,
                     room.Number,
+                    room.PlanSlot,
                     equipments
                 )
             );

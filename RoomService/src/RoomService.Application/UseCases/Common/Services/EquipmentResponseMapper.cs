@@ -12,6 +12,7 @@ namespace RoomService.Application.UseCases.Common.Services
         {
             _equipmentRepository = equipmentRepository;
         }
+
         public async Task<List<EquipmentResponse>> MapEquipmentsAsync(IEnumerable<RoomEquipment> roomEquipments)
         {
             var equipmentResponses = new List<EquipmentResponse>();
@@ -21,12 +22,17 @@ namespace RoomService.Application.UseCases.Common.Services
                 var equipment = await _equipmentRepository.GetByIdAsync(roomEquipment.EquipmentId);
                 if (equipment is null) continue;
 
+                // Sobrescrita da sala vence a ancora padrao do tipo.
+                var placement = roomEquipment.Placement ?? equipment.Placement;
+
                 equipmentResponses.Add(new EquipmentResponse(
                     equipment.Id,
-                    equipment.Type,
+                    equipment.Type.ToString(),
+                    placement.ToString(),
                     equipment.Brand,
                     equipment.SerialNumber,
-                    equipment.PurchaseDate
+                    equipment.PurchaseDate,
+                    roomEquipment.RoomId
                 ));
             }
             return equipmentResponses;

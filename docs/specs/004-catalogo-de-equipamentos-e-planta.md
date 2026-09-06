@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | Rascunho |
+| Status | Implementada |
 | Serviços afetados | RoomService, Gateway |
 | Depende de | — (pode correr em paralelo com 002 e 003) |
 | Autor / data | Darlan · 2026-09-02 |
@@ -144,18 +144,20 @@ Nenhum outro serviço lê `Equipment` — RoomService é o único dono.
 
 ## 8. Critérios de aceite
 
-- [ ] Dado `type: "Projetor"`, quando cadastro um equipamento, então recebo `201` com `placement: "Teto"`.
-- [ ] Dado `type: "Holograma"`, então recebo `400` com `"Unknown equipment type."` e a lista de tipos aceitos.
-- [ ] Dado `type: "projetor"` em minúsculas, então é aceito — a comparação não diferencia caixa.
-- [ ] Dado equipamentos cadastrados, quando consulto `GET /api/equipments`, então recebo todos, cada um com `placement` e `roomId`.
-- [ ] Dado nenhum equipamento, então recebo `200` com `[]`.
-- [ ] Dado `unassigned=true`, então recebo apenas os que não estão em nenhuma sala.
-- [ ] Dado uma sala com `planSlot: 3`, quando cadastro outra com `planSlot: 3`, então recebo `400` com `"Plan slot is already taken."`.
-- [ ] Dado `planSlot: 11`, então recebo `400`.
-- [ ] Dado uma sala sem `planSlot`, então ela é criada normalmente e aparece nas listagens.
-- [ ] Dado um equipamento com `Type` livre gravado antes da migration, quando aplico as migrations, então ele passa a valer `Outro` e nenhuma linha é perdida.
-- [ ] `POST /api/equipments` responde através do Gateway na porta 5000.
-- [ ] Testes de unidade cobrindo a âncora por tipo, o tipo desconhecido e os limites de `planSlot`.
+> Verificados em 2026-09-06 com a pilha em Docker, via Gateway na 5000.
+
+- [x] Dado `type: "Projetor"`, quando cadastro um equipamento, então recebo `201` com `placement: "Teto"`.
+- [x] Dado `type: "Holograma"`, então recebo `400` com `"Unknown equipment type."` e a lista de tipos aceitos.
+- [x] Dado `type: "projetor"` em minúsculas, então é aceito — a comparação não diferencia caixa.
+- [x] Dado equipamentos cadastrados, quando consulto `GET /api/equipments`, então recebo todos, cada um com `placement` e `roomId`.
+- [x] Dado nenhum equipamento, então recebo `200` com `[]`.
+- [x] Dado `unassigned=true`, então recebo apenas os que não estão em nenhuma sala.
+- [x] Dado uma sala com `planSlot: 3`, quando cadastro outra com `planSlot: 3`, então recebo `400` com `"Plan slot is already taken."`.
+- [x] Dado `planSlot: 11`, então recebo `400`.
+- [x] Dado uma sala sem `planSlot`, então ela é criada normalmente e aparece nas listagens.
+- [ ] Dado um equipamento com `Type` livre gravado antes da migration, quando aplico as migrations, então ele passa a valer `Outro` e nenhuma linha é perdida. — **não verificado**: o banco de desenvolvimento não tinha linhas legadas. O SQL de normalização está na migration `EquipmentCatalogAndPlanSlot` e roda antes do `AlterColumn`.
+- [x] `POST /api/equipments` responde através do Gateway na porta 5000.
+- [x] Testes de unidade cobrindo a âncora por tipo, o tipo desconhecido e os limites de `planSlot`.
 
 ## 9. Decisões em aberto
 

@@ -16,20 +16,23 @@ Todos exigem JWT (`[Authorize]` no controller + `FallbackPolicy` no `Program.cs`
 ### `POST /api/rooms`
 
 ```json
-{ "name": "Sala Azul", "number": 101, "equipmentIds": ["<guid>", "<guid>"] }
+{ "name": "Sala Azul", "number": 101, "equipmentIds": ["<guid>"], "planSlot": 3 }
 ```
+
+`planSlot` é opcional (1 a 10) e liga a sala ao polígono da planta fixa.
 
 `201 Created`:
 ```json
-{ "room": { "id": "...", "name": "Sala Azul", "number": 101,
-            "equipments": [{ "id": "...", "type": "Projetor", "brand": "Epson",
-                             "serialNumber": "SN-123", "purchaseDate": "2024-01-10T00:00:00Z" }] } }
+{ "room": { "id": "...", "name": "Sala Azul", "number": 101, "planSlot": 3,
+            "equipments": [{ "id": "...", "type": "Tv", "placement": "Parede",
+                             "brand": "Samsung", "serialNumber": "SN-002",
+                             "purchaseDate": "2023-05-02T00:00:00Z", "roomId": "..." }] } }
 ```
 
 `400` "Business error": `"Room is already registered."` (nome **ou** número em uso),
 `"Equipment with ID {id} not found!"`, `"There is equipment with an invalid ID."`,
-`"Equipment {id} is already allocated to another room."` (ver defeito abaixo), ou
-mensagem de `DomainException`.
+`"Equipment {id} is already allocated to another room."`,
+`"Plan slot is already taken."`, ou mensagem de `DomainException`.
 
 ### `GET /api/rooms?name=&number=`
 
@@ -68,16 +71,30 @@ ou `DomainException`. Não altera equipamentos.
 
 ### `POST /api/equipments`
 
-Controller separado, rota `api/equipments`. **Não é exposta pelo Gateway** — só na porta
-5003.
+Controller separado, rota `api/equipments`, exposta pelo Gateway desde a spec 004.
 
 ```json
 { "type": "Projetor", "brand": "Epson", "serialNumber": "SN-123", "purchaseDate": "2024-01-10" }
 ```
 
+`type` aceita apenas valores do vocabulário `EquipmentType`, sem diferenciar caixa
+(`"projetor"` funciona). A resposta traz `placement`, derivado do tipo.
+
 `201 Created` com `{ "equipment": { ... } }`.
-`400`: `"Equipment is already registered!"` (serial repetido) ou `DomainException`
+`400`: `"Unknown equipment type. Accepted values: …"`, `"Equipment is already registered!"`
+(serial repetido) ou `DomainException`
 (invariantes em [domain/model.md](../domain/model.md#equipment--raiz-roomservice)).
+
+### `GET /api/equipments?type=&unassigned=`
+
+| Parâmetro | Efeito |
+|---|---|
+| `type` | filtra pelo tipo do vocabulário |
+| `unassigned=true` | só equipamentos não alocados a nenhuma sala |
+
+`200 OK` com `EquipmentResponse[]`, cada item com `placement` e `roomId` (nulo quando
+livre). **Vazio devolve `200` com `[]`**, não o `400` do ADR-011: ausência de equipamento é
+resposta legítima. Uma consulta só, com left join — sem N+1.
 
 ## Casos de uso
 
@@ -115,18 +132,14 @@ mentindo sobre o conteúdo da sala.
 
 - ~~Faltam rotas de consulta por identificador~~ — resolvido pela
   [spec 002](../specs/002-consulta-por-id-e-auth-servico.md).
-- **Defeito em `RegisterRoomUseCase.ValidateAsync`**: quando a validação de alocação
-  falha, o método retorna `equipmentIdsValidation` (que é sucesso) em vez de
-  `equipmnetAllocationValidation` — o erro é engolido e a inserção prossegue, sendo
-  barrada só pelo índice único do banco, o que produz `500` em vez de `400`
-  ([backlog B3](../sdd/backlog.md#b3)).
+- ~~Defeito em `RegisterRoomUseCase.ValidateAsync`~~ — corrigido na spec 004.
 - `ValidateEquipmentIdsAsync` checa `Guid.Empty` **depois** de buscar cada id no
   repositório; um `Guid.Empty` na lista falha antes com `"Equipment with ID ... not found!"`.
-- Sem endpoints para listar/atualizar/remover equipamentos, remover sala, ou
+- Sem endpoints para atualizar ou remover equipamentos (listagem entregue pela spec 004), remover sala, ou
   adicionar/remover equipamento de uma sala existente (o domínio suporta
   `RemoveEquipment`, a API não expõe).
 - Unicidade de nome, número e número de série sem índice único no banco.
-- `RoomService.UnitTests` está vazio.
+- `RoomService.UnitTests` cobre âncoras, vocabulário de tipo, normalização de data e limites de `planSlot` (24 testes).
 - Diferente dos demais, este `Program.cs` registra `AddSecurityRequirement` no Swagger —
   por isso o botão *Authorize* aplica o token automaticamente aqui e no
   ReservationService, mas não em Auth/User.

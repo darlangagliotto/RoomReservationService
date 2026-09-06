@@ -75,6 +75,11 @@ namespace RoomService.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
     
+        public async Task<Room?> GetByPlanSlotAsync(int planSlot)
+        {
+            return await _context.Rooms.FirstOrDefaultAsync(r => r.PlanSlot == planSlot);
+        }
+
         public async Task<bool> ExistsByEquipmentIdAsync(Guid equipmentId)
         {
             return await _context.Set<RoomEquipment>()

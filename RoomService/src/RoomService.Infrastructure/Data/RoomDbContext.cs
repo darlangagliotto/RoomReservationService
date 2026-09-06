@@ -10,7 +10,6 @@ namespace RoomService.Infrastructure.Data
 
         public DbSet<Room> Rooms { get; set; } = null!;
         public DbSet<Equipment> Equipments { get; set; } = null!;
-        //public DbSet<RoomEquipment> RoomEquipments { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +20,14 @@ namespace RoomService.Infrastructure.Data
                 entity.HasKey(u => u.Id);
                 entity.Property(u => u.Name).IsRequired();
                 entity.Property(u => u.Number).IsRequired();
+                entity.Property(u => u.PlanSlot);
+
+                // Unicidade garantida pelo banco, e nao so pelo caso de uso —
+                // ao contrario das demais unicidades do servico (backlog B5).
+                // Filtrado para varias salas poderem ficar sem slot.
+                entity.HasIndex(u => u.PlanSlot)
+                      .IsUnique()
+                      .HasFilter("\"PlanSlot\" IS NOT NULL");
 
                 entity.HasMany(x => x.Equipments)
                       .WithOne()
@@ -31,9 +38,19 @@ namespace RoomService.Infrastructure.Data
             modelBuilder.Entity<Equipment>(entity =>
             {
                 entity.HasKey(x => x.Id);
-                entity.Property(x => x.Type).IsRequired();
+
+                // Enum gravado como texto: legivel no banco e estavel a
+                // reordenacao dos membros.
+                entity.Property(x => x.Type)
+                      .HasConversion<string>()
+                      .HasMaxLength(40)
+                      .IsRequired();
+
                 entity.Property(x => x.Brand).IsRequired();
                 entity.Property(x => x.PurchaseDate).IsRequired();
+
+                // Placement e derivado do tipo, nao coluna.
+                entity.Ignore(x => x.Placement);
             });
 
             modelBuilder.Entity<RoomEquipment>(entity =>
@@ -42,6 +59,10 @@ namespace RoomService.Infrastructure.Data
 
                 entity.HasIndex(x => x.EquipmentId)
                     .IsUnique();
+
+                entity.Property(x => x.Placement)
+                      .HasConversion<string>()
+                      .HasMaxLength(20);
 
                 entity.HasOne<Equipment>()
                     .WithMany()

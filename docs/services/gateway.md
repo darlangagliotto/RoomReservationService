@@ -21,6 +21,7 @@ com um só projeto (`Gateway.Api`), sem `Domain`/`Application`/`Infrastructure`.
 | `/api/auth/{**catch-all}` | `auth-cluster` | `http://authservice:5000` |
 | `/api/users/{**catch-all}` | `users-cluster` | `http://userservice:5000` |
 | `/api/rooms/{**catch-all}` | `rooms-cluster` | `http://roomservice:5000` |
+| `/api/equipments/{**catch-all}` | `rooms-cluster` | `http://roomservice:5000` |
 | `/api/reservations/{**catch-all}` | `reservations-cluster` | `http://reservationservice:5000` |
 
 Sem transformação de path: o prefixo chega íntegro ao serviço de destino. Sem
@@ -52,7 +53,7 @@ Detalhes de validação do token em [cross-cutting.md](../architecture/cross-cut
   tem token nenhum quando vai fazer login. Correção: `"AuthorizationPolicy": "anonymous"`
   na rota (ver [backlog B2](../sdd/backlog.md#b2)). O mesmo vale para
   `POST /api/users` (cadastro).
-- **`/api/equipments` não é roteado**: não há rota para esse prefixo, então o endpoint de
+- ~~`/api/equipments` não é roteado~~ — rota adicionada pela [spec 004](../specs/004-catalogo-de-equipamentos-e-planta.md).
   cadastro de equipamento só existe na porta direta do RoomService (5003).
 - `appsettings.Development.json` do Gateway está versionado (os demais serviços têm esse
   arquivo ignorado pelo `.gitignore`) e contém apenas configuração de log.

@@ -53,6 +53,7 @@ namespace RoomService.Application.UseCases.RegisterRoom
                     room.Id,
                     room.Name,
                     room.Number,
+                    room.PlanSlot,
                     equipmentResponses
                     )
                 )
@@ -73,10 +74,19 @@ namespace RoomService.Application.UseCases.RegisterRoom
                 return equipmentIdsValidation;
             }
 
-            var equipmnetAllocationValidation = await ValidateEquipmentAllocationAsync(request.EquipmentIds);
-            if (!equipmnetAllocationValidation.IsSuccess)
+            // Devolvia equipmentIdsValidation (sucesso) e engolia o erro de
+            // alocacao, deixando o indice unico do banco barrar com 500 em vez
+            // de 400. Ver backlog B3.
+            var equipmentAllocationValidation = await ValidateEquipmentAllocationAsync(request.EquipmentIds);
+            if (!equipmentAllocationValidation.IsSuccess)
             {
-                return equipmentIdsValidation;
+                return equipmentAllocationValidation;
+            }
+
+            var planSlotValidation = await ValidatePlanSlotAsync(request.PlanSlot);
+            if (!planSlotValidation.IsSuccess)
+            {
+                return planSlotValidation;
             }
 
             return Result<bool>.Success(true);
@@ -124,9 +134,24 @@ namespace RoomService.Application.UseCases.RegisterRoom
             return Result<bool>.Success(true);
         }
 
+        private async Task<Result<bool>> ValidatePlanSlotAsync(int? planSlot)
+        {
+            if (planSlot is null)
+            {
+                return Result<bool>.Success(true);
+            }
+
+            var occupying = await _roomRepository.GetByPlanSlotAsync(planSlot.Value);
+
+            return occupying is null
+                ? Result<bool>.Success(true)
+                : Result<bool>.Failure("Plan slot is already taken.");
+        }
+
         private Room CreateRoom(RegisterRoomRequest request)
         {
             var room = new Room(request.Name, request.Number);
+            room.AssignPlanSlot(request.PlanSlot);
             foreach (var equipmentId in request.EquipmentIds)
             {
                 room.AddEquipment(equipmentId);

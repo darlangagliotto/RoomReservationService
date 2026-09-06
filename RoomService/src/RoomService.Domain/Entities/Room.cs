@@ -6,9 +6,19 @@ namespace RoomService.Domain.Entities
     {
         private readonly List<RoomEquipment> _equipments = new();
 
+        /// <summary>Limite da planta atual: um andar, ate 10 salas.</summary>
+        public const int MaxPlanSlot = 10;
+
         public Guid Id {get; private set;}
         public string Name {get; private set;}
         public int Number {get; private set;}
+
+        /// <summary>
+        /// Qual poligono da planta fixa representa esta sala. Nulo = a sala nao
+        /// aparece na planta, mas aparece nas listagens normalmente.
+        /// Ver docs/product/information-architecture.md#tratamento-visual.
+        /// </summary>
+        public int? PlanSlot {get; private set;}
 
         public IReadOnlyCollection<RoomEquipment> Equipments => _equipments.AsReadOnly();
 
@@ -44,6 +54,16 @@ namespace RoomService.Domain.Entities
             }
 
             Number = number;
+        }
+
+        public void AssignPlanSlot(int? planSlot)
+        {
+            if (planSlot is not null && (planSlot < 1 || planSlot > MaxPlanSlot))
+            {
+                throw new DomainException($"Plan slot must be between 1 and {MaxPlanSlot}.");
+            }
+
+            PlanSlot = planSlot;
         }
 
         public void AddEquipment(Guid equipmentId)

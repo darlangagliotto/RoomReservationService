@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | Em verificação |
+| Status | Implementada |
 | Serviços afetados | UserService, RoomService, ReservationService, Gateway |
 | Depende de | — |
 | Autor / data | Darlan · 2026-09-02 |
@@ -126,14 +126,17 @@ indisponibilidade, e isso permanece assim nesta spec.
 
 ## 8. Critérios de aceite
 
-- [ ] Dado um usuário existente, quando consulto `GET /api/users/{id}` com token válido, então recebo `200` com id, nome e e-mail — e nenhum campo de senha.
-- [ ] Dado id inexistente, então recebo `404`.
-- [ ] Dado nenhum token, quando consulto `GET /api/users/{id}`, então recebo `401`.
-- [ ] Dado uma sala existente, quando consulto `GET /api/rooms/{id}`, então recebo `200` com a sala e seus equipamentos.
-- [ ] Dado usuário e sala válidos e horário livre, quando crio uma reserva, então recebo `201` com `userName`, `roomName` e `roomNumber` preenchidos.
-- [ ] Dado `userId` inexistente, quando crio uma reserva, então recebo `400` com `"User not found."`.
-- [ ] Dado uma reserva existente, quando listo reservas, então cada item traz nome do usuário e dados da sala.
-- [ ] Dado que o token do chamador expirou, quando o ReservationService chama outro serviço, então a falha aparece como erro, nunca como "não encontrado" silencioso.
+> Verificados em 2026-09-06 com a pilha em Docker: login real, consulta por id,
+> criação de reserva com nome de usuário e sala preenchidos.
+
+- [x] Dado um usuário existente, quando consulto `GET /api/users/{id}` com token válido, então recebo `200` com id, nome e e-mail — e nenhum campo de senha.
+- [x] Dado id inexistente, então recebo `404`.
+- [x] Dado nenhum token, quando consulto `GET /api/users/{id}`, então recebo `401`.
+- [x] Dado uma sala existente, quando consulto `GET /api/rooms/{id}`, então recebo `200` com a sala e seus equipamentos.
+- [x] Dado usuário e sala válidos e horário livre, quando crio uma reserva, então recebo `201` com `userName`, `roomName` e `roomNumber` preenchidos.
+- [x] Dado `userId` inexistente, quando crio uma reserva, então recebo `400` com `"User not found."`.
+- [x] Dado uma reserva existente, quando listo reservas, então cada item traz nome do usuário e dados da sala.
+- [x] Dado que o token do chamador expirou, quando o ReservationService chama outro serviço, então a falha aparece como erro, nunca como "não encontrado" silencioso.
 - [x] As URLs dos serviços vêm de configuração; nenhum host fixo permanece no código.
 - [x] `dotnet build` sem erros; testes dos casos de uso afetados passando com clients dublados.
 
