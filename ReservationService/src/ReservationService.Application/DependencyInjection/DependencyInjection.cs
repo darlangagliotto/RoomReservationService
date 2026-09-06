@@ -5,6 +5,7 @@ using System.Reflection;
 using ReservationService.Application.UseCases.GetReservations;
 using ReservationService.Application.UseCases.CreateReservation;
 using ReservationService.Application.UseCases.CancelReservation;
+using ReservationService.Application.UseCases.GetAvailability;
 using ReservationService.Application.Services;
 
 namespace ReservationService.Application.DependencyInjection
@@ -19,6 +20,7 @@ namespace ReservationService.Application.DependencyInjection
             services.AddScoped<IGetReservationsUseCase, GetReservationsUseCase>();
             services.AddScoped<ICreateReservationUseCase, CreateReservationUseCase>();
             services.AddScoped<ICancelReservationUseCase, CancelReservationUseCase>();
+            services.AddScoped<IGetAvailabilityUseCase, GetAvailabilityUseCase>();
 
             // URLs vem da configuracao: fixas no codigo, o servico so funcionava
             // dentro da rede do Compose. Ver docs/specs/002 e backlog B10.

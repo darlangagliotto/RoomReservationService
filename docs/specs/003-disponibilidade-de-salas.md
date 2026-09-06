@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | Rascunho |
+| Status | Implementada |
 | Serviços afetados | ReservationService (consome RoomService) |
 | Depende de | [002](002-consulta-por-id-e-auth-servico.md) |
 | Autor / data | Darlan · 2026-09-02 |
@@ -139,17 +139,20 @@ Nenhuma mudança de roteamento: `/api/reservations/*` já é coberto pelo Gatewa
 
 ## 8. Critérios de aceite
 
-- [ ] Dado uma sala com reserva das 14:00 às 15:30, quando consulto `start=14:30&end=15:00`, então o estado é `EmUso` e `busyUntil` é 15:30.
-- [ ] Dado a mesma sala, quando consulto `start=16:00&end=17:00`, então o estado é `Disponivel`.
-- [ ] Dado uma sala com reserva às 17:00 e consulta das 09:00 às 10:00 do mesmo dia, então o estado é `Reservada` e `nextReservationAt` é 17:00.
-- [ ] Dado uma sala com reserva apenas no dia seguinte, quando consulto hoje, então o estado é `Disponivel`.
-- [ ] Dado reservas encadeadas 14:00–15:00 e 15:00–16:00, quando consulto às 14:30, então `busyUntil` é 16:00.
-- [ ] Dado uma reserva que apenas encosta no fim do intervalo consultado, então não conta como `EmUso`.
-- [ ] Dado nenhuma sala cadastrada, então recebo `200` com `[]`.
-- [ ] Dado `end` anterior a `start`, então recebo `400` com `"Start must be before end."`.
-- [ ] Dado nenhum token, então recebo `401`.
-- [ ] Dado 10 salas, a requisição faz **uma** chamada ao RoomService e **uma** consulta ao banco.
-- [ ] Testes de unidade cobrindo os três estados, o encadeamento e as bordas de intervalo, sem banco real.
+> Estados e bordas cobertos por 12 testes de unidade com repositório e client
+> dublados; os três estados também verificados na pilha em Docker, via Gateway.
+
+- [x] Dado uma sala com reserva das 14:00 às 15:30, quando consulto `start=14:30&end=15:00`, então o estado é `EmUso` e `busyUntil` é 15:30.
+- [x] Dado a mesma sala, quando consulto `start=16:00&end=17:00`, então o estado é `Disponivel`.
+- [x] Dado uma sala com reserva às 17:00 e consulta das 09:00 às 10:00 do mesmo dia, então o estado é `Reservada` e `nextReservationAt` é 17:00.
+- [x] Dado uma sala com reserva apenas no dia seguinte, quando consulto hoje, então o estado é `Disponivel`.
+- [x] Dado reservas encadeadas 14:00–15:00 e 15:00–16:00, quando consulto às 14:30, então `busyUntil` é 16:00.
+- [x] Dado uma reserva que apenas encosta no fim do intervalo consultado, então não conta como `EmUso`.
+- [x] Dado nenhuma sala cadastrada, então recebo `200` com `[]`.
+- [x] Dado `end` anterior a `start`, então recebo `400` com `"Start must be before end."`.
+- [x] Dado nenhum token, então recebo `401`.
+- [x] Dado 10 salas, a requisição faz **uma** chamada ao RoomService e **uma** consulta ao banco.
+- [x] Testes de unidade cobrindo os três estados, o encadeamento e as bordas de intervalo, sem banco real.
 
 ## 9. Decisões em aberto
 

@@ -10,7 +10,7 @@ Candidatos priorizados estão em [../sdd/backlog.md](../sdd/backlog.md).
 |---|---|---|---|
 | 001 | [Login e sessão autenticada](001-login-e-sessao.md) | Implementada | Frontend, AuthService (consumo) |
 | 002 | [Consulta por id e autenticação serviço-a-serviço](002-consulta-por-id-e-auth-servico.md) | Implementada | User, Room, Reservation |
-| 003 | [Disponibilidade de salas por intervalo](003-disponibilidade-de-salas.md) | Rascunho | Reservation, Room |
+| 003 | [Disponibilidade de salas por intervalo](003-disponibilidade-de-salas.md) | Implementada | Reservation, Room |
 | 004 | [Catálogo de equipamentos e vínculo com a planta](004-catalogo-de-equipamentos-e-planta.md) | Implementada | Room, Gateway |
 
 Ordem e dependências entre specs: [product/information-architecture.md](../product/information-architecture.md#sequência-de-specs).

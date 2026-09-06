@@ -35,7 +35,16 @@ namespace ReservationService.Application.Services
         public Task<GetRoomResponse?> GetRoomByNameAsync(string roomName)
             => QuerySingleAsync($"/api/rooms?name={Uri.EscapeDataString(roomName)}");
 
+        public async Task<List<GetRoomResponse>> GetAllRoomsAsync()
+            => await QueryManyAsync("/api/rooms");
+
         private async Task<GetRoomResponse?> QuerySingleAsync(string path)
+        {
+            var rooms = await QueryManyAsync(path);
+            return rooms.Count > 0 ? rooms[0] : null;
+        }
+
+        private async Task<List<GetRoomResponse>> QueryManyAsync(string path)
         {
             var response = await _httpClient.GetAsync(path);
 
@@ -43,14 +52,12 @@ namespace ReservationService.Application.Services
             // (ADR-011). Ausencia nao e erro para quem consulta.
             if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.BadRequest)
             {
-                return null;
+                return [];
             }
 
             response.EnsureSuccessStatusCode();
 
-            var rooms = await response.Content.ReadFromJsonAsync<List<GetRoomResponse>>();
-
-            return rooms is { Count: > 0 } ? rooms[0] : null;
+            return await response.Content.ReadFromJsonAsync<List<GetRoomResponse>>() ?? [];
         }
     }
 }

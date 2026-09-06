@@ -110,3 +110,39 @@ depender de `Microsoft.EntityFrameworkCore` (ver
 - `userName` no filtro é inerte; não há filtro por status (não existe status).
 - Sem endpoint de reserva por id, sem atualização/reagendamento.
 - `ReservationService.UnitTests` está vazio.
+
+## `GET /api/reservations/availability` (spec 003)
+
+Estado de cada sala do andar num intervalo. É a base da planta.
+
+| Parâmetro | Obrigatório |
+|---|---|
+| `start` | sim — instante UTC ISO-8601 |
+| `end` | sim — maior que `start` |
+
+`200 OK` com **todas** as salas, inclusive as sem reserva:
+
+```json
+[{ "roomId": "…", "roomName": "Sala Azul", "roomNumber": 101,
+   "status": "EmUso", "busyUntil": "2026-09-06T19:00:00Z", "nextReservationAt": null }]
+```
+
+Três estados, avaliados contra `[start, end)`:
+
+| Estado | Condição |
+|---|---|
+| `EmUso` | há reserva **sobrepondo** o intervalo |
+| `Reservada` | não sobrepõe, mas há reserva começando depois de `end`, **no mesmo dia** |
+| `Disponivel` | nenhuma das anteriores |
+
+`busyUntil` considera **reservas encadeadas** como um bloco só: 14–15 seguida de 15–16
+devolve 16, não 15 — senão a UI prometeria uma sala que continua ocupada.
+
+Bordas que apenas se tocam não sobrepõem, mesma regra da criação de reserva.
+
+**Vazio devolve `200` com `[]`**, não o `400` do ADR-011: "não há salas cadastradas" é
+resposta legítima. Com o RoomService fora do ar, a chamada falha inteira com
+`"Rooms are unavailable."` — planta com salas faltando é pior que planta que não carrega.
+
+Custo: **uma** chamada ao RoomService e **uma** consulta ao banco, independente do número
+de salas.

@@ -46,6 +46,14 @@ namespace ReservationService.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Reservation>> GetOverlappingOrLaterSameDayAsync(DateTime start, DateTime dayEnd)
+        {
+            return await _context.Reservations
+                .AsNoTracking()
+                .Where(r => r.EndTime > start && r.StartTime < dayEnd)
+                .ToListAsync();
+        }
+
         public async Task AddAsync(Reservation reservation)
         {
             await _context.Reservations.AddAsync(reservation);
