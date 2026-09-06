@@ -133,7 +133,7 @@ public class <Entity>Controller : ControllerBase
 
 - Um caso de uso por action, injetado por construtor.
 - Corpo padrão: executa o caso de uso; se `!IsSuccess`, devolve
-  `Problem(title: "Business error", detail: response.Error, statusCode: 400)`;
+  `Problem(title: "Erro de negócio", detail: response.Error, statusCode: 400)`;
   senão `Ok(...)` ou `CreatedAtAction(nameof(Action), new { id = ... }, value)`.
 - Atributos `[ProducesResponseType]` para o tipo de sucesso e para `400`.
 - Rota de item usa restrição de tipo: `[HttpPatch("{id:guid}")]`.
@@ -166,5 +166,23 @@ com coverlet e gera relatório HTML via `dotnet reportgenerator`
 
 ## Idioma
 
-Identificadores, rotas, mensagens de erro de domínio e logs em **inglês**
-(padronizado no commit `5d835f5`). Comentários existentes estão em português.
+A regra separa **quem lê** o texto, não onde ele mora:
+
+| O quê | Idioma | Por quê |
+|---|---|---|
+| Identificadores — classes, métodos, variáveis, parâmetros, nomes de teste | **inglês** | é código; a linguagem, os frameworks e a comunidade são em inglês |
+| Rotas, campos de JSON, nomes de coluna | **inglês** | fazem parte do contrato técnico |
+| Logs e mensagens de exceção técnica | **inglês** | leitor é quem opera o sistema |
+| **Texto que o usuário lê** — mensagens de `DomainException`, `Result.Failure`, validação, títulos de `ProblemDetails`, rótulos e textos de UI | **português** | o produto é pt-BR e o frontend exibe a mensagem do backend como veio |
+| Comentários e documentação | português | leitor é o time |
+
+O texto de `Result.Failure` e de `DomainException` **é** o texto que aparece na tela: o
+controller o copia para `ProblemDetails.detail` e o frontend o exibe sem traduzir. Por isso
+essas mensagens são interface, não diagnóstico — e seguem o guia de escrita: sentença
+afirmativa, sem exclamação, sem culpar quem usa. `"Informe o nome."`, não
+`"Name is required!"`.
+
+Consequência que vale saber: o `requestList` do frontend detecta "lista vazia" casando o
+texto da mensagem (`/^nenhum[ao]?\s+.+\s+encontrad[ao]s?/i`). Mudar a redação dessas
+mensagens específicas quebra a detecção — o caminho definitivo é o endpoint responder
+`200` com `[]`, como fazem os endpoints criados nas specs 003 e 004.

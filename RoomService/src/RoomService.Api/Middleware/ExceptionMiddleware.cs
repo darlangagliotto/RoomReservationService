@@ -29,11 +29,11 @@ namespace RoomService.Api.Middleware
 
                 var detail = _env.IsDevelopment()
                     ? $"{ex.GetType().Name}: {ex.Message}"
-                    : "An unexpected error occurred.";
+                    : "Ocorreu um erro inesperado.";
 
                 var problem = new ProblemDetails
                 {
-                    Title = "Internal server error",
+                    Title = "Erro interno",
                     Detail = detail,
                     Status = 500,
                     Instance = context.Request.Path

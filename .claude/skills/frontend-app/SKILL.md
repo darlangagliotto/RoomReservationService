@@ -13,22 +13,17 @@ lá ficam os valores concretos.
 Contexto do backend: [docs/architecture/overview.md](../../../docs/architecture/overview.md).
 Contratos por serviço: [docs/services/](../../../docs/services/).
 
-## Antes de qualquer tela: dois bloqueadores de backend
+## Antes de qualquer tela: um bloqueador de backend
 
-Verifique estes dois pontos e resolva-os por spec antes de prometer um fluxo completo:
+**Login e cadastro seguem bloqueados no Gateway** ([B2](../../../docs/sdd/backlog.md#b2)):
+a `FallbackPolicy` exige token em `/api/auth/*` e `POST /api/users` — justamente as rotas
+de quem ainda não tem token. O desvio está em **dois** lugares, ambos com `TODO(B2)`:
+`vite.config.ts` (dev) e `Frontend/nginx.conf` (container). Ao corrigir B2, remova os dois.
 
-1. **Nenhum serviço configura CORS.** Não há `AddCors`/`UseCors` em nenhum `Program.cs`.
-   Em desenvolvimento isso é contornado pelo proxy do Vite (abaixo). Para qualquer
-   ambiente onde o frontend seja servido de outra origem, CORS no Gateway é
-   pré-requisito — abra spec.
-2. **Login e cadastro estão bloqueados no Gateway** ([backlog B2](../../../docs/sdd/backlog.md#b2)):
-   a `FallbackPolicy` exige token nas rotas `/api/auth/*` e `POST /api/users`. Até B2
-   ser resolvido, aponte essas duas rotas direto para as portas 5001/5002 no proxy do
-   Vite — e deixe um comentário no `vite.config.ts` referenciando B2, para o desvio ser
-   removido quando a correção entrar.
+**CORS deixou de ser problema**: o nginx serve o bundle e faz o proxy de `/api`, então
+aplicação e API ficam na mesma origem. Só volta a importar se o frontend for servido de
+outro host.
 
-`/api/equipments` **não é roteado pelo Gateway** — não construa tela de equipamento
-esperando passar pela 5000.
 
 ## Stack fixa
 
@@ -121,9 +116,9 @@ tudo isso **em um lugar só**, e nenhuma tela deve inspecionar status HTTP cru.
 | Resposta do backend | Significado real | O que a UI faz |
 |---|---|---|
 | `2xx` | sucesso | renderiza |
-| `400` + `ProblemDetails` com `title: "Business error"` | regra de negócio violada | mostra `detail` como mensagem, próxima da ação |
+| `400` + `ProblemDetails` com `title: "Erro de negócio"` | regra de negócio violada | mostra `detail` como mensagem, próxima da ação |
 | `400` + `ValidationProblemDetails` (tem `errors`) | validação de entrada | mostra erro por campo no formulário |
-| `400` com `detail` iniciando por `"No rooms found."` / `"No reservations found."` | **lista vazia, não erro** | renderiza estado vazio |
+| `400` com `detail` como `"Nenhuma sala encontrada."` | **lista vazia, não erro** | renderiza estado vazio |
 | `401` | token ausente, inválido ou expirado | encerra sessão e vai para login |
 | `500` + `ProblemDetails` | falha inesperada | estado de erro genérico + opção de repetir |
 
@@ -139,9 +134,9 @@ entrada. Nenhum componente monta string de data à mão.
 
 ### Dados que o backend ainda não fornece
 
-- `GET /api/users/id/{id}` **não existe** ([B1](../../../docs/sdd/backlog.md#b1)) e o JWT
-  carrega apenas `sub`, `email` e `jti` — **sem nome e sem papel**. O app shell só pode
-  exibir o e-mail. Não invente endpoint nem finja um nome.
+- O JWT carrega apenas `sub`, `email` e `jti` — **sem nome e sem papel**. O app shell
+  exibe o e-mail. `GET /api/users/{id}` existe desde a spec 002 e devolve o nome, mas
+  custa uma chamada por usuário: use-o onde o nome importa, não no shell.
 - Sem claim de papel, **não há autorização por perfil**: não construa UI condicional a
   "admin". A autorização é binária (autenticado ou não).
 
@@ -295,3 +290,15 @@ quatro cards de métrica não descreve nenhum dos dois.
 - [ ] Nova rota de API registrada em `src/api/` e no proxy do Vite, se necessário
 - [ ] Lógica extraída de componente para função pura testável; teste onde a regra não é óbvia
 - [ ] Documentação atualizada se algo aqui mudou (stack, contrato, estrutura)
+
+## Idioma
+
+| O quê | Idioma |
+|---|---|
+| Identificadores, tipos, nomes de arquivo, chaves de query | **inglês** |
+| Texto que o usuário lê — rótulos, mensagens, estados vazios, erros | **português** |
+| Comentários e descrições de teste | português |
+
+A mensagem de erro de negócio **vem pronta do backend em português** e é exibida como
+veio. O frontend não traduz nem reescreve: se o texto estiver ruim, o conserto é no
+backend. Ver [conventions.md](../../../docs/architecture/conventions.md#idioma).

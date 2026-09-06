@@ -20,7 +20,7 @@ namespace RoomService.Application.UseCases.RegisterEquipment
             if (!TryParseType(request.Type, out var type))
             {
                 return Result<RegisterEquipmentResponse>.Failure(
-                    $"Unknown equipment type. Accepted values: {string.Join(", ", Enum.GetNames<EquipmentType>())}.");
+                    $"Tipo de equipamento desconhecido. Valores aceitos: {string.Join(", ", Enum.GetNames<EquipmentType>())}.");
             }
 
             var existingEquipment = await _equipmentRepository.GetBySerialNumberAsync(request.SerialNumber);
@@ -28,7 +28,7 @@ namespace RoomService.Application.UseCases.RegisterEquipment
             if (existingEquipment is not null)
             {
                 return Result<RegisterEquipmentResponse>
-                    .Failure("Equipment is already registered!");
+                    .Failure("Este equipamento já está cadastrado.");
             }
 
             Equipment equipment;

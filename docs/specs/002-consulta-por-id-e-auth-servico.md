@@ -14,7 +14,7 @@ O `ReservationService` chama quatro endpoints que **não existem**
 destinos exigem JWT, então as chamadas seriam rejeitadas com `401` mesmo se as rotas
 existissem.
 
-Efeito hoje: `POST /api/reservations` falha sempre com `"User not found."`, e
+Efeito hoje: `POST /api/reservations` falha sempre com `"Usuário não encontrado."`, e
 `GET /api/reservations` devolve `userName` e `roomName` vazios e `roomNumber: 0`.
 Reserva — o coração do produto — não funciona de ponta a ponta.
 
@@ -118,7 +118,7 @@ Ordem de implantação: **UserService e RoomService antes do ReservationService*
 consumidor só funciona depois que os provedores expõem as rotas.
 
 Indisponibilidade de qualquer provedor mantém o comportamento atual: o caso de uso devolve
-`"User not found."` / `"Room not found."`. A UI não consegue distinguir ausência de
+`"Usuário não encontrado."` / `"Sala não encontrada."`. A UI não consegue distinguir ausência de
 indisponibilidade, e isso permanece assim nesta spec.
 
 `GET /api/users/{id}` e `GET /api/rooms/{id}` já são cobertos pelas rotas
@@ -134,7 +134,7 @@ indisponibilidade, e isso permanece assim nesta spec.
 - [x] Dado nenhum token, quando consulto `GET /api/users/{id}`, então recebo `401`.
 - [x] Dado uma sala existente, quando consulto `GET /api/rooms/{id}`, então recebo `200` com a sala e seus equipamentos.
 - [x] Dado usuário e sala válidos e horário livre, quando crio uma reserva, então recebo `201` com `userName`, `roomName` e `roomNumber` preenchidos.
-- [x] Dado `userId` inexistente, quando crio uma reserva, então recebo `400` com `"User not found."`.
+- [x] Dado `userId` inexistente, quando crio uma reserva, então recebo `400` com `"Usuário não encontrado."`.
 - [x] Dado uma reserva existente, quando listo reservas, então cada item traz nome do usuário e dados da sala.
 - [x] Dado que o token do chamador expirou, quando o ReservationService chama outro serviço, então a falha aparece como erro, nunca como "não encontrado" silencioso.
 - [x] As URLs dos serviços vêm de configuração; nenhum host fixo permanece no código.

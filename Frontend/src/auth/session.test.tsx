@@ -88,7 +88,7 @@ describe('login', () => {
 
   it('mostra o erro do backend e limpa a senha quando a credencial e invalida', async () => {
     stubFetch(() =>
-      jsonResponse({ title: 'Business error', detail: 'Invalid email or password!' }, 400),
+      jsonResponse({ title: 'Business error', detail: 'E-mail ou senha inválidos.' }, 400),
     )
     renderApp(['/'])
 
@@ -97,7 +97,7 @@ describe('login', () => {
     await userEvent.type(senha, 'errada')
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password!')
+    expect(await screen.findByRole('alert')).toHaveTextContent('E-mail ou senha inválidos.')
     expect(senha).toHaveValue('')
     expect(screen.queryByText(HOME_TEXT)).not.toBeInTheDocument()
   })

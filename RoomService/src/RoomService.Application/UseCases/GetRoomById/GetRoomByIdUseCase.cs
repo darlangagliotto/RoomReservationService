@@ -24,7 +24,7 @@ namespace RoomService.Application.UseCases.GetRoomById
 
             if (room is null)
             {
-                return Result<RoomResponse>.Failure("Room not found.");
+                return Result<RoomResponse>.Failure("Sala não encontrada.");
             }
 
             var equipments = await _equipmentResponseMapper.MapEquipmentsAsync(room.Equipments);

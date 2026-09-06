@@ -72,13 +72,13 @@ reservar.
 Sempre devolve **todas** as salas, inclusive as sem nenhuma reserva. Ausência de sala na
 resposta significa que a sala não existe, não que está livre.
 
-Erros (`400` `ProblemDetails`, `title: "Business error"`):
+Erros (`400` `ProblemDetails`, `title: "Erro de negócio"`):
 
 | Condição | `detail` |
 |---|---|
-| `start` ou `end` ausente | `"Start and end are required."` |
-| `start >= end` | `"Start must be before end."` |
-| RoomService indisponível | `"Rooms are unavailable."` |
+| `start` ou `end` ausente | `"Informe o início e o fim do período."` |
+| `start >= end` | `"O início precisa ser anterior ao fim."` |
+| RoomService indisponível | `"Não foi possível carregar as salas."` |
 
 **Lista vazia devolve `200` com `[]`**, não `400`. Divergência deliberada do ADR-011: aqui
 o vazio significa "não há salas cadastradas", que é resposta legítima e não erro de
@@ -131,7 +131,7 @@ Nenhuma migration. A consulta filtra por período; o índice em `RoomId` sugerid
 ## 7. Impacto entre serviços
 
 ReservationService passa a depender do RoomService também para leitura de disponibilidade.
-Com o RoomService fora do ar, a chamada falha inteira com `"Rooms are unavailable."` — não
+Com o RoomService fora do ar, a chamada falha inteira com `"Não foi possível carregar as salas."` — não
 devolve resposta parcial, porque uma planta com salas faltando é pior que uma planta que
 não carrega.
 
@@ -149,7 +149,7 @@ Nenhuma mudança de roteamento: `/api/reservations/*` já é coberto pelo Gatewa
 - [x] Dado reservas encadeadas 14:00–15:00 e 15:00–16:00, quando consulto às 14:30, então `busyUntil` é 16:00.
 - [x] Dado uma reserva que apenas encosta no fim do intervalo consultado, então não conta como `EmUso`.
 - [x] Dado nenhuma sala cadastrada, então recebo `200` com `[]`.
-- [x] Dado `end` anterior a `start`, então recebo `400` com `"Start must be before end."`.
+- [x] Dado `end` anterior a `start`, então recebo `400` com `"O início precisa ser anterior ao fim."`.
 - [x] Dado nenhum token, então recebo `401`.
 - [x] Dado 10 salas, a requisição faz **uma** chamada ao RoomService e **uma** consulta ao banco.
 - [x] Testes de unidade cobrindo os três estados, o encadeamento e as bordas de intervalo, sem banco real.

@@ -27,13 +27,13 @@ namespace ReservationService.Application.UseCases.CreateReservation
             var user = await _userServiceClient.GetUserByIdAsync(request.UserId);
             if (user is null)
             {
-                return Result<CreateReservationResponse>.Failure("User not found.");
+                return Result<CreateReservationResponse>.Failure("Usuário não encontrado.");
             }
 
             var room = await _roomServiceClient.GetRoomByIdAsync(request.RoomId);
             if (room is null)
             {
-                return Result<CreateReservationResponse>.Failure("Room not found.");
+                return Result<CreateReservationResponse>.Failure("Sala não encontrada.");
             }
 
             var availabilityValidation = await ValidateRoomAvailabilityAsync(request);
@@ -85,7 +85,7 @@ namespace ReservationService.Application.UseCases.CreateReservation
 
             if (hasOverlap)
             {
-                return Result<bool>.Failure("Room is already reserved for the requested period.");
+                return Result<bool>.Failure("A sala já está reservada nesse período.");
             }
 
             return Result<bool>.Success(true);

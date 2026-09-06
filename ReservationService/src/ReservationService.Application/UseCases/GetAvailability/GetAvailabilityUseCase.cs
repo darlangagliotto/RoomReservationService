@@ -22,7 +22,7 @@ namespace ReservationService.Application.UseCases.GetAvailability
         {
             if (request.Start is null || request.End is null)
             {
-                return Result<List<RoomAvailabilityResponse>>.Failure("Start and end are required.");
+                return Result<List<RoomAvailabilityResponse>>.Failure("Informe o início e o fim do período.");
             }
 
             var start = ToUtc(request.Start.Value);
@@ -30,7 +30,7 @@ namespace ReservationService.Application.UseCases.GetAvailability
 
             if (start >= end)
             {
-                return Result<List<RoomAvailabilityResponse>>.Failure("Start must be before end.");
+                return Result<List<RoomAvailabilityResponse>>.Failure("O início precisa ser anterior ao fim.");
             }
 
             List<GetRoomResponse> rooms;
@@ -42,7 +42,7 @@ namespace ReservationService.Application.UseCases.GetAvailability
             {
                 // Planta com salas faltando e pior que planta que nao carrega:
                 // a falha e total e explicita. Ver docs/specs/003.
-                return Result<List<RoomAvailabilityResponse>>.Failure("Rooms are unavailable.");
+                return Result<List<RoomAvailabilityResponse>>.Failure("Não foi possível carregar as salas.");
             }
 
             // Uma consulta so, cobrindo o intervalo e o resto do dia de `end`

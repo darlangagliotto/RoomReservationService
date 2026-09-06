@@ -11,7 +11,7 @@ function jsonResponse(body: unknown, status = 200): Response {
   })
 }
 
-const sala = {
+const room = {
   id: 'r-1',
   name: 'Sala Azul',
   number: 101,
@@ -64,10 +64,10 @@ beforeEach(() => {
 })
 
 describe('listagem', () => {
-  it('trata o 400 de "No rooms found." como estado vazio, não como erro', async () => {
+  it('trata o 400 de "Nenhuma sala encontrada." como estado vazio, não como erro', async () => {
     stubApi((url) =>
       url.includes('/api/rooms')
-        ? jsonResponse({ title: 'Business error', detail: 'No rooms found.' }, 400)
+        ? jsonResponse({ title: 'Business error', detail: 'Nenhuma sala encontrada.' }, 400)
         : jsonResponse([]),
     )
 
@@ -78,14 +78,14 @@ describe('listagem', () => {
   })
 
   it('mostra nome, número, posição na planta e equipamentos na tabela', async () => {
-    stubApi((url) => (url.includes('/api/rooms') ? jsonResponse([sala]) : jsonResponse([])))
+    stubApi((url) => (url.includes('/api/rooms') ? jsonResponse([room]) : jsonResponse([])))
 
     renderPage()
 
-    const linha = await screen.findByRole('row', { name: /Sala Azul/ })
-    expect(within(linha).getByText('101')).toBeInTheDocument()
-    expect(within(linha).getByText('3')).toBeInTheDocument()
-    expect(within(linha).getByText(/Tv \(parede\)/)).toBeInTheDocument()
+    const row = await screen.findByRole('row', { name: /Sala Azul/ })
+    expect(within(row).getByText('101')).toBeInTheDocument()
+    expect(within(row).getByText('3')).toBeInTheDocument()
+    expect(within(row).getByText(/Tv \(parede\)/)).toBeInTheDocument()
   })
 
   it('mostra estado de erro com opção de repetir quando a API falha', async () => {
@@ -107,29 +107,29 @@ describe('listagem', () => {
 describe('cadastro', () => {
   it('não envia requisição quando o nome é curto demais', async () => {
     const fetchMock = stubApi((url) =>
-      url.includes('/api/rooms') ? jsonResponse([sala]) : jsonResponse([]),
+      url.includes('/api/rooms') ? jsonResponse([room]) : jsonResponse([]),
     )
     renderPage()
 
     await userEvent.click(await screen.findByRole('button', { name: 'Nova sala' }))
     await userEvent.type(screen.getByLabelText('Nome'), 'ab')
     await userEvent.type(screen.getByLabelText('Número'), '5')
-    const chamadasAntes = fetchMock.mock.calls.length
+    const callsBefore = fetchMock.mock.calls.length
 
     await userEvent.click(screen.getByRole('button', { name: 'Cadastrar sala' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'O nome precisa de ao menos 3 caracteres.',
     )
-    expect(fetchMock.mock.calls.length).toBe(chamadasAntes)
+    expect(fetchMock.mock.calls.length).toBe(callsBefore)
   })
 
   it('exibe a mensagem do backend quando o slot da planta já está ocupado', async () => {
     stubApi((url, init) => {
       if (init?.method === 'POST') {
-        return jsonResponse({ title: 'Business error', detail: 'Plan slot is already taken.' }, 400)
+        return jsonResponse({ title: 'Business error', detail: 'Esta posição da planta já está ocupada.' }, 400)
       }
-      return url.includes('/api/rooms') ? jsonResponse([sala]) : jsonResponse([])
+      return url.includes('/api/rooms') ? jsonResponse([room]) : jsonResponse([])
     })
     renderPage()
 
@@ -139,13 +139,13 @@ describe('cadastro', () => {
     await userEvent.type(screen.getByLabelText('Posição na planta'), '3')
     await userEvent.click(screen.getByRole('button', { name: 'Cadastrar sala' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Plan slot is already taken.')
+    expect(await screen.findByRole('alert')).toHaveTextContent('Esta posição da planta já está ocupada.')
   })
 
   it('volta para a lista depois de cadastrar', async () => {
     stubApi((url, init) => {
-      if (init?.method === 'POST') return jsonResponse({ room: sala }, 201)
-      return url.includes('/api/rooms') ? jsonResponse([sala]) : jsonResponse([])
+      if (init?.method === 'POST') return jsonResponse({ room }, 201)
+      return url.includes('/api/rooms') ? jsonResponse([room]) : jsonResponse([])
     })
     renderPage()
 
@@ -160,9 +160,9 @@ describe('cadastro', () => {
   })
 
   it('só oferece equipamentos livres', async () => {
-    const livre = { ...sala.equipments[0], id: 'e-9', serialNumber: 'SN-LIVRE', roomId: null }
+    const unassignedEquipment = { ...room.equipments[0], id: 'e-9', serialNumber: 'SN-LIVRE', roomId: null }
     stubApi((url) =>
-      url.includes('/api/equipments') ? jsonResponse([livre]) : jsonResponse([sala]),
+      url.includes('/api/equipments') ? jsonResponse([unassignedEquipment]) : jsonResponse([room]),
     )
     renderPage()
 
@@ -175,15 +175,15 @@ describe('cadastro', () => {
 describe('apresentação por largura', () => {
   it('em tela estreita mostra cartões, sem tabela — a mesma informação', async () => {
     setViewport(false)
-    stubApi((url) => (url.includes('/api/rooms') ? jsonResponse([sala]) : jsonResponse([])))
+    stubApi((url) => (url.includes('/api/rooms') ? jsonResponse([room]) : jsonResponse([])))
 
     renderPage()
 
-    const cartao = await screen.findByRole('listitem')
+    const card = await screen.findByRole('listitem')
     // `selector` desempata com o rótulo sr-only do botão Editar, que repete o
     // nome de propósito para dar nome acessível distinto a cada botão.
-    expect(within(cartao).getByText('Sala Azul', { selector: 'p' })).toBeInTheDocument()
-    expect(within(cartao).getByText(/nº 101/)).toBeInTheDocument()
+    expect(within(card).getByText('Sala Azul', { selector: 'p' })).toBeInTheDocument()
+    expect(within(card).getByText(/nº 101/)).toBeInTheDocument()
     // Só uma das apresentações existe no DOM: renderizar as duas duplicaria o
     // conteúdo para leitor de tela.
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
@@ -191,7 +191,7 @@ describe('apresentação por largura', () => {
 
   it('em tela larga mostra tabela, sem cartões', async () => {
     setViewport(true)
-    stubApi((url) => (url.includes('/api/rooms') ? jsonResponse([sala]) : jsonResponse([])))
+    stubApi((url) => (url.includes('/api/rooms') ? jsonResponse([room]) : jsonResponse([])))
 
     renderPage()
 

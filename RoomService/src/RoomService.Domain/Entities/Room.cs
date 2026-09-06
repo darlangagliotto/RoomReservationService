@@ -35,12 +35,12 @@ namespace RoomService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new DomainException("Name is required.");
+                throw new DomainException("Informe o nome.");
             }
 
             if (name.Trim().Length < 3)
             {
-                throw new DomainException("Name must be at least 3 characters long.");
+                throw new DomainException("O nome precisa de ao menos 3 caracteres.");
             }
 
             Name = name.Trim();
@@ -50,7 +50,7 @@ namespace RoomService.Domain.Entities
         {
             if (number <= 0)
             {
-                throw new DomainException("Room number must be greater than 0.");
+                throw new DomainException("O número da sala precisa ser maior que 0.");
             }
 
             Number = number;
@@ -60,7 +60,7 @@ namespace RoomService.Domain.Entities
         {
             if (planSlot is not null && (planSlot < 1 || planSlot > MaxPlanSlot))
             {
-                throw new DomainException($"Plan slot must be between 1 and {MaxPlanSlot}.");
+                throw new DomainException($"A posição na planta precisa estar entre 1 e {MaxPlanSlot}.");
             }
 
             PlanSlot = planSlot;
@@ -70,12 +70,12 @@ namespace RoomService.Domain.Entities
         {
             if (equipmentId == Guid.Empty)
             {
-                throw new DomainException("Equipment is required.");
+                throw new DomainException("Informe o equipamento.");
             }
 
             if(_equipments.Any(x => x.EquipmentId == equipmentId))
             {
-                throw new DomainException("Equipment is already associated with the room.");
+                throw new DomainException("Este equipamento já está na sala.");
             }
 
             _equipments.Add(new RoomEquipment(Id, equipmentId));
@@ -87,7 +87,7 @@ namespace RoomService.Domain.Entities
 
             if (association is null)
             {
-                throw new DomainException("Equipment is not associated with the room.");
+                throw new DomainException("Este equipamento não está na sala.");
             }
 
             _equipments.Remove(association);

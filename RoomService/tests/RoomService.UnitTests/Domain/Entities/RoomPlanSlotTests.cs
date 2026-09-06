@@ -47,7 +47,7 @@ namespace RoomService.UnitTests.Domain.Entities
             var act = () => CreateValidRoom().AssignPlanSlot(slot);
 
             act.Should().Throw<DomainException>()
-               .WithMessage("Plan slot must be between 1 and 10.");
+               .WithMessage("A posição na planta precisa estar entre 1 e 10.");
         }
     }
 }

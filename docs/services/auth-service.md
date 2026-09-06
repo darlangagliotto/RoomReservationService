@@ -26,8 +26,8 @@ Request:
 { "token": "<jwt>", "expiresAt": "2026-09-02T18:30:00Z" }
 ```
 
-`400 Bad Request` (`ProblemDetails`, `title: "Business error"`):
-`"Invalid email or password!"` — usado para credencial errada, usuário bloqueado,
+`400 Bad Request` (`ProblemDetails`, `title: "Erro de negócio"`):
+`"E-mail ou senha inválidos."` — usado para credencial errada, usuário bloqueado,
 usuário inexistente **e falha de comunicação com o UserService** (o erro remoto é
 logado e convertido em credencial inválida).
 

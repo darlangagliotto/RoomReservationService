@@ -41,7 +41,7 @@ Request:
 { }
 ```
 
-Erros (`400` `ProblemDetails`, `title: "Business error"`):
+Erros (`400` `ProblemDetails`, `title: "Erro de negócio"`):
 
 | Condição | `detail` |
 |---|---|

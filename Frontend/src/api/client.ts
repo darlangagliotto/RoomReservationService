@@ -18,10 +18,15 @@ import {
 
 /**
  * O backend responde 400 quando a busca nao encontra nada, em vez de 200 com
- * lista vazia — consequencia do ADR-011. Ex.: "No rooms found.",
- * "No reservations found.". Isso e ausencia de dado, nao erro.
+ * lista vazia — consequencia do ADR-011. Ex.: "Nenhuma sala encontrada.",
+ * "Nenhuma reserva encontrada.". Isso e ausencia de dado, nao erro.
+ *
+ * Casar por prosa e fragil: se a mensagem mudar, a tela volta a mostrar erro
+ * onde deveria mostrar estado vazio. O caminho definitivo e o backend
+ * responder 200 com [] — feito na spec 003 e 004 para os endpoints novos.
+ * Este padrao cobre os endpoints antigos ate serem alinhados.
  */
-const EMPTY_RESULT_PATTERN = /^no\s+.+\s+found[.!]?$/i
+const EMPTY_RESULT_PATTERN = /^nenhum[ao]?\s+.+\s+encontrad[ao]s?[.!]?$/i
 
 interface ProblemDetails {
   title?: string

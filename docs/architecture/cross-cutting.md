@@ -52,18 +52,18 @@ Duas faixas, sem sobreposição:
 
 | Faixa | Origem | Resposta |
 |---|---|---|
-| Erro de negócio | `Result.Failure(...)` devolvido pelo caso de uso | `400` `ProblemDetails` com `title: "Business error"` e `detail` = mensagem da regra |
+| Erro de negócio | `Result.Failure(...)` devolvido pelo caso de uso | `400` `ProblemDetails` com `title: "Erro de negócio"` e `detail` = mensagem da regra |
 | Erro inesperado | exceção não tratada | `500` `ProblemDetails` via `ExceptionMiddleware` |
 
 `ExceptionMiddleware` é idêntico nos quatro serviços (`Api/Middleware/`): loga
 `"Unexpected error"`, devolve `detail` com `Tipo: mensagem` em Development e
-`"An unexpected error occurred."` fora dele, e preenche `Instance` com o path.
+`"Ocorreu um erro inesperado."` fora dele, e preenche `Instance` com o path.
 
 `DomainException` nunca chega ao middleware pelo caminho feliz: os casos de uso a
 capturam e convertem em `Result.Failure`. Se escapar, vira `500`.
 
 Consequência conhecida do desenho: "não encontrado" também responde `400`, não `404`
-(ex.: `"Room not found!"`, `"Reservation not found."`).
+(ex.: `"Sala não encontrada."`, `"Reserva não encontrada."`).
 
 Validação de entrada com FluentValidation está **registrada** em todos os serviços
 (`AddFluentValidationAutoValidation()` + `AddValidatorsFromAssembly`), mas só existe um

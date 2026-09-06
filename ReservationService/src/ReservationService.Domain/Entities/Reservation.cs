@@ -28,7 +28,7 @@ namespace ReservationService.Domain.Entities
         {
             if (userId == Guid.Empty)
             {
-                throw new DomainException("User is required.");
+                throw new DomainException("Informe o usuário.");
             }
             UserId = userId;
         }
@@ -37,7 +37,7 @@ namespace ReservationService.Domain.Entities
         {
             if (roomId == Guid.Empty)
             {
-                throw new DomainException("Room is required.");
+                throw new DomainException("Informe a sala.");
             }
             RoomId = roomId;
         }
@@ -46,22 +46,22 @@ namespace ReservationService.Domain.Entities
         {
             if (startDate < DateTime.UtcNow)
             {
-                throw new DomainException("Start time must be in the future.");
+                throw new DomainException("O horário de início precisa estar no futuro.");
             }
 
             if (startDate >= endDate)
             {
-                throw new DomainException("Start time must be before end time.");
+                throw new DomainException("O horário de início precisa ser anterior ao de término.");
             }
 
             if (startDate == DateTime.MinValue)
             {
-                throw new DomainException("Start time is required.");
+                throw new DomainException("Informe o horário de início.");
             }
             
             if (endDate == DateTime.MinValue)
             {
-                throw new DomainException("End time is required.");
+                throw new DomainException("Informe o horário de término.");
             }
 
             StartTime = startDate;

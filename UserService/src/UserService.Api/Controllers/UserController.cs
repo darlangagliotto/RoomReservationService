@@ -61,7 +61,7 @@ namespace UserService.Api.Controllers
             if (!response.IsSuccess)
             {
                 return Problem(
-                    title: "Business error",
+                    title: "Erro de negócio",
                     detail: response.Error,
                     statusCode: StatusCodes.Status400BadRequest
                 );

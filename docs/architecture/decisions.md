@@ -156,4 +156,4 @@ não existe. Demais operações seguem o ADR-011 sem mudança.
 `EnsureSuccessStatusCode` para o resto — um `401` por token expirado deixa de ser
 confundido com "usuário não encontrado", que era o comportamento anterior. A regra vale
 apenas para leitura endereçada por identificador; buscas por filtro continuam devolvendo
-`400` com `"No … found."`, tratado como coleção vazia pelo frontend.
+`400` com `"Nenhum … encontrado."`, tratado como coleção vazia pelo frontend.

@@ -19,9 +19,9 @@ Microsserviços por subdomínio, cada um com **Clean Architecture em 4 projetos*
 | AuthService | 5001 | 5000 | — (stateless) | implementado |
 | UserService | 5002 | 5000 | `userdb` | implementado |
 | RoomService | 5003 | 5000 | `roomdb` | implementado |
-| ReservationService | 5004 | 5000 | `reservationdb` | implementado, integração incompleta |
+| ReservationService | 5004 | 5000 | `reservationdb` | implementado |
 | PostgreSQL 15 | 5432 | 5432 | instância única | implementado |
-| Frontend (React + nginx) | 5005 | 5000 | — | login e sessão (spec 001) |
+| Frontend (React + nginx) | 5005 | 5000 | — | login, navegação e salas (specs 001, 005) |
 | Mensageria | — | — | — | **não existe** (ADR-006) |
 
 Portas de execução local fora do Docker (`launchSettings.json`): Gateway `5046/7091`,
@@ -52,8 +52,8 @@ UserService `5291`.
                           └──────────────────────┘
 ```
 
-> `/api/equipments` do RoomService **não é roteado pelo Gateway** — só existe rota
-> para `/api/rooms/*`. Ver [gateway.md](../services/gateway.md).
+O Gateway roteia `/api/auth`, `/api/users`, `/api/rooms`, `/api/equipments` e
+`/api/reservations`. Ver [gateway.md](../services/gateway.md).
 
 ## Matriz de dependências em runtime
 
@@ -61,12 +61,12 @@ UserService `5291`.
 |---|---|---|---|
 | Gateway → todos | HTTP | proxy transparente, repassa `Authorization` | `Gateway.Api/appsettings.json` |
 | AuthService → UserService | HTTP | `POST /api/users/validate-credentials` | `AuthService.Infrastructure/Services/UserValidationService.cs` |
-| ReservationService → UserService | HTTP | `GET /api/users/id/{id}` | `ReservationService.Application/Services/UserServiceClient.cs` |
-| ReservationService → RoomService | HTTP | `GET /api/rooms/id/{id}`, `/number/{n}`, `/name/{n}` | `ReservationService.Application/Services/RoomServiceClient.cs` |
+| ReservationService → UserService | HTTP | `GET /api/users/{id}` | `ReservationService.Application/Services/UserServiceClient.cs` |
+| ReservationService → RoomService | HTTP | `GET /api/rooms/{id}`, `GET /api/rooms?name=&number=` | `ReservationService.Application/Services/RoomServiceClient.cs` |
 | User/Room/Reservation → Postgres | TCP | EF Core + Npgsql | `*.Infrastructure/DependencyInjection` |
 
-**Os quatro endpoints consumidos pelo ReservationService não existem** nos serviços
-de destino. Consequência funcional em [backlog.md](../sdd/backlog.md#b1).
+O ReservationService **propaga o `Authorization` do chamador** nessas chamadas
+([ADR-012](decisions.md)); sem isso os destinos responderiam `401`.
 
 Ordem de subida definida em `Infra/docker-compose.yml`:
 `db` → `userservice` → (`authservice`, `roomservice`, `reservationservice`) → `gateway`
@@ -83,7 +83,7 @@ enquanto [B2](../sdd/backlog.md#b2) não for corrigido.
 2. `LoginUserUseCase` chama `IUserValidationService` (HTTP) → `POST /api/users/validate-credentials`.
 3. UserService busca por e-mail normalizado, verifica bloqueio e compara hash BCrypt,
    responde `{ isValid, userId }` sempre com `200`.
-4. Falha → `Result.Failure("Invalid email or password!")` → `400 ProblemDetails`.
+4. Falha → `Result.Failure("E-mail ou senha inválidos.")` → `400 ProblemDetails`.
    Sucesso → `ITokenGenerator` emite JWT HS256 → `{ token, expiresAt }`.
 
 Nenhum dado de usuário é persistido no AuthService.
@@ -111,8 +111,8 @@ da linha (não há status de cancelamento — ADR-010).
 | Camadas / separação de responsabilidades | consistente nos 4 serviços |
 | Autenticação | JWT em todos os serviços, defesa em profundidade |
 | Persistência | EF Core + migrations aplicadas no startup |
-| Contratos entre serviços | **quebrados** (endpoints ausentes) |
-| Testes | apenas `AuthService.UnitTests` tem casos reais; demais são esqueleto |
+| Contratos entre serviços | íntegros desde a spec 002 |
+| Testes | 89 no total: Auth 6, Room 24, Reservation 12, frontend 53. `UserService.UnitTests` segue vazio |
 | CI | `.github/workflows/` existe e está **vazio** |
 | Observabilidade | apenas `ILogger` padrão; sem tracing, métricas ou correlação |
 | Resiliência | sem retry/circuit breaker; timeout só no cliente do AuthService (10 s) |

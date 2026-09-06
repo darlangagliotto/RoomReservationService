@@ -18,7 +18,7 @@ namespace UserService.Application.UseCases.GetUserById
 
             if (user is null)
             {
-                return Result<GetUserByIdResponse>.Failure("User not found.");
+                return Result<GetUserByIdResponse>.Failure("Usuário não encontrado.");
             }
 
             return Result<GetUserByIdResponse>.Success(

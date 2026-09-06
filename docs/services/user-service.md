@@ -26,7 +26,7 @@ Controller `api/users`, decorado com `[Authorize]` na classe. As duas rotas de e
 Erros:
 - `400` `ValidationProblemDetails` — FluentValidation: `Name` obrigatório e ≥ 3;
   `Email` obrigatório e válido; `Password` obrigatório e ≥ 6.
-- `400` `ProblemDetails` "Business error" — `"Email is already registered!"` ou mensagem
+- `400` `ProblemDetails` "Erro de negócio" — `"Este e-mail já está cadastrado."` ou mensagem
   de `DomainException` (invariantes em [domain/model.md](../domain/model.md#user--raiz-userservice)).
 
 ### `POST /api/users/validate-credentials` — anônimo, uso interno

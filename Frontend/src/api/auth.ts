@@ -17,7 +17,7 @@ export interface LoginResponse {
 
 /**
  * Credencial invalida, usuario bloqueado, usuario inexistente e UserService
- * fora do ar produzem o mesmo BusinessError ("Invalid email or password!") —
+ * fora do ar produzem o mesmo BusinessError ("E-mail ou senha inválidos.") —
  * o backend nao os distingue, e a UI nao deve inventar essa distincao.
  */
 export function login(client: ApiClient, credentials: LoginRequest): Promise<LoginResponse> {

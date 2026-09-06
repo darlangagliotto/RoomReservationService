@@ -42,7 +42,7 @@ Nenhum endpoint novo. Consome, pelo Gateway:
 
 | Chamada | Uso |
 |---|---|
-| `GET /api/rooms` | listagem — `400` `"No rooms found."` vira `[]` pelo `requestList` |
+| `GET /api/rooms` | listagem — `400` `"Nenhuma sala encontrada."` vira `[]` pelo `requestList` |
 | `POST /api/rooms` | cadastro |
 | `PATCH /api/rooms/{id}` | edição |
 | `GET /api/equipments?unassigned=true` | equipamentos livres para alocar |
@@ -52,11 +52,11 @@ Nenhum endpoint novo. Consome, pelo Gateway:
 Validação no cliente espelha as invariantes de
 [domain/model.md](../domain/model.md#room--raiz-roomservice): nome ≥ 3 caracteres, número
 > 0, `planSlot` entre 1 e 10 quando informado. **O servidor continua sendo a autoridade** —
-`"Room is already registered."` e `"Plan slot is already taken."` só ele sabe, e a
+`"Esta sala já está cadastrada."` e `"Esta posição da planta já está ocupada."` só ele sabe, e a
 mensagem dele é exibida como está.
 
 Na edição, ao menos um campo deve mudar (o backend recusa com
-`"Provide at least one field to update!"`).
+`"Informe ao menos um campo para atualizar."`).
 
 Equipamento só pode estar em uma sala: o seletor oferece apenas `unassigned=true`.
 
@@ -79,7 +79,7 @@ Nenhum. Rotas já cobertas pelo Gateway.
 - [x] Dado que cadastro uma sala válida, então ela aparece na lista sem eu recarregar a página.
 - [x] Dado nome com 2 caracteres, então vejo erro no campo e nenhuma requisição é enviada.
 - [x] Dado um número já usado, então vejo a mensagem do backend junto ao formulário. — mesmo caminho de erro exercitado pelo teste de `planSlot` ocupado.
-- [x] Dado um `planSlot` já ocupado, então vejo `"Plan slot is already taken."`.
+- [x] Dado um `planSlot` já ocupado, então vejo `"Esta posição da planta já está ocupada."`.
 - [ ] Dado que edito o nome de uma sala, então a lista reflete a mudança. — **não coberto por teste**: o fluxo de edição existe e usa o mesmo caminho do cadastro, mas só foi exercitado manualmente.
 - [x] Dado que a API demora, então vejo skeleton com a forma do conteúdo, não spinner solto.
 - [x] Dado que a API falha com `500`, então vejo estado de erro com opção de repetir.

@@ -24,7 +24,7 @@ namespace RoomService.Application.UseCases.GetEquipments
                     || !Enum.IsDefined(parsed))
                 {
                     return Result<List<EquipmentResponse>>.Failure(
-                        $"Unknown equipment type. Accepted values: {string.Join(", ", Enum.GetNames<EquipmentType>())}.");
+                        $"Tipo de equipamento desconhecido. Valores aceitos: {string.Join(", ", Enum.GetNames<EquipmentType>())}.");
                 }
 
                 type = parsed;

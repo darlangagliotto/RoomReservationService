@@ -29,10 +29,10 @@ Todos exigem JWT (`[Authorize]` no controller + `FallbackPolicy` no `Program.cs`
                              "purchaseDate": "2023-05-02T00:00:00Z", "roomId": "..." }] } }
 ```
 
-`400` "Business error": `"Room is already registered."` (nome **ou** número em uso),
-`"Equipment with ID {id} not found!"`, `"There is equipment with an invalid ID."`,
+`400` "Erro de negócio": `"Esta sala já está cadastrada."` (nome **ou** número em uso),
+`"Equipment with ID {id} not found!"`, `"Há equipamento com identificador inválido."`,
 `"Equipment {id} is already allocated to another room."`,
-`"Plan slot is already taken."`, ou mensagem de `DomainException`.
+`"Esta posição da planta já está ocupada."`, ou mensagem de `DomainException`.
 
 ### `GET /api/rooms?name=&number=`
 
@@ -45,7 +45,7 @@ Busca única com filtros opcionais por query string, resolvida assim:
 | ✔ | — | sala pelo nome (0 ou 1) |
 | — | — | todas as salas |
 
-`200 OK` com `RoomResponse[]`. **Lista vazia devolve `400`** com `"No rooms found."`
+`200 OK` com `RoomResponse[]`. **Lista vazia devolve `400`** com `"Nenhuma sala encontrada."`
 (consequência do ADR-011).
 
 ### `GET /api/rooms/{id:guid}`
@@ -65,8 +65,8 @@ esperava foram **descartadas** na [spec 002](../specs/002-consulta-por-id-e-auth
 Ambos opcionais; o `id` da rota sobrescreve o do corpo. `200 OK` com
 `{ "room": { ... } }`.
 
-`400`: `"Room not found!"`, `"Provide at least one field to update!"`,
-`"A room with this name already exists."`, `"A room with this number already exists."`,
+`400`: `"Sala não encontrada."`, `"Informe ao menos um campo para atualizar."`,
+`"Já existe uma sala com esse nome."`, `"Já existe uma sala com esse número."`,
 ou `DomainException`. Não altera equipamentos.
 
 ### `POST /api/equipments`
@@ -81,7 +81,7 @@ Controller separado, rota `api/equipments`, exposta pelo Gateway desde a spec 00
 (`"projetor"` funciona). A resposta traz `placement`, derivado do tipo.
 
 `201 Created` com `{ "equipment": { ... } }`.
-`400`: `"Unknown equipment type. Accepted values: …"`, `"Equipment is already registered!"`
+`400`: `"Tipo de equipamento desconhecido. Valores aceitos: …"`, `"Este equipamento já está cadastrado."`
 (serial repetido) ou `DomainException`
 (invariantes em [domain/model.md](../domain/model.md#equipment--raiz-roomservice)).
 

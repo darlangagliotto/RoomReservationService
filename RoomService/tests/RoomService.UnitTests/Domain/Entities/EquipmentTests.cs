@@ -21,16 +21,16 @@ namespace RoomService.UnitTests.Domain.Entities
         {
             var act = () => new Equipment((EquipmentType)999, "Epson", "SN-001", DateTime.UtcNow.Date);
 
-            act.Should().Throw<DomainException>().WithMessage("Unknown equipment type.");
+            act.Should().Throw<DomainException>().WithMessage("Tipo de equipamento desconhecido.");
         }
 
         [Fact]
         public void Should_Normalize_Unspecified_Purchase_Date_To_Utc()
         {
             // A coluna e timestamptz: sem esta normalizacao o insert quebra com 500.
-            var semFuso = new DateTime(2024, 1, 10, 0, 0, 0, DateTimeKind.Unspecified);
+            var withoutOffset = new DateTime(2024, 1, 10, 0, 0, 0, DateTimeKind.Unspecified);
 
-            var equipment = new Equipment(EquipmentType.Tv, "Samsung", "SN-002", semFuso);
+            var equipment = new Equipment(EquipmentType.Tv, "Samsung", "SN-002", withoutOffset);
 
             equipment.PurchaseDate.Kind.Should().Be(DateTimeKind.Utc);
         }
@@ -40,7 +40,7 @@ namespace RoomService.UnitTests.Domain.Entities
         {
             var act = () => new Equipment(EquipmentType.Tv, "Samsung", "SN-002", DateTime.UtcNow.AddDays(1));
 
-            act.Should().Throw<DomainException>().WithMessage("Purchase date cannot be in the future.");
+            act.Should().Throw<DomainException>().WithMessage("A data de compra não pode ser futura.");
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace RoomService.UnitTests.Domain.Entities
         {
             var act = () => new Equipment(EquipmentType.Tv, "Samsung", "SN-002", new DateTime(1989, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
-            act.Should().Throw<DomainException>().WithMessage("Invalid purchase date for the business context.");
+            act.Should().Throw<DomainException>().WithMessage("Data de compra fora do período aceito.");
         }
     }
 }

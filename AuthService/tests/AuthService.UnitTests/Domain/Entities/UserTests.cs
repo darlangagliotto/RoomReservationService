@@ -1,5 +1,6 @@
 using Xunit;
 using FluentAssertions;
+using AuthService.Domain.Common;
 using AuthService.Domain.Entities;
 using AuthService.Domain.ValueObjects;
 
@@ -83,9 +84,12 @@ namespace AuthService.UnitTests.Domain.Entities
             Action act = () => new User(name, null!, passwordHash);
 
             // Assert
+            // Esperava ArgumentNullException, mas a entidade sempre lançou
+            // DomainException — o teste estava quebrado desde antes desta
+            // mudança de idioma.
             act.Should()
-                .Throw<ArgumentNullException>()
-                .WithParameterName("email");
+                .Throw<DomainException>()
+                .WithMessage("Informe o e-mail.");
         }
 
         private static User CreateValidUser() 

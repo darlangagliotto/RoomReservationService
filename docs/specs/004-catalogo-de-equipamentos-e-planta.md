@@ -68,7 +68,7 @@ frontend recebe a âncora pronta e não replica a tabela.
 { "type": "Projetor", "brand": "Epson", "serialNumber": "SN-123", "purchaseDate": "2024-01-10" }
 ```
 
-Valor fora do vocabulário → `400` com `"Unknown equipment type."` e a lista dos aceitos no
+Valor fora do vocabulário → `400` com `"Tipo de equipamento desconhecido."` e a lista dos aceitos no
 `detail`.
 
 A resposta ganha `placement`:
@@ -98,7 +98,7 @@ listas normalmente.
 
 Aceito em `POST /api/rooms` e `PATCH /api/rooms/{id}`, devolvido em `RoomResponse`.
 
-Slot já usado por outra sala → `400` com `"Plan slot is already taken."`
+Slot já usado por outra sala → `400` com `"Esta posição da planta já está ocupada."`
 
 ## 5. Regras de negócio
 
@@ -147,12 +147,12 @@ Nenhum outro serviço lê `Equipment` — RoomService é o único dono.
 > Verificados em 2026-09-06 com a pilha em Docker, via Gateway na 5000.
 
 - [x] Dado `type: "Projetor"`, quando cadastro um equipamento, então recebo `201` com `placement: "Teto"`.
-- [x] Dado `type: "Holograma"`, então recebo `400` com `"Unknown equipment type."` e a lista de tipos aceitos.
+- [x] Dado `type: "Holograma"`, então recebo `400` com `"Tipo de equipamento desconhecido."` e a lista de tipos aceitos.
 - [x] Dado `type: "projetor"` em minúsculas, então é aceito — a comparação não diferencia caixa.
 - [x] Dado equipamentos cadastrados, quando consulto `GET /api/equipments`, então recebo todos, cada um com `placement` e `roomId`.
 - [x] Dado nenhum equipamento, então recebo `200` com `[]`.
 - [x] Dado `unassigned=true`, então recebo apenas os que não estão em nenhuma sala.
-- [x] Dado uma sala com `planSlot: 3`, quando cadastro outra com `planSlot: 3`, então recebo `400` com `"Plan slot is already taken."`.
+- [x] Dado uma sala com `planSlot: 3`, quando cadastro outra com `planSlot: 3`, então recebo `400` com `"Esta posição da planta já está ocupada."`.
 - [x] Dado `planSlot: 11`, então recebo `400`.
 - [x] Dado uma sala sem `planSlot`, então ela é criada normalmente e aparece nas listagens.
 - [ ] Dado um equipamento com `Type` livre gravado antes da migration, quando aplico as migrations, então ele passa a valer `Outro` e nenhuma linha é perdida. — **não verificado**: o banco de desenvolvimento não tinha linhas legadas. O SQL de normalização está na migration `EquipmentCatalogAndPlanSlot` e roda antes do `AlterColumn`.

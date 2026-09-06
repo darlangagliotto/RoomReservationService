@@ -8,16 +8,16 @@ namespace UserService.Application.UseCases.RegisterUser
         public RegisterUserRequestValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is required.")
-                .MinimumLength(3).WithMessage("Name must be at least 3 characters long.");
+                .NotEmpty().WithMessage("Informe o nome.")
+                .MinimumLength(3).WithMessage("O nome precisa de ao menos 3 caracteres.");
 
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email.");
+                .NotEmpty().WithMessage("Informe o e-mail.")
+                .EmailAddress().WithMessage("E-mail inválido.");
 
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(6).WithMessage("Password must be at least 6 characters long.");
+                .NotEmpty().WithMessage("Informe a senha.")
+                .MinimumLength(6).WithMessage("A senha precisa de ao menos 6 caracteres.");
         }
     }
 }

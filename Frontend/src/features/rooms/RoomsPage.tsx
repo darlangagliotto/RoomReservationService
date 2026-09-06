@@ -69,11 +69,11 @@ export function RoomsPage() {
     )
   }
 
-  const novaSala = <Button onClick={() => setMode({ kind: 'create' })}>Nova sala</Button>
+  const newRoomButton = <Button onClick={() => setMode({ kind: 'create' })}>Nova sala</Button>
 
   return (
     <>
-      <PageHeader title="Salas" action={rooms.data && rooms.data.length > 0 ? novaSala : undefined} />
+      <PageHeader title="Salas" action={rooms.data && rooms.data.length > 0 ? newRoomButton : undefined} />
 
       {rooms.isPending && (
         <div className="flex flex-col gap-3" aria-busy="true" aria-label="Carregando salas">
@@ -94,7 +94,7 @@ export function RoomsPage() {
         <EmptyState
           title="Nenhuma sala cadastrada"
           description="Cadastre a primeira sala para começar a reservar."
-          action={novaSala}
+          action={newRoomButton}
         />
       )}
 

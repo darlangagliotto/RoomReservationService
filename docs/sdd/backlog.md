@@ -18,7 +18,7 @@ O ReservationService chama quatro endpoints que **não existem**:
 | `GET /api/rooms/number/{n}` | `RoomServiceClient` | RoomService |
 | `GET /api/rooms/name/{n}` | `RoomServiceClient` | RoomService |
 
-Efeito: `POST /api/reservations` sempre falha com `"User not found."`;
+Efeito: `POST /api/reservations` sempre falha com `"Usuário não encontrado."`;
 `GET /api/reservations` devolve `userName`/`roomName` vazios e `roomNumber: 0`.
 
 Além de criar os endpoints, é preciso resolver **autenticação serviço-a-serviço**: os

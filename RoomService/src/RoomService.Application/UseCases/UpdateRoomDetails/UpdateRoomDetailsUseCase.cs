@@ -24,7 +24,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
 
             if (room is null)
             {
-                return Result<UpdateRoomDetailsResponse>.Failure("Room not found!");
+                return Result<UpdateRoomDetailsResponse>.Failure("Sala não encontrada.");
             }
 
             var validationIsOk = await ValidateAsync(request);
@@ -70,7 +70,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
         {
            if (request.Name is null && !request.Number.HasValue && !request.PlanSlot.HasValue)
            {
-             return Result<bool>.Failure("Provide at least one field to update!");
+             return Result<bool>.Failure("Informe ao menos um campo para atualizar.");
            }
 
            if (request.PlanSlot.HasValue)
@@ -78,7 +78,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
                 var samePlanSlotRoom = await _roomRepository.GetByPlanSlotAsync(request.PlanSlot.Value);
                 if (samePlanSlotRoom is not null && samePlanSlotRoom.Id != request.RoomId)
                 {
-                    return Result<bool>.Failure("Plan slot is already taken.");
+                    return Result<bool>.Failure("Esta posição da planta já está ocupada.");
                 }
            }
 
@@ -87,7 +87,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
                 var sameNameRoom = await _roomRepository.GetByNameAsync(request.Name);
                 if (sameNameRoom is not null && sameNameRoom.Id != request.RoomId)
                 {
-                    return Result<bool>.Failure("A room with this name already exists.");  
+                    return Result<bool>.Failure("Já existe uma sala com esse nome.");  
                 }
            }
 
@@ -96,7 +96,7 @@ namespace RoomService.Application.UseCases.UpdateRoomDetails
                 var sameNumberRoom = await _roomRepository.GetByNumberAsync(request.Number.Value);
                 if (sameNumberRoom is not null && sameNumberRoom.Id != request.RoomId)
                 {
-                    return Result<bool>.Failure("A room with this number already exists.");
+                    return Result<bool>.Failure("Já existe uma sala com esse número.");
                 }                
             }
             return Result<bool>.Success(true);

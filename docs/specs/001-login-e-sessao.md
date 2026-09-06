@@ -77,8 +77,8 @@ Erros:
 
 | Condição | Resposta | `detail` |
 |---|---|---|
-| Credencial inválida, usuário bloqueado ou inexistente | `400` `ProblemDetails` | `"Invalid email or password!"` |
-| UserService indisponível | `400` `ProblemDetails` | `"Invalid email or password!"` |
+| Credencial inválida, usuário bloqueado ou inexistente | `400` `ProblemDetails` | `"E-mail ou senha inválidos."` |
+| UserService indisponível | `400` `ProblemDetails` | `"E-mail ou senha inválidos."` |
 | Falha inesperada | `500` `ProblemDetails` | genérico |
 
 O backend **não distingue** credencial errada de indisponibilidade do UserService — o
@@ -183,7 +183,7 @@ contornado por desvio de proxy, tanto no Vite quanto no nginx.
 **Autenticação**
 
 - [x] Dado credencial válida, quando submeto o login, então sou levado à Home (`/`) e o meu e-mail aparece no shell.
-- [x] Dado credencial inválida, quando submeto, então vejo `"Invalid email or password!"` junto ao formulário, o campo de senha é limpo e permaneço no login.
+- [x] Dado credencial inválida, quando submeto, então vejo `"E-mail ou senha inválidos."` junto ao formulário, o campo de senha é limpo e permaneço no login.
 - [x] Dado o AuthService indisponível, quando submeto, então vejo mensagem de erro e opção de tentar novamente, sem tela quebrada.
 - [x] Dado e-mail em formato inválido, quando submeto, então vejo o erro no campo e nenhuma requisição é enviada.
 - [x] Dado que digito uma senha de 3 caracteres, quando submeto, então a requisição **é** enviada (o cliente não valida comprimento).

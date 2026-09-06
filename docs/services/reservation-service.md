@@ -26,10 +26,10 @@ Todos exigem JWT (`[Authorize]` + `FallbackPolicy`).
                    "startDate": "2026-09-10T14:00:00Z", "endDate": "2026-09-10T15:00:00Z" } }
 ```
 
-`400` "Business error", nesta ordem de verificação:
-`"User not found."` → `"Room not found."` →
-`"Room is already reserved for the requested period."` → mensagem de `DomainException`
-(`"Start time must be in the future."`, `"Start time must be before end time."`, …).
+`400` "Erro de negócio", nesta ordem de verificação:
+`"Usuário não encontrado."` → `"Sala não encontrada."` →
+`"A sala já está reservada nesse período."` → mensagem de `DomainException`
+(`"O horário de início precisa estar no futuro."`, `"O horário de início precisa ser anterior ao de término."`, …).
 
 Datas devem ser UTC — ver [cross-cutting.md](../architecture/cross-cutting.md#persistência).
 
@@ -47,15 +47,15 @@ Resolução dos filtros (`GetReservationsUseCase`):
 4. Para cada reserva encontrada, busca nome do usuário e dados da sala por HTTP.
 
 `200 OK` com `ReservationResponse[]`. **Resultado vazio devolve `400`** com
-`"No reservations found."`.
+`"Nenhuma reserva encontrada."`.
 
 `userName` é aceito no request e **nunca usado** — filtrar por nome de usuário não tem efeito.
 
 ### `DELETE /api/reservations/{id:guid}`
 
 `200 OK` com `{ "id": "<guid>" }`.
-`400`: `"Reservation not found."` ou
-`"Cannot cancel a reservation that has already started."`.
+`400`: `"Reserva não encontrada."` ou
+`"Não é possível cancelar uma reserva já iniciada."`.
 A linha é **removida fisicamente** (ADR-010).
 
 ## Clients HTTP
@@ -94,7 +94,7 @@ depender de `Microsoft.EntityFrameworkCore` (ver
 ## Lacunas conhecidas
 
 - **Integração quebrada**: nenhum dos quatro endpoints consumidos existe
-  ([backlog B1](../sdd/backlog.md#b1)). Hoje `POST` sempre falha com `"User not found."`
+  ([backlog B1](../sdd/backlog.md#b1)). Hoje `POST` sempre falha com `"Usuário não encontrado."`
   e o `GET` devolve `userName`/`roomName` vazios e `roomNumber: 0`.
 - **N+1 remoto na listagem**: duas chamadas HTTP por reserva retornada.
 - **Overlap sem proteção de concorrência**: a verificação lê e grava sem transação nem
@@ -142,7 +142,7 @@ Bordas que apenas se tocam não sobrepõem, mesma regra da criação de reserva.
 
 **Vazio devolve `200` com `[]`**, não o `400` do ADR-011: "não há salas cadastradas" é
 resposta legítima. Com o RoomService fora do ar, a chamada falha inteira com
-`"Rooms are unavailable."` — planta com salas faltando é pior que planta que não carrega.
+`"Não foi possível carregar as salas."` — planta com salas faltando é pior que planta que não carrega.
 
 Custo: **uma** chamada ao RoomService e **uma** consulta ao banco, independente do número
 de salas.

@@ -72,11 +72,11 @@ describe('request — sucesso', () => {
 describe('request — mapa de erros', () => {
   it('400 "Business error" vira BusinessError com o detail do backend', async () => {
     const { client } = setup(() =>
-      jsonResponse({ title: 'Business error', detail: 'Invalid email or password!' }, 400),
+      jsonResponse({ title: 'Business error', detail: 'E-mail ou senha inválidos.' }, 400),
     )
 
     await expect(client.request('/api/auth/login')).rejects.toThrowError(
-      new BusinessError('Invalid email or password!'),
+      new BusinessError('E-mail ou senha inválidos.'),
     )
   })
 
@@ -130,7 +130,7 @@ describe('request — mapa de erros', () => {
 })
 
 describe('requestList — 400 de lista vazia', () => {
-  it.each(['No rooms found.', 'No reservations found.', 'no rooms found'])(
+  it.each(['Nenhuma sala encontrada.', 'Nenhuma reserva encontrada.', 'nenhuma sala encontrada'])(
     'trata "%s" como colecao vazia',
     async (detail) => {
       const { client } = setup(() => jsonResponse({ title: 'Business error', detail }, 400))
@@ -141,7 +141,7 @@ describe('requestList — 400 de lista vazia', () => {
 
   it('mantem como erro um 400 de negocio que nao e ausencia de resultado', async () => {
     const { client } = setup(() =>
-      jsonResponse({ title: 'Business error', detail: 'Room is already registered.' }, 400),
+      jsonResponse({ title: 'Business error', detail: 'Esta sala já está cadastrada.' }, 400),
     )
 
     await expect(client.requestList('/api/rooms')).rejects.toBeInstanceOf(BusinessError)

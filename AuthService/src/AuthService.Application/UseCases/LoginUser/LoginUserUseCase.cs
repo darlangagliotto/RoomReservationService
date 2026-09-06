@@ -23,7 +23,7 @@ namespace AuthService.Application.UseCases.LoginUser
 
             if (!isValid || !userId.HasValue)
             {
-                return Result<LoginUserResponse>.Failure("Invalid email or password!");
+                return Result<LoginUserResponse>.Failure("E-mail ou senha inválidos.");
             }
 
             var token = _tokenGenerator.Generate(userId.Value, request.Email);

@@ -28,7 +28,7 @@ namespace RoomService.Domain.Entities
         {
             if (!Enum.IsDefined(type))
             {
-                throw new DomainException("Unknown equipment type.");
+                throw new DomainException("Tipo de equipamento desconhecido.");
             }
 
             Type = type;
@@ -38,12 +38,12 @@ namespace RoomService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(brand))
             {
-                throw new DomainException("Brand is required.");
+                throw new DomainException("Informe a marca.");
             }
 
             if (brand.Trim().Length < 3)
             {
-                throw new DomainException("Brand must be at least 3 characters long.");
+                throw new DomainException("A marca precisa de ao menos 3 caracteres.");
             }
 
             Brand = brand.Trim();
@@ -53,12 +53,12 @@ namespace RoomService.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(serialNumber))
             {
-                throw new DomainException("Serial number is required.");
+                throw new DomainException("Informe o número de série.");
             }
 
             if (serialNumber.Trim().Length < 3)
             {
-                throw new DomainException("Serial number must be at least 3 characters long.");
+                throw new DomainException("O número de série precisa de ao menos 3 caracteres.");
             }
 
             SerialNumber = serialNumber.Trim();
@@ -68,7 +68,7 @@ namespace RoomService.Domain.Entities
         {
             if (purchaseDate == default)
             {
-                throw new DomainException("Purchase date is required.");
+                throw new DomainException("Informe a data de compra.");
             }
 
             // A coluna e timestamptz e o Npgsql so aceita Kind=Utc: uma data sem
@@ -84,12 +84,12 @@ namespace RoomService.Domain.Entities
 
             if (normalized.Date > DateTime.UtcNow.Date)
             {
-                throw new DomainException("Purchase date cannot be in the future.");
+                throw new DomainException("A data de compra não pode ser futura.");
             }
 
             if (normalized.Year < 1990)
             {
-                throw new DomainException("Invalid purchase date for the business context.");
+                throw new DomainException("Data de compra fora do período aceito.");
             }
 
             PurchaseDate = normalized;

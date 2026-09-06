@@ -29,7 +29,7 @@ namespace ReservationService.Application.UseCases.GetReservations
 
             if (reservationsResponse.Count == 0)
             {
-                return Result<List<ReservationResponse>>.Failure("No reservations found.");
+                return Result<List<ReservationResponse>>.Failure("Nenhuma reserva encontrada.");
             }
 
             return Result<List<ReservationResponse>>.Success(reservationsResponse);

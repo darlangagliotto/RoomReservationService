@@ -18,12 +18,12 @@ namespace ReservationService.Application.UseCases.CancelReservation
 
             if (reservation is null)
             {
-                return Result<CancelReservationResponse>.Failure("Reservation not found.");
+                return Result<CancelReservationResponse>.Failure("Reserva não encontrada.");
             }
 
             if (reservation.StartTime <= DateTime.UtcNow)
             {
-                return Result<CancelReservationResponse>.Failure("Cannot cancel a reservation that has already started.");
+                return Result<CancelReservationResponse>.Failure("Não é possível cancelar uma reserva já iniciada.");
             }
 
             await _reservationRepository.DeleteAsync(reservation);
