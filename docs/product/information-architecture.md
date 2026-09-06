@@ -84,7 +84,10 @@ Room Reservation     Planta   Reservas   Salas   Equipamentos     usuario@email 
 | `/salas` | **Salas** | cadastrar e editar salas |
 | `/equipamentos` | **Equipamentos** | cadastrar equipamentos |
 
-Abaixo de 768px a barra colapsa; acima, os quatro rótulos ficam visíveis.
+A barra lista apenas destinos que existem. Hoje: Início e Salas (spec 005); Equipamentos,
+Reservas e Planta entram com as specs 006 e 007. Em telas estreitas a barra quebra para a
+linha de baixo em vez de colapsar num menu — com poucos itens, um hambúrguer esconderia
+mais do que ajudaria.
 
 > **Sem papéis.** O JWT não carrega papel e a autorização do sistema é binária: qualquer
 > pessoa autenticada cadastra e edita salas e equipamentos. Isso é consequência do backend
@@ -136,30 +139,32 @@ o `400` de lista vazia precisa virar estado vazio, não erro.
 A coluna da direita é o valor deste documento: nenhuma tela deve ser especificada sem
 saber o que falta abaixo dela.
 
-| Tela | Já existe | **Falta no backend** |
+| Tela | Backend | Situação |
 |---|---|---|
-| Planta | `GET /api/rooms` | disponibilidade por intervalo; tipo de equipamento como vocabulário; dimensão da sala |
-| Detalhe da sala | `GET /api/reservations?roomId=` | `GET /api/rooms/id/{id}` ([B1](../sdd/backlog.md#b1)); âncora por tipo |
-| Nova reserva | `POST /api/reservations` | B1 — hoje falha sempre com `"User not found."` |
-| Reservas | `GET`, `DELETE /api/reservations` | B1, para o nome do usuário |
-| Salas | `GET`, `POST`, `PATCH /api/rooms` | — |
-| Equipamentos | `POST /api/equipments` | **listagem de equipamentos não existe**; e `/api/equipments` **não é roteado pelo Gateway** |
+| Planta | `GET /api/reservations/availability`, `GET /api/rooms` | ✅ pronto — falta o **render** |
+| Detalhe da sala | `GET /api/rooms/{id}`, `GET /api/reservations?roomId=` | ✅ pronto |
+| Nova reserva | `POST /api/reservations` | ✅ pronto |
+| Reservas | `GET`, `DELETE /api/reservations`, `GET /api/users/{id}` | ✅ pronto |
+| Salas | `GET`, `POST`, `PATCH /api/rooms` | ✅ pronto e **em uso** (spec 005) |
+| Equipamentos | `GET`, `POST /api/equipments` | ✅ pronto |
 
-Três lacunas são estruturais e aparecem em mais de uma tela:
+**O backend deixou de ser o gargalo.** As três lacunas estruturais que este documento
+levantou foram fechadas pelas specs 002, 003 e 004: consulta por id com propagação de
+token, disponibilidade por intervalo com os três estados, e vocabulário de equipamento com
+âncoras mais `PlanSlot`.
 
-1. **B1** — endpoints por id e autenticação serviço-a-serviço. Trava reserva inteira.
-2. **Disponibilidade** — estado derivado por intervalo. Sem isso não há planta com status.
-3. **Vocabulário de tipo + geometria** — sem isso o desenho não passa de retângulo.
+O que trava a planta agora é **produção de arte**, não código — ver "Pendências de
+produção" abaixo.
 
 ## Sequência de specs
 
 | # | Spec | Bloco | Depende | Estado |
 |---|---|---|---|---|
-| 002 | Consulta por id e autenticação serviço-a-serviço | backend | — | escrita |
-| 003 | Disponibilidade por intervalo, com três estados | backend | 002 | escrita |
-| 004 | Catálogo de equipamentos e vínculo com a planta | backend | — | escrita |
+| 002 | Consulta por id e autenticação serviço-a-serviço | backend | — | ✅ implementada |
+| 003 | Disponibilidade por intervalo, com três estados | backend | 002 | ✅ implementada |
+| 004 | Catálogo de equipamentos e vínculo com a planta | backend | — | ✅ implementada |
 | 005 | **Navegação no topo** + Salas: lista, cadastro, edição | frontend | — | implementada |
-| 006 | Equipamentos e Reservas: listas, cadastro, cancelamento | frontend | 002, 004, 005 | a escrever |
+| 006 | Equipamentos e Reservas: listas, cadastro, cancelamento | frontend | 002, 004, 005 | a escrever — **desbloqueada** |
 | 007 | Planta do andar com estado e linha do tempo | frontend | 003, 004, 005, **render** | a escrever |
 | 008 | Detalhe da sala | frontend | 004, 007 | a escrever |
 
