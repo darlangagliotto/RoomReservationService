@@ -22,14 +22,20 @@ namespace RoomService.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        // Include obrigatorio: sem ele a RoomResponse sai com a lista de
+        // equipamentos vazia, mentindo sobre o conteudo da sala.
         public async Task<Room?> GetByNameAsync(string name)
         {
-            return await _context.Rooms.FirstOrDefaultAsync(u => u.Name == name);
+            return await _context.Rooms
+                .Include(r => r.Equipments)
+                .FirstOrDefaultAsync(u => u.Name == name);
         }
 
         public async Task<Room?> GetByIdAsync(Guid id)
         {
-            return await _context.Rooms.FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Rooms
+                .Include(r => r.Equipments)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<Room?> GetByNumberAsync(int roomNumber)
@@ -46,7 +52,9 @@ namespace RoomService.Infrastructure.Repositories
 
         public async Task<Room?> GetByNameAndNumberAsync(string name, int roomNumber)
         {
-            return await _context.Rooms.FirstOrDefaultAsync(u => u.Name == name && u.Number == roomNumber);
+            return await _context.Rooms
+                .Include(r => r.Equipments)
+                .FirstOrDefaultAsync(u => u.Name == name && u.Number == roomNumber);
         }
 
         public async Task AddSync(Room room)

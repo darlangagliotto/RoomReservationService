@@ -97,6 +97,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=db;Database=reservationdb;Username=postgres;Password=postgrespw
+      - Services__RoomServiceUrl=http://roomservice:5000
+      - Services__UserServiceUrl=http://userservice:5000
       - Jwt__Issuer=AuthService
       - Jwt__Audience=AuthService.Client
       - Jwt__Key=${JWT_KEY}

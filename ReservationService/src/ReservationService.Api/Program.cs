@@ -12,8 +12,18 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddApplication()
+    .AddApplication(builder.Configuration)
     .AddInfrastructure(builder.Configuration);
+
+// Propagacao do token do chamador nas chamadas a User e RoomService (spec 002).
+// Singleton de proposito: os DelegatingHandler do HttpClientFactory sao
+// reaproveitados entre requisicoes, e um provider Scoped viraria dependencia
+// capturada de um escopo morto. IHttpContextAccessor ja resolve a requisicao
+// corrente via AsyncLocal, entao singleton aqui e correto e seguro.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<
+    ReservationService.Application.Services.IAccessTokenProvider,
+    ReservationService.Api.Http.HttpContextAccessTokenProvider>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

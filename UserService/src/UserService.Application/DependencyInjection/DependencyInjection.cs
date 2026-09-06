@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using UserService.Application.UseCases.GetUserById;
 using UserService.Application.UseCases.RegisterUser;
 using UserService.Application.UseCases.ValidateCredentials;
 using FluentValidation;
@@ -11,6 +12,7 @@ namespace UserService.Application.DependencyInjection
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddScoped<IRegisterUserUseCase, RegisterUserUseCase>();
+            services.AddScoped<IGetUserByIdUseCase, GetUserByIdUseCase>();
             services.AddScoped<IValidateCredentialsUseCase, ValidateCredentialsUseCase>();
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             return services;

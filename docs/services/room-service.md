@@ -45,6 +45,15 @@ Busca única com filtros opcionais por query string, resolvida assim:
 `200 OK` com `RoomResponse[]`. **Lista vazia devolve `400`** com `"No rooms found."`
 (consequência do ADR-011).
 
+### `GET /api/rooms/{id:guid}`
+
+`200 OK` com o `RoomResponse` completo, incluindo `equipments`.
+`404 Not Found` quando não existe — ver [ADR-013](../architecture/decisions.md).
+
+Consumido pelo ReservationService. Busca por nome ou número continua sendo
+`GET /api/rooms?name=&number=`: as rotas `/name/{n}` e `/number/{n}` que o client antigo
+esperava foram **descartadas** na [spec 002](../specs/002-consulta-por-id-e-auth-servico.md).
+
 ### `PATCH /api/rooms/{id:guid}`
 
 ```json
@@ -90,10 +99,11 @@ silenciosamente omitido.
 `_context.Set<RoomEquipment>()`). Schema, FKs e o índice único em
 [domain/model.md](../domain/model.md#roomdb). `Migrate()` no startup.
 
-Carregamento de `Equipments`: `GetAllAsync` e `GetByNumberAsync` usam `Include`;
-`GetByIdAsync`, `GetByNameAsync`, `GetByNameOrNumberAsync` e `GetByNameAndNumberAsync`
-**não** — nesses caminhos a coleção volta vazia e o mapper devolve lista vazia
-(afeta a resposta do `PATCH` e a busca por nome).
+Carregamento de `Equipments`: todos os caminhos de leitura usam `Include`, exceto
+`GetByNameOrNumberAsync`, que só serve à checagem de unicidade no cadastro e não alimenta
+resposta. O `Include` em `GetByIdAsync`, `GetByNameAsync` e `GetByNameAndNumberAsync` foi
+adicionado na spec 002 — sem ele a resposta saía com a lista de equipamentos vazia,
+mentindo sobre o conteúdo da sala.
 
 ## Configuração
 
@@ -103,8 +113,8 @@ Carregamento de `Equipments`: `GetAllAsync` e `GetByNumberAsync` usam `Include`;
 
 ## Lacunas conhecidas
 
-- **Faltam `GET /api/rooms/id/{id}`, `/number/{n}` e `/name/{n}`**, consumidos pelo
-  ReservationService ([backlog B1](../sdd/backlog.md#b1)).
+- ~~Faltam rotas de consulta por identificador~~ — resolvido pela
+  [spec 002](../specs/002-consulta-por-id-e-auth-servico.md).
 - **Defeito em `RegisterRoomUseCase.ValidateAsync`**: quando a validação de alocação
   falha, o método retorna `equipmentIdsValidation` (que é sucesso) em vez de
   `equipmnetAllocationValidation` — o erro é engolido e a inserção prossegue, sendo

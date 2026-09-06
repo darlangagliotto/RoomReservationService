@@ -1,3 +1,4 @@
+using UserService.Application.UseCases.GetUserById;
 using UserService.Application.UseCases.RegisterUser;
 using UserService.Application.UseCases.ValidateCredentials;
 using Microsoft.AspNetCore.Authorization;
@@ -12,13 +13,41 @@ namespace UserService.Api.Controllers
     {
         private readonly IRegisterUserUseCase _registerUserUseCase;
         private readonly IValidateCredentialsUseCase _validateCredentialsUseCase;
+        private readonly IGetUserByIdUseCase _getUserByIdUseCase;
 
         public UserController(
             IRegisterUserUseCase registerUserUseCase,
-            IValidateCredentialsUseCase validateCredentialsUseCase)
+            IValidateCredentialsUseCase validateCredentialsUseCase,
+            IGetUserByIdUseCase getUserByIdUseCase)
         {
             _registerUserUseCase = registerUserUseCase;
             _validateCredentialsUseCase = validateCredentialsUseCase;
+            _getUserByIdUseCase = getUserByIdUseCase;
+        }
+
+        /// <summary>
+        /// Consulta por identificador.
+        ///
+        /// Ausencia responde 404, e nao o 400 de negocio do ADR-011: o chamador
+        /// precisa distinguir "nao existe" de "falhou", e 404 e a resposta correta
+        /// para recurso enderecado por id. Ver docs/specs/002.
+        ///
+        /// Exige autenticacao — e a primeira rota deste servico que exige.
+        /// </summary>
+        [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(GetUserByIdResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<GetUserByIdResponse>> GetById([FromRoute] Guid id)
+        {
+            var response = await _getUserByIdUseCase.ExecuteAsync(new GetUserByIdRequest(id));
+
+            if (!response.IsSuccess)
+            {
+                return NotFound();
+            }
+
+            return Ok(response.Value);
         }
 
         [HttpPost]

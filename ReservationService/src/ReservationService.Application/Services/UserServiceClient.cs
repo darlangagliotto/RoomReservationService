@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 
 namespace ReservationService.Application.Services
@@ -13,11 +14,17 @@ namespace ReservationService.Application.Services
 
         public async Task<GetUserResponse?> GetUserByIdAsync(Guid userId)
         {
-            var response = await _httpClient.GetAsync($"/api/users/id/{userId}");
-            if (!response.IsSuccessStatusCode)
+            var response = await _httpClient.GetAsync($"/api/users/{userId}");
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
+
+            // Qualquer outra falha (401 por token expirado, 5xx) e erro de verdade e
+            // nao pode virar "usuario nao encontrado". Ver docs/specs/002.
+            response.EnsureSuccessStatusCode();
+
             return await response.Content.ReadFromJsonAsync<GetUserResponse>();
         }
     }

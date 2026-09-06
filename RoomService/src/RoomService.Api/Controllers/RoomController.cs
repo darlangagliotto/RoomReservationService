@@ -1,4 +1,5 @@
 using RoomService.Application.UseCases.RegisterRoom;
+using RoomService.Application.UseCases.GetRoomById;
 using RoomService.Application.UseCases.GetRooms;
 using RoomService.Application.UseCases.UpdateRoomDetails;
 using RoomService.Application.UseCases.Common;
@@ -15,15 +16,42 @@ namespace RoomService.Api.Controllers
         private readonly IRegisterRoomUseCase _registerRoomUseCase;
         private readonly IGetRoomsUseCase _getRoomsUseCase;
         private readonly IUpdateRoomDetailsUseCase _updateRoomDetailsUseCase;
+        private readonly IGetRoomByIdUseCase _getRoomByIdUseCase;
 
         public RoomController(
             IRegisterRoomUseCase registerRoomUseCase,
             IGetRoomsUseCase getRoomsUseCase,
-            IUpdateRoomDetailsUseCase updateRoomDetailsUseCase)
+            IUpdateRoomDetailsUseCase updateRoomDetailsUseCase,
+            IGetRoomByIdUseCase getRoomByIdUseCase)
         {
             _registerRoomUseCase = registerRoomUseCase;
             _getRoomsUseCase = getRoomsUseCase;
             _updateRoomDetailsUseCase = updateRoomDetailsUseCase;
+            _getRoomByIdUseCase = getRoomByIdUseCase;
+        }
+
+        /// <summary>
+        /// Consulta por identificador.
+        ///
+        /// Ausencia responde 404, e nao o 400 de negocio do ADR-011: o chamador
+        /// precisa distinguir "nao existe" de "falhou". Ver docs/specs/002.
+        ///
+        /// Busca por nome ou numero continua em GET /api/rooms?name=&amp;number=;
+        /// nao existem rotas /name/{n} nem /number/{n}.
+        /// </summary>
+        [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(RoomResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<RoomResponse>> GetById([FromRoute] Guid id)
+        {
+            var response = await _getRoomByIdUseCase.ExecuteAsync(new GetRoomByIdRequest(id));
+
+            if (!response.IsSuccess)
+            {
+                return NotFound();
+            }
+
+            return Ok(response.Value);
         }
 
         [HttpPost]

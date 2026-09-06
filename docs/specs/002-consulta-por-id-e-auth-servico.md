@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | Rascunho |
+| Status | Em verificação |
 | Serviços afetados | UserService, RoomService, ReservationService, Gateway |
 | Depende de | — |
 | Autor / data | Darlan · 2026-09-02 |
@@ -134,8 +134,8 @@ indisponibilidade, e isso permanece assim nesta spec.
 - [ ] Dado `userId` inexistente, quando crio uma reserva, então recebo `400` com `"User not found."`.
 - [ ] Dado uma reserva existente, quando listo reservas, então cada item traz nome do usuário e dados da sala.
 - [ ] Dado que o token do chamador expirou, quando o ReservationService chama outro serviço, então a falha aparece como erro, nunca como "não encontrado" silencioso.
-- [ ] As URLs dos serviços vêm de configuração; nenhum host fixo permanece no código.
-- [ ] `dotnet build` sem erros; testes dos casos de uso afetados passando com clients dublados.
+- [x] As URLs dos serviços vêm de configuração; nenhum host fixo permanece no código.
+- [x] `dotnet build` sem erros; testes dos casos de uso afetados passando com clients dublados.
 
 ## 9. Decisões em aberto
 

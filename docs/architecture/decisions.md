@@ -16,6 +16,8 @@ exige um ADR novo aqui (nunca editar um ADR aceito — superá-lo).
 | 009 | Migrations aplicadas no startup da API | Aceita, com ressalva |
 | 010 | Cancelamento de reserva é exclusão física | Aceita, a revisar |
 | 011 | `Result<T>` em vez de exceções para erro de negócio | Aceita |
+| 012 | Propagação do token do chamador entre serviços | Aceita |
+| 013 | `404` para consulta por identificador | Aceita |
 
 ---
 
@@ -113,3 +115,45 @@ violação de invariante dentro da entidade, sempre capturada no caso de uso.
 **Consequências**: fluxo explícito e sem custo de stack unwinding; o controller decide o
 status HTTP em um único ponto. Custo: todo erro de negócio vira `400`, inclusive
 "não encontrado" — a granularidade de status HTTP se perde.
+
+## ADR-012 — Propagação do token do chamador entre serviços
+
+**Contexto**: o ReservationService precisa consultar UserService e RoomService, que exigem
+JWT. Até a spec 002 ele não enviava header algum, e as chamadas seriam rejeitadas com `401`.
+
+**Decisão**: propagar o `Authorization` da requisição em curso, via `DelegatingHandler`
+registrado nos `HttpClient` tipados. A leitura do `HttpContext` fica na camada `Api`, atrás
+da porta `IAccessTokenProvider` declarada em `Application` — a camada de aplicação não
+conhece ASP.NET.
+
+**Alternativas descartadas**:
+
+| Opção | Descartada porque |
+|---|---|
+| Token de serviço próprio | Introduz segredo novo e uma identidade sem dono; ganho nulo enquanto a autorização é binária |
+| Rotas internas anônimas | Depende de a rede ser confiável — o oposto da defesa em profundidade do ADR-004 |
+
+**Consequências**: o ReservationService age **como o usuário**, herdando exatamente as
+permissões dele — adequado hoje porque não há papéis; **revisar quando houver**. Sem token
+no contexto (chamada de fundo, futura mensageria), a chamada sai sem header e o destino
+responde `401`: falha visível, nunca silenciosa.
+
+O provider é registrado como **singleton** de propósito: os `DelegatingHandler` do
+`HttpClientFactory` são reaproveitados entre requisições, e um provider `Scoped` viraria
+dependência capturada de um escopo morto. `IHttpContextAccessor` já resolve a requisição
+corrente via `AsyncLocal`.
+
+## ADR-013 — `404` para consulta por identificador
+
+**Contexto**: o ADR-011 manda todo erro de negócio virar `400`, inclusive "não encontrado".
+Isso funciona para operações, mas quebra quem consulta um recurso por id: o chamador não
+consegue distinguir "não existe" de "a chamada falhou".
+
+**Decisão**: `GET /api/users/{id}` e `GET /api/rooms/{id}` respondem `404` quando o recurso
+não existe. Demais operações seguem o ADR-011 sem mudança.
+
+**Consequências**: os clients do ReservationService tratam `404` como ausência e
+`EnsureSuccessStatusCode` para o resto — um `401` por token expirado deixa de ser
+confundido com "usuário não encontrado", que era o comportamento anterior. A regra vale
+apenas para leitura endereçada por identificador; buscas por filtro continuam devolvendo
+`400` com `"No … found."`, tratado como coleção vazia pelo frontend.

@@ -26,7 +26,7 @@ namespace ReservationService.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Reservation> GetReservationById(Guid id)
+        public async Task<Reservation?> GetReservationById(Guid id)
         {
             return await _context.Reservations.FirstOrDefaultAsync(u => u.Id == id);
         }

@@ -1,7 +1,8 @@
 namespace ReservationService.Application.Services
 {
-    public record GetUserResponse(
+    public record GetRoomResponse(
         Guid Id,
-        string Name        
+        string Name,
+        int Number
     );
 }

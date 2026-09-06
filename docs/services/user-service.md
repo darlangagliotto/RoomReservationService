@@ -9,8 +9,8 @@ identidade — nenhum outro serviço persiste dados de usuário.
 
 ## Endpoints
 
-Controller `api/users`, decorado com `[Authorize]` na classe, mas **ambas as actions são
-`[AllowAnonymous]`** — na prática a API é pública.
+Controller `api/users`, decorado com `[Authorize]` na classe. As duas rotas de escrita são
+`[AllowAnonymous]`; a consulta por id, não.
 
 ### `POST /api/users` — anônimo
 
@@ -44,10 +44,25 @@ Responde **sempre `200 OK`**, nunca erro, para não vazar existência de conta:
 `isValid: false` (com `userId: null`) para usuário inexistente, bloqueado ou senha
 incorreta.
 
+### `GET /api/users/{id}` — **autenticado**
+
+Consumido pelo ReservationService para exibir o nome de quem reservou.
+
+`200 OK`:
+```json
+{ "id": "9f3...", "name": "João Silva", "email": "joao@email.com" }
+```
+
+`404 Not Found` quando não existe · `401` sem token.
+
+Nunca devolve `passwordHash` nem `isBlocked`. Ausência responde `404`, e não o `400` de
+negócio — ver [ADR-013](../architecture/decisions.md).
+
 ## Casos de uso
 
 | Caso | Fluxo |
 |---|---|
+| `GetUserByIdUseCase` | busca por id → `Failure` se ausente, mapeada para `404` pelo controller |
 | `RegisterUserUseCase` | busca por e-mail → se existe, falha → cria `Email` VO + hash BCrypt + `User` (captura `DomainException`) → `AddSync` |
 | `ValidateCredentialsUseCase` | busca por e-mail normalizado → verifica `IsBlocked` → `IPasswordHasher.Verify` → devolve `Success` em todos os caminhos, variando `IsValid` |
 
@@ -85,9 +100,6 @@ invariantes valem para ele e a senha funciona no `validate-credentials` normalme
 
 ## Lacunas conhecidas
 
-- **Não existe `GET /api/users/id/{id}`**, endpoint que o ReservationService chama para
-  enriquecer a resposta com o nome do usuário → hoje a criação de reserva falha com
-  `"User not found."` ([backlog B1](../sdd/backlog.md#b1)).
 - **Unicidade de e-mail sem índice único no banco**: dois cadastros simultâneos com o
   mesmo e-mail passam pela checagem e ambos são persistidos.
 - Sem operações de atualização, exclusão, bloqueio/desbloqueio ou listagem — a entidade
