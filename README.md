@@ -64,7 +64,7 @@ Cadastro de usuários e validação interna de credenciais (usado pelo AuthServi
 | POST   | `/api/users`                        | não  | Cadastra um novo usuário (`name`, `email`, `password`) |
 | POST   | `/api/users/validate-credentials`     | não  | Uso interno (chamado pelo AuthService) — valida e-mail/senha |
 
-> ⚠️ **Limitação conhecida:** não existe endpoint `GET` para buscar usuário por Id. O `ReservationService` espera consumir `GET /api/users/id/{id}` para enriquecer a resposta da reserva com o nome do usuário — esse endpoint **ainda precisa ser criado** no `UserController`, senão essa busca sempre retorna vazio.
+| GET    | `/api/users/{id}`                  | sim  | Consulta por id; devolve `id`, `name` e `email` |
 
 ### RoomService — porta `5003`
 Cadastro de salas e equipamentos. Um equipamento só pode estar alocado a uma sala por vez.
@@ -74,9 +74,10 @@ Cadastro de salas e equipamentos. Um equipamento só pode estar alocado a uma sa
 | POST   | `/api/rooms`               | sim  | Cadastra uma sala (`name`, `number`, `equipmentIds`)    |
 | GET    | `/api/rooms`                 | sim  | Busca salas por query string (`?name=`, `?number=`); sem filtro, lista todas |
 | PATCH  | `/api/rooms/{id}`               | sim  | Atualiza nome e/ou número de uma sala existente           |
-| POST   | `/api/equipments`                 | sim  | Cadastra um equipamento (`type`, `brand`, `serialNumber`, `purchaseDate`) |
+| POST   | `/api/equipments`             | sim  | Cadastra equipamento (`type` do vocabulário, `brand`, `serialNumber`, `purchaseDate`) |
+| GET    | `/api/equipments`             | sim  | Lista equipamentos (`?type=`, `?unassigned=true`) |
+| GET    | `/api/rooms/{id}`              | sim  | Consulta sala por id |
 
-> ⚠️ **Limitação conhecida:** o `ReservationService` espera consumir `GET /api/rooms/id/{id}`, `GET /api/rooms/number/{n}` e `GET /api/rooms/name/{name}` para resolver a sala pelo identificador informado — essas rotas **ainda não existem** no `RoomController` (hoje só há a busca via query string em `GET /api/rooms`). Sem isso, a criação de reserva sempre falha com "Room not found".
 
 ### ReservationService — porta `5004`
 Regras de negócio de reserva: existência de usuário/sala (via chamada HTTP aos outros serviços) e conflito de horário.
@@ -85,9 +86,10 @@ Regras de negócio de reserva: existência de usuário/sala (via chamada HTTP ao
 |--------|------------------------------|------|--------------------------------------------------------------------------|
 | POST   | `/api/reservations`            | sim  | Cria reserva (`userId`, `roomId`, `startDate`, `endDate`); valida usuário, sala e overlap de horário |
 | GET    | `/api/reservations`              | sim  | Busca reservas por `userId`, `userName`, `roomId`, `roomNumber`, `roomName`, `startDate`, `endDate` |
-| DELETE | `/api/reservations/{id}`           | sim  | Cancela uma reserva (não permite cancelar reserva já iniciada)              |
+| DELETE | `/api/reservations/{id}`       | sim  | Cancela uma reserva (não permite cancelar reserva já iniciada) |
+| GET    | `/api/reservations/availability` | sim  | Estado de cada sala num intervalo (`Disponivel`, `Reservada`, `EmUso`) |
 
-> Depende de `UserService` e `RoomService` estarem disponíveis e saudáveis para criar/buscar reservas (ver limitações acima — hoje essa integração está incompleta).
+> Depende de `UserService` e `RoomService` estarem disponíveis para criar e buscar reservas. O token do chamador é propagado nessas chamadas (ADR-012).
 
 ## Autenticação
 
@@ -108,7 +110,7 @@ docker compose up --build
 Sobe, nesta ordem de dependência: Postgres → UserService → AuthService/RoomService/ReservationService → Gateway.
 
 Em `Development`, o UserService cria um usuário fixo no startup para você conseguir logar
-de imediato — `dev@roomreservation.dev` / `dev123456`. O seeder não roda em nenhum outro
+de imediato — `admin@admin.com` / `admin`. O seeder não roda em nenhum outro
 ambiente (ver `docs/services/user-service.md`).
 
 | Serviço             | Endereço               |

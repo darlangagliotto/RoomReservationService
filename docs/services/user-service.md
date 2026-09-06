@@ -80,9 +80,9 @@ negócio — ver [ADR-013](../architecture/decisions.md).
 | Chave | Valor no Compose |
 |---|---|
 | `Seed:DefaultUser:Enabled` | `true` |
-| `Seed:DefaultUser:Name` | `Dev User` |
-| `Seed:DefaultUser:Email` | `dev@roomreservation.dev` |
-| `Seed:DefaultUser:Password` | `dev123456` |
+| `Seed:DefaultUser:Name` | `Administrador` |
+| `Seed:DefaultUser:Email` | `admin@admin.com` |
+| `Seed:DefaultUser:Password` | `admin` |
 
 Duas travas impedem que isso vire conta permanente com senha pública: o seeder **sai
 imediatamente fora do ambiente `Development`**, e pode ser desligado por

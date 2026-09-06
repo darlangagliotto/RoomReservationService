@@ -19,9 +19,9 @@ namespace UserService.Api.Seeding
     public static class DevelopmentSeeder
     {
         private const string SectionName = "Seed:DefaultUser";
-        private const string DefaultName = "Dev User";
-        private const string DefaultEmail = "dev@roomreservation.dev";
-        private const string DefaultPassword = "dev123456";
+        private const string DefaultName = "Administrador";
+        private const string DefaultEmail = "admin@admin.com";
+        private const string DefaultPassword = "admin";
 
         public static async Task SeedDefaultUserAsync(WebApplication app)
         {
