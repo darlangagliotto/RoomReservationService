@@ -57,6 +57,11 @@ export function getEmail(token: string): string | null {
   return decodeJwtPayload(token)?.email ?? null
 }
 
+/** Claim `sub` — identificador do usuário, usado como `userId` nas reservas (spec 008). */
+export function getUserId(token: string): string | null {
+  return decodeJwtPayload(token)?.sub ?? null
+}
+
 /** Instante de expiracao, ou null se o token nao declarar `exp`. */
 export function getExpiresAt(token: string): Date | null {
   const exp = decodeJwtPayload(token)?.exp

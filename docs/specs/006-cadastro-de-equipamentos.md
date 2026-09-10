@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | Rascunho |
+| Status | Implementada |
 | Serviços afetados | Frontend (RoomService consumido, sem alteração) |
 | Depende de | [004](004-catalogo-de-equipamentos-e-planta.md) (vocabulário e âncoras), [005](005-navegacao-e-salas.md) (barra de navegação) |
 | Autor / data | Darlan · 2026-09-06 |

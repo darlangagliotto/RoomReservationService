@@ -67,7 +67,30 @@ Ambos opcionais; o `id` da rota sobrescreve o do corpo. `200 OK` com
 
 `400`: `"Sala não encontrada."`, `"Informe ao menos um campo para atualizar."`,
 `"Já existe uma sala com esse nome."`, `"Já existe uma sala com esse número."`,
-ou `DomainException`. Não altera equipamentos.
+ou `DomainException`. Não altera equipamentos — ver os dois endpoints seguintes,
+adicionados na [spec 007](../specs/007-atribuir-equipamentos-as-salas.md).
+
+### `POST /api/rooms/{id:guid}/equipments`
+
+Aloca um ou mais equipamentos livres à sala existente.
+
+```json
+{ "equipmentIds": ["<guid>", "<guid>"] }
+```
+
+`200 OK` com `{ "room": { ... } }` (mesmo envelope do `PATCH`, sala inteira e atualizada).
+
+`400`: `"Sala não encontrada."`, `"Informe ao menos um equipamento."`,
+`"Há equipamento com identificador inválido."`, `"Equipamento não encontrado."`,
+`"Este equipamento já está alocado a outra sala."`, `"Este equipamento já está na sala."`.
+Validação é atômica: se um id da lista falhar, nenhum é alocado.
+
+### `DELETE /api/rooms/{id:guid}/equipments/{equipmentId:guid}`
+
+Desaloca um equipamento da sala; ele volta a aparecer em
+`GET /api/equipments?unassigned=true`. Sem corpo. `200 OK` com `{ "room": { ... } }`.
+
+`400`: `"Sala não encontrada."`, `"Este equipamento não está na sala."`.
 
 ### `POST /api/equipments`
 
@@ -104,6 +127,8 @@ resposta legítima. Uma consulta só, com left join — sem N+1.
 | `GetRoomsUseCase` | resolve a estratégia de busca conforme a tabela acima; falha se vazio |
 | `UpdateRoomDetailsUseCase` | carrega a sala, valida colisão de nome/número, aplica `Rename`/`ChangeNumber` |
 | `RegisterEquipmentUseCase` | valida serial e cria `Equipment` |
+| `AssignEquipmentsToRoomUseCase` | valida sala → lista não vazia/sem `Guid.Empty` → existência de cada equipamento → não alocado em outra sala nem já nesta → `Room.AddEquipment` para cada um → persiste |
+| `RemoveEquipmentFromRoomUseCase` | valida sala → `Room.RemoveEquipment` → persiste |
 
 `IEquipmentResponseMapper` (`Common/Services`) traduz `RoomEquipment` → `EquipmentResponse`
 buscando cada equipamento **um a um** no repositório; equipamento não encontrado é
@@ -135,11 +160,13 @@ mentindo sobre o conteúdo da sala.
 - ~~Defeito em `RegisterRoomUseCase.ValidateAsync`~~ — corrigido na spec 004.
 - `ValidateEquipmentIdsAsync` checa `Guid.Empty` **depois** de buscar cada id no
   repositório; um `Guid.Empty` na lista falha antes com `"Equipment with ID ... not found!"`.
-- Sem endpoints para atualizar ou remover equipamentos (listagem entregue pela spec 004), remover sala, ou
-  adicionar/remover equipamento de uma sala existente (o domínio suporta
-  `RemoveEquipment`, a API não expõe).
+- ~~Sem endpoints para adicionar/remover equipamento de uma sala existente~~ — resolvido
+  pela [spec 007](../specs/007-atribuir-equipamentos-as-salas.md).
+- Sem endpoints para atualizar ou remover equipamentos (listagem entregue pela spec 004)
+  nem para remover sala.
 - Unicidade de nome, número e número de série sem índice único no banco.
-- `RoomService.UnitTests` cobre âncoras, vocabulário de tipo, normalização de data e limites de `planSlot` (24 testes).
+- `RoomService.UnitTests` cobre âncoras, vocabulário de tipo, normalização de data, limites
+  de `planSlot` e os dois casos de uso de alocação/desalocação (35 testes).
 - Diferente dos demais, este `Program.cs` registra `AddSecurityRequirement` no Swagger —
   por isso o botão *Authorize* aplica o token automaticamente aqui e no
   ReservationService, mas não em Auth/User.

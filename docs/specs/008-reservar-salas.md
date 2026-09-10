@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | Rascunho |
+| Status | Implementada |
 | Serviços afetados | Frontend (ReservationService consumido, sem alteração) |
 | Depende de | [002](002-consulta-por-id-e-auth-servico.md) (sem ela o `POST` sempre falha), [005](005-navegacao-e-salas.md) (navegação e salas cadastradas) |
 | Autor / data | Darlan · 2026-09-06 |

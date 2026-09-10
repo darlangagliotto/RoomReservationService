@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | Rascunho |
+| Status | Implementada |
 | Serviços afetados | **RoomService** (endpoints novos), Frontend |
 | Depende de | [005](005-navegacao-e-salas.md) (tela de salas), [006](006-cadastro-de-equipamentos.md) (há o que atribuir) |
 | Autor / data | Darlan · 2026-09-06 |
@@ -135,10 +135,12 @@ Mesma razão para **não** haver um `PUT` que troca o conjunto inteiro.
 
 ### Frontend
 
-O painel vive na tela **Salas** (`/salas`), não na de Equipamentos. A pergunta que a pessoa
-faz é "o que tem nesta sala?", e a resposta pertence à sala. A tela de Equipamentos (spec
-006) continua mostrando a alocação como **leitura** — ela responde "onde está este
-equipamento?", que é outra pergunta.
+A gestão vive **dentro da tela de edição da sala** (`/salas` → Editar), não num diálogo
+à parte nem na tela de Equipamentos. Nome, número, posição na planta e equipamentos são
+a mesma pergunta — "como esta sala está configurada?" — então ficam na mesma tela; abrir
+um diálogo separado para equipamentos duplicaria essa pergunta em dois lugares sem motivo.
+A tela de Equipamentos (spec 006) continua mostrando a alocação como **leitura** — ela
+responde "onde está este equipamento?", que é outra pergunta.
 
 O seletor oferece apenas `GET /api/equipments?unassigned=true`: um equipamento já alocado
 não aparece como opção, então o erro de alocação dupla vira caminho excepcional (corrida
@@ -189,13 +191,19 @@ não olha equipamentos.
 
 **Frontend**
 
-- [ ] Dado uma sala na lista, então consigo abrir a gestão de equipamentos dela.
-- [ ] Dado o painel aberto, então vejo os equipamentos da sala e uma seleção contendo **apenas** equipamentos livres.
-- [ ] Dado que adiciono um equipamento, então ele aparece na sala e some da lista de livres, sem eu recarregar a página.
-- [ ] Dado que retiro um equipamento, então ele sai da sala e volta à lista de livres.
-- [ ] Dado que o servidor recusa a alocação, então vejo a mensagem dele junto ao painel e a lista é recarregada.
-- [ ] Em 375px o painel é usável e não produz scroll horizontal.
-- [ ] O painel é percorrível apenas com teclado, com foco visível, e fecha com `Esc`.
+- [ ] Dado uma sala na lista, quando clico em Editar, então vejo os equipamentos dela na
+      mesma tela, abaixo dos campos de nome/número/planta.
+- [ ] Dado a tela de edição aberta, então vejo os equipamentos da sala e uma busca que
+      sugere **apenas** equipamentos livres conforme digito.
+- [ ] Dado que adiciono um equipamento pela busca, então ele aparece na sala e some das
+      sugestões, sem eu recarregar a página nem clicar em "Salvar alterações" — essa ação
+      é independente do formulário de nome/número/planta.
+- [ ] Dado que retiro um equipamento, então ele sai da sala e volta a aparecer nas
+      sugestões de busca.
+- [ ] Dado que o servidor recusa a alocação, então vejo a mensagem dele junto à seção de
+      equipamentos, sem perder o que já estava preenchido no formulário acima.
+- [ ] Em 375px a seção de equipamentos é usável e não produz scroll horizontal.
+- [ ] A busca e a lista de equipamentos são percorríveis apenas com teclado, com foco visível.
 - [ ] `npx tsc --noEmit` limpo e `npm test` passando.
 
 ## 9. Decisões em aberto

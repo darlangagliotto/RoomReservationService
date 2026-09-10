@@ -5,6 +5,8 @@ using RoomService.Application.UseCases.GetEquipments;
 using RoomService.Application.UseCases.GetRoomById;
 using RoomService.Application.UseCases.GetRooms;
 using RoomService.Application.UseCases.UpdateRoomDetails;
+using RoomService.Application.UseCases.AssignEquipmentsToRoom;
+using RoomService.Application.UseCases.RemoveEquipmentFromRoom;
 using RoomService.Application.UseCases.Common.Services;
 
 namespace RoomService.Application.DependencyInjection
@@ -19,6 +21,8 @@ namespace RoomService.Application.DependencyInjection
             services.AddScoped<IGetRoomByIdUseCase, GetRoomByIdUseCase>();
             services.AddScoped<IGetEquipmentsUseCase, GetEquipmentsUseCase>();
             services.AddScoped<IUpdateRoomDetailsUseCase, UpdateRoomDetailsUseCase>();
+            services.AddScoped<IAssignEquipmentsToRoomUseCase, AssignEquipmentsToRoomUseCase>();
+            services.AddScoped<IRemoveEquipmentFromRoomUseCase, RemoveEquipmentFromRoomUseCase>();
             services.AddScoped<IEquipmentResponseMapper, EquipmentResponseMapper>();
             
             return services;

@@ -5,6 +5,7 @@ import { ErrorState } from '@/components/ErrorState'
 import { PageHeader } from '@/components/PageHeader'
 import { Skeleton } from '@/components/Skeleton'
 import { Button } from '@/components/ui/button'
+import { RoomEquipmentEditor } from '@/features/rooms/components/RoomEquipmentEditor'
 import { RoomForm } from '@/features/rooms/components/RoomForm'
 import { RoomList } from '@/features/rooms/components/RoomList'
 import {
@@ -46,6 +47,10 @@ export function RoomsPage() {
   }
 
   if (mode.kind === 'edit') {
+    // Deriva da lista sempre que possivel: assim que assign/remove invalida a
+    // query, os equipamentos aqui atualizam sem precisar reabrir a tela.
+    const liveRoom = rooms.data?.find((room) => room.id === mode.room.id) ?? mode.room
+
     return (
       <>
         <PageHeader title={`Editar ${mode.room.name}`} />
@@ -64,7 +69,9 @@ export function RoomsPage() {
             })
             setMode({ kind: 'list' })
           }}
-        />
+        >
+          <RoomEquipmentEditor room={liveRoom} unassignedEquipments={equipments.data ?? []} />
+        </RoomForm>
       </>
     )
   }

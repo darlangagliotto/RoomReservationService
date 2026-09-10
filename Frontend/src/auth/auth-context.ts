@@ -5,6 +5,8 @@ export interface Session {
   token: string
   /** Lido do claim `email`. O token nao carrega nome nem papel. */
   email: string | null
+  /** Lido do claim `sub`. E o `userId` usado ao criar/listar reservas (spec 008). */
+  userId: string | null
 }
 
 export interface AuthContextValue {

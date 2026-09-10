@@ -3,17 +3,9 @@
 */
 
 import type { ApiClient } from '@/api/client'
+import { listEquipments, type Equipment } from '@/api/equipments'
 
-export interface Equipment {
-  id: string
-  type: string
-  /** Ancora efetiva, ja resolvida pelo backend. O cliente nao deriva isso. */
-  placement: string
-  brand: string
-  serialNumber: string
-  purchaseDate: string
-  roomId: string | null
-}
+export type { Equipment }
 
 export interface Room {
   id: string
@@ -57,5 +49,28 @@ export function updateRoom(
 export function listUnassignedEquipments(client: ApiClient): Promise<Equipment[]> {
   // Equipamento so pode estar numa sala: o seletor de cadastro nunca deve
   // oferecer um ja alocado.
-  return client.requestList<Equipment>('/api/equipments?unassigned=true')
+  return listEquipments(client, { unassignedOnly: true })
+}
+
+/** Aloca equipamentos livres a uma sala existente. Ver docs/specs/007. */
+export function assignEquipmentsToRoom(
+  client: ApiClient,
+  roomId: string,
+  equipmentIds: string[],
+): Promise<{ room: Room }> {
+  return client.request<{ room: Room }>(`/api/rooms/${roomId}/equipments`, {
+    method: 'POST',
+    body: { equipmentIds },
+  })
+}
+
+/** Desaloca um equipamento; ele volta a aparecer como livre. */
+export function removeEquipmentFromRoom(
+  client: ApiClient,
+  roomId: string,
+  equipmentId: string,
+): Promise<{ room: Room }> {
+  return client.request<{ room: Room }>(`/api/rooms/${roomId}/equipments/${equipmentId}`, {
+    method: 'DELETE',
+  })
 }

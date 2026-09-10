@@ -11,6 +11,10 @@ interface RoomListProps {
  * Mesma informacao em duas apresentacoes: tabela em tela larga, cartoes em
  * tela estreita. Nao e degradacao — e a apresentacao certa para cada espaco.
  * So uma das duas e renderizada (ver useMediaQuery).
+ *
+ * Gestao de equipamentos nao tem acao propria aqui: ela vive dentro da tela
+ * de edicao (RoomEquipmentEditor), junto dos outros dados da sala — nao num
+ * dialogo a parte que duplicaria "onde eu mexo nesta sala".
  */
 export function RoomList({ rooms, onEdit }: RoomListProps) {
   return useIsWideScreen() ? (

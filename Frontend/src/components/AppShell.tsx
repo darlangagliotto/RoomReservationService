@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils'
 /*
   Moldura das rotas autenticadas.
 
-  A barra so lista destinos que existem de verdade: Equipamentos, Reservas e a
-  Planta entram quando suas telas existirem (specs 006 e 007). Item de menu
+  A barra so lista destinos que existem de verdade: a Planta entra quando a
+  tela existir (spec 009, que depende de arte da planta baixa). Item de menu
   apontando para lugar nenhum e decoracao.
 
   Exibe o e-mail porque o JWT nao carrega nome (docs/services/auth-service.md).
@@ -15,6 +15,8 @@ import { cn } from '@/lib/utils'
 const sections = [
   { to: '/', label: 'Início', end: true },
   { to: '/salas', label: 'Salas', end: false },
+  { to: '/equipamentos', label: 'Equipamentos', end: false },
+  { to: '/reservas', label: 'Reservas', end: false },
 ]
 
 export function AppShell() {

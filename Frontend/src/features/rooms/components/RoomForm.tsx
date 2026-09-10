@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { ApiError, ValidationError } from '@/api/errors'
@@ -6,6 +7,7 @@ import type { Equipment, Room } from '@/api/rooms'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { EquipmentPicker } from '@/features/rooms/components/EquipmentPicker'
 
 /*
   Espelha as invariantes de docs/domain/model.md. Espelhar nao e substituir:
@@ -27,12 +29,15 @@ type ParsedRoom = z.output<typeof roomSchema>
 interface RoomFormProps {
   room?: Room
   equipments?: Equipment[]
+  /** Conteúdo extra entre os campos e os botões — ex.: gestão de equipamentos na edição. */
+  children?: ReactNode
   submitLabel: string
   onCancel: () => void
   onSubmit: (values: ParsedRoom & { equipmentIds: string[] }) => Promise<void>
 }
 
-export function RoomForm({ room, equipments, submitLabel, onCancel, onSubmit }: RoomFormProps) {
+export function RoomForm({ room, equipments, children, submitLabel, onCancel, onSubmit }: RoomFormProps) {
+  const [equipmentIds, setEquipmentIds] = useState<string[]>([])
   const {
     register,
     handleSubmit,
@@ -47,14 +52,7 @@ export function RoomForm({ room, equipments, submitLabel, onCancel, onSubmit }: 
     },
   })
 
-  async function submit(values: ParsedRoom, event?: React.BaseSyntheticEvent) {
-    const form = event?.target as HTMLFormElement | undefined
-    const equipmentIds = form
-      ? Array.from(form.querySelectorAll<HTMLInputElement>('input[name="equipmentIds"]:checked')).map(
-          (input) => input.value,
-        )
-      : []
-
+  async function submit(values: ParsedRoom) {
     try {
       await onSubmit({ ...values, equipmentIds })
     } catch (error) {
@@ -135,32 +133,14 @@ export function RoomForm({ room, equipments, submitLabel, onCancel, onSubmit }: 
       </div>
 
       {equipments && (
-        <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-medium">Equipamentos disponíveis</legend>
-          {equipments.length === 0 ? (
-            <p className="text-sm text-muted">
-              Nenhum equipamento livre. Equipamento já alocado a outra sala não pode ser reutilizado.
-            </p>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {equipments.map((equipment) => (
-                <label key={equipment.id} className="flex items-center gap-3 text-sm">
-                  <input
-                    type="checkbox"
-                    name="equipmentIds"
-                    value={equipment.id}
-                    className="size-4 accent-[var(--color-accent)]"
-                  />
-                  <span>
-                    {equipment.type} · {equipment.brand}{' '}
-                    <span className="text-muted">({equipment.serialNumber})</span>
-                  </span>
-                </label>
-              ))}
-            </div>
-          )}
-        </fieldset>
+        <EquipmentPicker
+          equipments={equipments}
+          selectedIds={equipmentIds}
+          onChange={setEquipmentIds}
+        />
       )}
+
+      {children}
 
       {errors.root && (
         <p role="alert" className="text-sm text-danger">

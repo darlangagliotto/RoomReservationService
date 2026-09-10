@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/api'
 import {
+  assignEquipmentsToRoom,
   createRoom,
   listRooms,
   listUnassignedEquipments,
+  removeEquipmentFromRoom,
   updateRoom,
   type CreateRoomInput,
   type UpdateRoomInput,
@@ -44,6 +46,32 @@ export function useUpdateRoom() {
       updateRoom(apiClient, id, input),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: roomsKey })
+    },
+  })
+}
+
+export function useAssignEquipments() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ roomId, equipmentIds }: { roomId: string; equipmentIds: string[] }) =>
+      assignEquipmentsToRoom(apiClient, roomId, equipmentIds),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: roomsKey })
+      await queryClient.invalidateQueries({ queryKey: ['equipments'] })
+    },
+  })
+}
+
+export function useRemoveEquipment() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ roomId, equipmentId }: { roomId: string; equipmentId: string }) =>
+      removeEquipmentFromRoom(apiClient, roomId, equipmentId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: roomsKey })
+      await queryClient.invalidateQueries({ queryKey: ['equipments'] })
     },
   })
 }

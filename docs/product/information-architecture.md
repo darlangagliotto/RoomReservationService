@@ -17,39 +17,54 @@ Consequência de projeto: a tela inicial não é um painel de métricas. É a pr
 
 | Decisão | Razão |
 |---|---|
-| **Um andar só, planta fixa, no máximo 10 salas** | O andar existe e não muda; isso permite uma planta desenhada uma vez |
-| **Acabamento realista, não esquemático** | Requisito do produto. Ver "Tratamento visual" |
+| **Grade de cards de sala, cada um com imagem ilustrativa individual** | Substitui a ideia original de planta única do andar (ver "Histórico da decisão visual"); cresce com o cadastro sem depender de uma arte redesenhada a cada sala nova |
+| **Acabamento estilizado, nem esquemático nem fotorrealista** | Ilustração top-down gerada por IA, no tom do tema (petróleo escuro + acento âmbar) — ver "Tratamento visual" |
 | **Três estados**: disponível · reservada · em uso | Sala livre agora mas reservada logo não serve para uma reunião longa |
 | **Status é derivado das reservas**, nunca um campo | Uma sala não "é" ocupada; ela está ocupada num intervalo |
-| **A referência de tempo abre em "agora" e é móvel** | Abrir em agora é útil sem configurar; sem poder mover, não se reserva para mais tarde |
-| **Navegação no topo**, não lateral | 4 seções não justificam menu lateral, e a planta precisa de toda a largura |
+| **Referência de tempo fixa em "agora + 30 minutos"** nesta versão | Sem slider ainda (ver "Fora de escopo" da spec 009); simples e cobre o caso comum |
+| **Navegação no topo**, não lateral | 4 seções não justificam menu lateral |
 | **Derivar, não pedir** | Posição pedida no cadastro vira campo vazio em produção. Ver abaixo |
 
 ## Tratamento visual
 
-**Requisito registrado**: a planta deve ter acabamento **realista** — piso, mobiliário e
-volume desenhados —, não traço esquemático. Planta em linha fina foi avaliada e
-**recusada**. A referência aceita é um render arquitetônico visto de cima.
-
-Como a planta é **fixa** e tem no máximo 10 salas, o caminho é:
+Cada sala é um **card** com uma imagem de fundo ilustrativa, vista de cima (top-down),
+estilo semi-flat com sombra suave — nem traço esquemático nem render fotorrealista. As
+imagens vêm de um conjunto pequeno e fixo (3 variações, geradas uma vez por IA de imagem),
+distribuídas entre as salas cadastradas; **não são fotos reais de cada sala** e não mudam
+conforme o equipamento cadastrado nela — equipamento é informação do painel de detalhe,
+não da imagem.
 
 | Camada | O que é | Origem |
 |---|---|---|
-| **Base** | Render realista do andar inteiro, visto de cima | Feito **uma vez**, fora do sistema (ferramenta 3D ou arte encomendada) |
-| **Hotspots** | Um polígono invisível por sala, sobre a base | `Room.PlanSlot` liga a sala ao polígono |
-| **Estado** | Etiqueta com texto e contorno, por sala | Calculado pela API de disponibilidade |
-| **Equipamentos** | Marcadores nas âncoras + lista no painel | Dados do cadastro |
+| **Imagem do card** | Uma de 3 ilustrações top-down fixas, distribuída por sala de forma determinística (mesma sala sempre mostra a mesma imagem) | Geradas uma vez, fora do sistema; arquivos em `Frontend/public/rooms/` |
+| **Estado** | Bolinha colorida + texto, sobreposta no card | Calculado pela API de disponibilidade (spec 003) |
+| **Detalhe** | Painel lateral ao clicar no card: nome, número, status, equipamentos, próximo horário, botão de reserva | Dados do cadastro + disponibilidade |
 
-Consequência a assumir de olhos abertos: **o mobiliário do render é cenário**. O
-equipamento *cadastrado* aparece como marcador sobre o render e na lista do painel — não
-como móvel desenhado. Trocar a base (render novo) não exige mudar código, só o arquivo e
-os polígonos.
+O estado **nunca** é uma lavagem de cor sobre a imagem inteira — é uma bolinha (`●`) mais
+texto, nunca só cor: `--color-success` (verde-petróleo) para Disponível, `--color-accent`
+(âmbar) para Reservada, `--color-muted` (cinza) para Em uso — o mesmo mapeamento que os
+tokens de `globals.css` já documentam.
 
-O estado **nunca** é uma lavagem de cor sobre a sala: com piso desenhado, a película briga
-com a arte. Etiqueta com texto e contorno, como na referência.
+Como a planta deixou de ser um mapa único, o modelo **não precisa** de `PlanSlot`,
+polígono nem largura/profundidade de sala para esta tela. `Room.PlanSlot` continua existindo
+no schema (spec 004) mas fica sem uso funcional aqui — não é removido, só não é mais o
+mecanismo de posicionamento visual.
 
-Como a planta é fixa, o modelo **não precisa** de largura, profundidade nem formato da
-sala. Isso foi removido do escopo.
+### Histórico da decisão visual
+
+Duas voltas antes de chegar aqui, registradas para quem for mexer nisso depois:
+
+1. Primeira decisão: planta única do andar, um render realista visto de cima, com um
+   polígono (`Room.PlanSlot`) por sala sobre essa base. Recusada na prática porque um
+   render de andar inteiro não escala — geradores de imagem não garantem um layout com o
+   número exato de salas do cadastro, e adicionar uma sala nova exigiria regerar a base
+   inteira.
+2. Tentativa de estilo 100% vetorial (SVG desenhado em código, flat ou pseudo-3D) para não
+   depender de gerar imagem nenhuma — descartada por ficar simples demais para o padrão
+   visual desejado.
+3. **Decisão atual**: cada sala é um card independente com uma imagem ilustrativa (de um
+   pool pequeno, não uma por sala), o que cresce naturalmente com o cadastro e não depende
+   de redesenhar nada quando uma sala é criada.
 
 ### Derivar, não pedir
 
@@ -84,10 +99,10 @@ Room Reservation     Planta   Reservas   Salas   Equipamentos     usuario@email 
 | `/salas` | **Salas** | cadastrar e editar salas |
 | `/equipamentos` | **Equipamentos** | cadastrar equipamentos |
 
-A barra lista apenas destinos que existem. Hoje: Início e Salas (spec 005); Equipamentos,
-Reservas e Planta entram com as specs 006, 008 e 009. Em telas estreitas a barra quebra para a
-linha de baixo em vez de colapsar num menu — com poucos itens, um hambúrguer esconderia
-mais do que ajudaria.
+A barra lista apenas destinos que existem. Hoje: Início, Salas (spec 005), Equipamentos
+(spec 006) e Reservas (spec 008); a Planta entra com a spec 009. Em telas estreitas a barra
+quebra para a linha de baixo em vez de colapsar num menu — com poucos itens, um hambúrguer
+esconderia mais do que ajudaria.
 
 > **Sem papéis.** O JWT não carrega papel e a autorização do sistema é binária: qualquer
 > pessoa autenticada cadastra e edita salas e equipamentos. Isso é consequência do backend
@@ -98,21 +113,18 @@ mais do que ajudaria.
 
 ### Planta do andar — `/` (Home)
 
-Vista de cima do andar. Cada sala é desenhada como planta (parede com vão de porta e arco
-de abertura), com o número em numeral tabular ao centro e os equipamentos como glifos de
-traço fino nas suas âncoras.
+Grade de cards, um por sala cadastrada — não mais um mapa único do andar (ver "Histórico
+da decisão visual"). Cada card tem: imagem ilustrativa de fundo, número da sala, nome, e
+uma bolinha de estado com texto no canto ("● Livre", "● Reservada", "● Em uso").
 
-- **Estado** por lavagem de cor **mais etiqueta**: teal = livre, âmbar = ocupada, sempre
-  com texto ("Livre", "Ocupada até 15:30"). Nunca só cor.
-- **Linha do tempo acima da planta**: arrastar move a referência e **repinta o andar**.
-  É o elemento de assinatura da tela e o que a torna ferramenta de reserva, não diagrama.
-- **Passar o mouse** eleva a sala; **clicar ou tocar** abre painel com equipamentos e
-  próximos horários. O painel é o caminho garantido; o hover é enriquecimento.
-- **Abaixo de 768px** a planta dá lugar a cartões de sala com exatamente as mesmas
-  etiquetas e a mesma lista. Não é degradação: é a apresentação certa para o espaço.
-
-Disciplina de cor: glifos de equipamento são monocromáticos, na tinta das paredes. **Cor
-é exclusiva do status** — caso contrário a planta vira confete e o status deixa de saltar.
+- **Estado** por bolinha colorida **mais texto**, nunca lavagem de cor sobre a imagem.
+- **Clicar** no card abre painel lateral com equipamentos, status atual e próximo
+  horário livre/ocupado, e um botão para reservar aquela sala com o horário pré-preenchido.
+- A grade já é responsiva por natureza dos cards — não precisa de uma apresentação
+  separada abaixo de 768px como as telas de tabela.
+- Sem linha do tempo arrastável nesta versão: a referência é fixa em "agora, próximos 30
+  minutos" (ver spec 009, Fora de escopo). Mover essa referência fica para quando fizer
+  falta de verdade.
 
 ### Detalhe da sala — `/salas/:id`
 
@@ -141,19 +153,18 @@ saber o que falta abaixo dela.
 
 | Tela | Backend | Situação |
 |---|---|---|
-| Planta | `GET /api/reservations/availability`, `GET /api/rooms` | ✅ pronto — falta o **render** |
+| Planta | `GET /api/reservations/availability`, `GET /api/rooms` | ✅ pronto e **em uso** (spec 009) |
 | Detalhe da sala | `GET /api/rooms/{id}`, `GET /api/reservations?roomId=` | ✅ pronto |
-| Nova reserva | `POST /api/reservations` | ✅ pronto |
-| Reservas | `GET`, `DELETE /api/reservations`, `GET /api/users/{id}` | ✅ pronto |
-| Equipamentos de uma sala | `POST`/`DELETE /api/rooms/{id}/equipments` | ❌ **não existe** — spec 007 |
+| Nova reserva | `POST /api/reservations` | ✅ pronto e **em uso** (spec 008) |
+| Reservas | `GET`, `DELETE /api/reservations`, `GET /api/users/{id}` | ✅ pronto e **em uso** (spec 008) |
+| Equipamentos de uma sala | `POST`/`DELETE /api/rooms/{id}/equipments` | ✅ pronto e **em uso** (spec 007, dentro da edição de sala) |
 | Salas | `GET`, `POST`, `PATCH /api/rooms` | ✅ pronto e **em uso** (spec 005) |
 | Equipamentos | `GET`, `POST /api/equipments` | ✅ pronto |
 
-**O backend quase deixou de ser o gargalo.** As três lacunas estruturais que este documento
-levantou foram fechadas pelas specs 002, 003 e 004: consulta por id com propagação de
-token, disponibilidade por intervalo com os três estados, e vocabulário de equipamento com
-âncoras mais `PlanSlot`. Restou uma, descoberta ao escrever a spec 007: **não há como
-alterar os equipamentos de uma sala depois de criada** — o domínio sabe, a API não expõe.
+**O backend deixou de ser o gargalo.** As lacunas estruturais que este documento levantou
+foram fechadas pelas specs 002, 003, 004 e 007: consulta por id com propagação de token,
+disponibilidade por intervalo com os três estados, vocabulário de equipamento com âncoras
+mais `PlanSlot`, e alocação/desalocação de equipamento numa sala já existente.
 
 O que trava a planta agora é **produção de arte**, não código — ver "Pendências de
 produção" abaixo.
@@ -166,11 +177,11 @@ produção" abaixo.
 | 003 | Disponibilidade por intervalo, com três estados | backend | 002 | ✅ implementada |
 | 004 | Catálogo de equipamentos e vínculo com a planta | backend | — | ✅ implementada |
 | 005 | **Navegação no topo** + Salas: lista, cadastro, edição | frontend | — | implementada |
-| 006 | Cadastro de equipamentos | frontend | 004, 005 | **escrita — desbloqueada** |
-| 007 | Atribuir equipamentos às salas | **backend** + frontend | 005, 006 | **escrita — exige endpoints novos** |
-| 008 | Reservar salas: criar, listar, cancelar | frontend | 002, 005 | **escrita — desbloqueada** |
-| 009 | Planta do andar com estado e linha do tempo | frontend | 003, 004, 008, **render** | a escrever |
-| 010 | Detalhe da sala | frontend | 004, 009 | a escrever |
+| 006 | Cadastro de equipamentos | frontend | 004, 005 | implementada |
+| 007 | Atribuir equipamentos às salas | **backend** + frontend | 005, 006 | implementada |
+| 008 | Reservar salas: criar, listar, cancelar | frontend | 002, 005 | implementada |
+| 009 | Planta do andar: grade de cards com estado e painel de detalhe | frontend | 003, 004, 008 | implementada |
+| 010 | Detalhe da sala em rota própria | frontend | 004, 009 | a escrever |
 
 **A 005 não depende de backend nenhum.** `GET`, `POST` e `PATCH /api/rooms` já existem e
 funcionam; o `planSlot` da spec 004 entra depois como campo adicional. Ou seja: a barra de
@@ -188,10 +199,12 @@ Itens que não são código e têm prazo de entrega próprio. A spec 009 não co
 |---|---|---|
 | Render do andar visto de cima, realista, planta fixa, até 10 salas | Fora do sistema — ferramenta 3D ou arte encomendada | **pendente, caminho crítico** |
 | Marcadores dos tipos de equipamento (11 tipos da spec 004) | idem | pendente |
-| Levantamento do que dá para obter pronto na internet — ferramentas, pacotes de assets, licenças | Claude, a pedido | **a entregar** |
+| ~~Levantamento do que dá para obter pronto na internet~~ | Claude, a pedido | ✅ entregue — [planta-baixa-materiais.md](planta-baixa-materiais.md) |
 
-O levantamento acima foi pedido para "quando chegar nos desenhos", mas o render está no
-caminho crítico da 009: convém antecipá-lo.
+O levantamento comparou três caminhos para o render (IA de imagem, ferramenta 3D com
+export, encomenda) e mapeou a cobertura de bibliotecas de ícones livres para os 11 tipos
+de equipamento. Falta a decisão de qual caminho seguir para o render e a produção em si —
+isso continua fora do sistema.
 
 Duas observações sobre a ordem:
 

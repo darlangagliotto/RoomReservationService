@@ -2,6 +2,8 @@ using RoomService.Application.UseCases.RegisterRoom;
 using RoomService.Application.UseCases.GetRoomById;
 using RoomService.Application.UseCases.GetRooms;
 using RoomService.Application.UseCases.UpdateRoomDetails;
+using RoomService.Application.UseCases.AssignEquipmentsToRoom;
+using RoomService.Application.UseCases.RemoveEquipmentFromRoom;
 using RoomService.Application.UseCases.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,17 +19,23 @@ namespace RoomService.Api.Controllers
         private readonly IGetRoomsUseCase _getRoomsUseCase;
         private readonly IUpdateRoomDetailsUseCase _updateRoomDetailsUseCase;
         private readonly IGetRoomByIdUseCase _getRoomByIdUseCase;
+        private readonly IAssignEquipmentsToRoomUseCase _assignEquipmentsToRoomUseCase;
+        private readonly IRemoveEquipmentFromRoomUseCase _removeEquipmentFromRoomUseCase;
 
         public RoomController(
             IRegisterRoomUseCase registerRoomUseCase,
             IGetRoomsUseCase getRoomsUseCase,
             IUpdateRoomDetailsUseCase updateRoomDetailsUseCase,
-            IGetRoomByIdUseCase getRoomByIdUseCase)
+            IGetRoomByIdUseCase getRoomByIdUseCase,
+            IAssignEquipmentsToRoomUseCase assignEquipmentsToRoomUseCase,
+            IRemoveEquipmentFromRoomUseCase removeEquipmentFromRoomUseCase)
         {
             _registerRoomUseCase = registerRoomUseCase;
             _getRoomsUseCase = getRoomsUseCase;
             _updateRoomDetailsUseCase = updateRoomDetailsUseCase;
             _getRoomByIdUseCase = getRoomByIdUseCase;
+            _assignEquipmentsToRoomUseCase = assignEquipmentsToRoomUseCase;
+            _removeEquipmentFromRoomUseCase = removeEquipmentFromRoomUseCase;
         }
 
         /// <summary>
@@ -114,6 +122,47 @@ namespace RoomService.Api.Controllers
                 );
             }
             return Ok(response.Value);
-        }    
+        }
+
+        [HttpPost("{id:guid}/equipments")]
+        [ProducesResponseType(typeof(AssignEquipmentsToRoomResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AssignEquipmentsToRoomResponse>> AssignEquipments(
+            [FromRoute] Guid id,
+            [FromBody] AssignEquipmentsToRoomRequest request)
+        {
+            var response = await _assignEquipmentsToRoomUseCase.ExecuteAsync(request with { RoomId = id });
+
+            if (!response.IsSuccess)
+            {
+                return Problem(
+                    title: "Erro de negócio",
+                    detail: response.Error,
+                    statusCode: StatusCodes.Status400BadRequest
+                );
+            }
+            return Ok(response.Value);
+        }
+
+        [HttpDelete("{id:guid}/equipments/{equipmentId:guid}")]
+        [ProducesResponseType(typeof(RemoveEquipmentFromRoomResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<RemoveEquipmentFromRoomResponse>> RemoveEquipment(
+            [FromRoute] Guid id,
+            [FromRoute] Guid equipmentId)
+        {
+            var response = await _removeEquipmentFromRoomUseCase.ExecuteAsync(
+                new RemoveEquipmentFromRoomRequest(id, equipmentId));
+
+            if (!response.IsSuccess)
+            {
+                return Problem(
+                    title: "Erro de negócio",
+                    detail: response.Error,
+                    statusCode: StatusCodes.Status400BadRequest
+                );
+            }
+            return Ok(response.Value);
+        }
     }
 }

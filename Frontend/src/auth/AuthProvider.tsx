@@ -3,10 +3,10 @@ import { login, type LoginRequest } from '@/api/auth'
 import { apiClient, setUnauthorizedHandler } from '@/api'
 import { AuthContext, type Session } from '@/auth/auth-context'
 import { clearToken, restoreToken, setToken } from '@/auth/token-store'
-import { getEmail } from '@/lib/jwt'
+import { getEmail, getUserId } from '@/lib/jwt'
 
 function toSession(token: string): Session {
-  return { token, email: getEmail(token) }
+  return { token, email: getEmail(token), userId: getUserId(token) }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

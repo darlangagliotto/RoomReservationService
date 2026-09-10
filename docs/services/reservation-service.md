@@ -64,15 +64,15 @@ A linha é **removida fisicamente** (ADR-010).
 
 | Client | Chamada | Destino |
 |---|---|---|
-| `IUserServiceClient.GetUserByIdAsync` | `GET /api/users/id/{id}` | `http://userservice:5000` |
-| `IRoomServiceClient.GetRoomByIdAsync` | `GET /api/rooms/id/{id}` | `http://roomservice:5000` |
-| `IRoomServiceClient.GetRoomByNumberAsync` | `GET /api/rooms/number/{n}` | idem |
-| `IRoomServiceClient.GetRoomByNameAsync` | `GET /api/rooms/name/{n}` | idem |
+| `IUserServiceClient.GetUserByIdAsync` | `GET /api/users/{id}` | `http://userservice:5000` |
+| `IRoomServiceClient.GetRoomByIdAsync` | `GET /api/rooms/{id}` | `http://roomservice:5000` |
+| `IRoomServiceClient.GetRoomByNumberAsync` | `GET /api/rooms?number={n}` | idem |
+| `IRoomServiceClient.GetRoomByNameAsync` | `GET /api/rooms?name={n}` | idem |
 
 Qualquer status não-2xx vira `null` (sem distinção entre 404, 401 e indisponibilidade;
-sem timeout, retry ou circuit breaker). **O `Authorization` do chamador não é
-propagado** — como os endpoints de destino exigem JWT, as chamadas seriam rejeitadas com
-`401` mesmo se as rotas existissem ([backlog B1](../sdd/backlog.md#b1)).
+sem timeout, retry ou circuit breaker). O `Authorization` do chamador **é propagado**
+(`AuthorizationPropagationHandler`, registrado nos dois `AddHttpClient`) — sem isso as
+chamadas seriam rejeitadas com `401`, já que os endpoints de destino exigem JWT.
 
 As URLs são **fixas no código**, não vêm de configuração: fora da rede do Compose o
 serviço não consegue falar com os outros.
@@ -93,9 +93,11 @@ depender de `Microsoft.EntityFrameworkCore` (ver
 
 ## Lacunas conhecidas
 
-- **Integração quebrada**: nenhum dos quatro endpoints consumidos existe
-  ([backlog B1](../sdd/backlog.md#b1)). Hoje `POST` sempre falha com `"Usuário não encontrado."`
-  e o `GET` devolve `userName`/`roomName` vazios e `roomNumber: 0`.
+- ~~Integração quebrada: nenhum dos quatro endpoints consumidos existia~~ — resolvido pela
+  [spec 002](../specs/002-consulta-por-id-e-auth-servico.md), que criou os endpoints de
+  consulta por id e passou a propagar o `Authorization` do chamador
+  (`AuthorizationPropagationHandler`). `POST`, `GET` e `DELETE` funcionam de ponta a ponta
+  e são consumidos pela tela de Reservas desde a [spec 008](../specs/008-reservar-salas.md).
 - **N+1 remoto na listagem**: duas chamadas HTTP por reserva retornada.
 - **Overlap sem proteção de concorrência**: a verificação lê e grava sem transação nem
   constraint de exclusão — requisições simultâneas podem sobrepor reservas.

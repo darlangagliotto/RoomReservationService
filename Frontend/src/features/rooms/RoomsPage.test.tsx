@@ -159,7 +159,7 @@ describe('cadastro', () => {
     })
   })
 
-  it('só oferece equipamentos livres', async () => {
+  it('busca equipamento livre por texto e permite remover a seleção', async () => {
     const unassignedEquipment = { ...room.equipments[0], id: 'e-9', serialNumber: 'SN-LIVRE', roomId: null }
     stubApi((url) =>
       url.includes('/api/equipments') ? jsonResponse([unassignedEquipment]) : jsonResponse([room]),
@@ -167,8 +167,116 @@ describe('cadastro', () => {
     renderPage()
 
     await userEvent.click(await screen.findByRole('button', { name: 'Nova sala' }))
+    await userEvent.type(screen.getByLabelText('Equipamentos disponíveis'), 'LIVRE')
 
-    expect(await screen.findByText(/SN-LIVRE/)).toBeInTheDocument()
+    const option = await screen.findByRole('option', { name: /SN-LIVRE/ })
+    await userEvent.click(option)
+
+    // Selecionado some das sugestões e vira cartão removível.
+    expect(screen.queryByRole('option')).not.toBeInTheDocument()
+    expect(screen.getByRole('listitem')).toHaveTextContent('SN-LIVRE')
+
+    await userEvent.click(screen.getByRole('button', { name: /Remover/ }))
+    expect(screen.queryByText(/SN-LIVRE/)).not.toBeInTheDocument()
+  })
+})
+
+describe('gestão de equipamentos (spec 007)', () => {
+  const freeEquipment = {
+    id: 'e-9',
+    type: 'Tv',
+    placement: 'Parede',
+    brand: 'Samsung',
+    serialNumber: 'SN-LIVRE',
+    purchaseDate: '2023-01-01T00:00:00Z',
+    roomId: null as string | null,
+  }
+
+  /** Estado mutavel simples: aloca/desaloca de verdade entre as chamadas. */
+  function stubRoomEquipmentApi() {
+    let equipmentsInRoom = [...room.equipments]
+    const currentRoom = () => ({ ...room, equipments: equipmentsInRoom })
+
+    return stubApi((url, init) => {
+      if (init?.method === 'POST' && url.includes('/equipments')) {
+        equipmentsInRoom = [...equipmentsInRoom, { ...freeEquipment, roomId: room.id }]
+        return jsonResponse({ room: currentRoom() }, 200)
+      }
+      if (init?.method === 'DELETE') {
+        equipmentsInRoom = equipmentsInRoom.filter((e) => !url.endsWith(`/equipments/${e.id}`))
+        return jsonResponse({ room: currentRoom() }, 200)
+      }
+      if (url.includes('/api/equipments')) {
+        const alreadyInRoom = equipmentsInRoom.some((e) => e.id === freeEquipment.id)
+        return jsonResponse(alreadyInRoom ? [] : [freeEquipment])
+      }
+      return url.includes('/api/rooms') ? jsonResponse([currentRoom()]) : jsonResponse([])
+    })
+  }
+
+  it('mostra os equipamentos da sala já na tela de edição, sem tela extra', async () => {
+    stubRoomEquipmentApi()
+    renderPage()
+
+    await userEvent.click(await screen.findByRole('button', { name: /^Editar/ }))
+
+    expect(await screen.findByRole('heading', { name: 'Equipamentos desta sala' })).toBeInTheDocument()
+    expect(document.body.textContent).toMatch(/SN-002/)
+  })
+
+  it('adiciona um equipamento livre à sala sem recarregar a página', async () => {
+    stubRoomEquipmentApi()
+    renderPage()
+
+    await userEvent.click(await screen.findByRole('button', { name: /^Editar/ }))
+    await userEvent.type(screen.getByLabelText('Adicionar equipamento'), 'LIVRE')
+    await userEvent.click(await screen.findByRole('option', { name: /SN-LIVRE/ }))
+
+    // O texto se espalha por nós de texto irmãos (marca, número de série entre
+    // parênteses); comparar o textContent evita depender de como o getByText
+    // do Testing Library resolve nós aninhados.
+    await waitFor(() => {
+      expect(document.body.textContent).toMatch(/SN-LIVRE/)
+    })
+  })
+
+  it('retira um equipamento da sala e ele some da tela', async () => {
+    stubRoomEquipmentApi()
+    renderPage()
+
+    await userEvent.click(await screen.findByRole('button', { name: /^Editar/ }))
+    await waitFor(() => {
+      expect(document.body.textContent).toMatch(/SN-002/)
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: /Remover/ }))
+
+    await waitFor(() => {
+      expect(document.body.textContent).not.toMatch(/SN-002/)
+    })
+    expect(screen.getByText('Esta sala não tem equipamentos.')).toBeInTheDocument()
+  })
+
+  it('mostra a mensagem do servidor junto ao editor quando a alocação falha', async () => {
+    stubApi((url, init) => {
+      if (init?.method === 'POST' && url.includes('/equipments')) {
+        return jsonResponse(
+          { title: 'Business error', detail: 'Este equipamento já está alocado a outra sala.' },
+          400,
+        )
+      }
+      if (url.includes('/api/equipments')) return jsonResponse([freeEquipment])
+      return url.includes('/api/rooms') ? jsonResponse([room]) : jsonResponse([])
+    })
+    renderPage()
+
+    await userEvent.click(await screen.findByRole('button', { name: /^Editar/ }))
+    await userEvent.type(screen.getByLabelText('Adicionar equipamento'), 'LIVRE')
+    await userEvent.click(await screen.findByRole('option', { name: /SN-LIVRE/ }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Este equipamento já está alocado a outra sala.',
+    )
   })
 })
 
